@@ -24,15 +24,17 @@ CLOUDY = os.environ.get('CLOUDY_PROFILES',
                         'T6_multi_ion/cloudy_stromgren/radial_profiles.txt')
 MUH, KB = 2.34335276e-24, 1.380649e-16
 P_TO_PK = MUH*1e10/KB
-X_HE, X_O, X_S = 0.1, 3.2e-4, 1.45e-5
+X_HE, X_O, X_S, X_N = 0.1, 3.2e-4, 1.45e-5, 7.4e-5
 CORE = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+']
-IONS = ['O++', 'S+', 'S++', 'S3+']
+IONS = ['O++', 'S+', 'S++', 'S3+', 'N+', 'N++']
 CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1,
-          'Si+': 1, 'O++': 2, 'S+': 1, 'S++': 2, 'S3+': 3}
-TOTAL = {'H+': 1.0, 'He+': X_HE, 'O+': X_O, 'O++': X_O, 'S+': X_S, 'S++': X_S, 'S3+': X_S}
-QTY = ['H+', 'He+', 'O+', 'O++', 'S+', 'S++', 'S3+']
+          'Si+': 1, 'O++': 2, 'S+': 1, 'S++': 2, 'S3+': 3, 'N+': 1, 'N++': 2}
+TOTAL = {'H+': 1.0, 'He+': X_HE, 'O+': X_O, 'O++': X_O, 'S+': X_S, 'S++': X_S, 'S3+': X_S,
+         'N+': X_N, 'N++': X_N}
+QTY = ['H+', 'He+', 'O+', 'O++', 'S+', 'S++', 'S3+', 'N+', 'N++']
 # Cloudy radial_profiles.txt columns
-CCOL = {'H+': 3, 'He+': 4, 'O+': 7, 'O++': 8, 'S+': 11, 'S++': 12, 'S3+': 13}
+CCOL = {'H+': 3, 'He+': 4, 'O+': 7, 'O++': 8, 'S+': 11, 'S++': 12, 'S3+': 13,
+        'N+': 14, 'N++': 15}
 
 
 def fixed_temperature(rundir):
@@ -90,7 +92,7 @@ crs = cr[mz].max()
 
 out = sys.argv[1]
 runs = [a.split(':', 1) for a in sys.argv[2:]]
-fig, axs = plt.subplots(3, 3, figsize=(16, 13))
+fig, axs = plt.subplots(3, 4, figsize=(21, 13))
 axs = axs.ravel()
 for n, q in enumerate(QTY):
     axs[n].semilogy(cr, cfr[q], 'k-', lw=2, label='Cloudy 25')
