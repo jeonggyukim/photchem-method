@@ -31,9 +31,11 @@ run classic $T/inputs/feedback/athinput.radiative_snr "${reg[@]}" cooling/coolin
 build $T ncr -ncr
 run ncr $T/inputs/feedback/athinput.radiative_snr "${reg[@]}" cooling/cooling=none \
   photchem/photchem=true photchem_ncr/cool_hyd_cie_flag=true
+gow=(time/ncycle_out=10 time/dt_diagnostics=-1 output2/dt=0.005 output3/dt=-1 time/tlim=0.05
+     cooling/cooling=none photchem/photchem=true photchem_gow17/cool_hyd_cie_flag=true)
 build $T core -gow17
-run core ../athinput.snr_gow17
+run core ../athinput.snr_gow17 "${gow[@]}"
 build $T ions -gow17 --photchem_ions=O3,S3,N3
-run ions ../athinput.snr_gow17
+run ions ../athinput.snr_gow17 "${gow[@]}"
 build $W/src_noreturn noreturn -gow17 --photchem_ions=O3,S3,N3
-run noreturn ../athinput.snr_gow17
+run noreturn ../athinput.snr_gow17 "${gow[@]}"

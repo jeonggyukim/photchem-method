@@ -1,347 +1,205 @@
-#------------------------- PAR_DUMP -------------------------
 <comment>
-problem   = radiative snr                        
-reference =                                      
-configure = --prob radiative_snr -fb -gow17 -mpi 
+problem   = radiative snr
+reference =
+configure = --prob radiative_snr -fb -gow17 -mpi
+# athinput.radiative_snr with GOW17 photochemistry: <photchem>/mode = gow17 and the
+# <photchem_gow17> block before <particle1>, with the ambient field and cosmic rays
+# of <photchem_ncr>. Run with photchem/photchem=true, cooling/cooling=none and
+# tigress_coolftn_ncr.txt in the run directory (the hot-gas CIE table).
+
 <job>
-problem_id    = snr_ions # problem ID: basename of output filenames
-output_timing = true     
+problem_id = SNR # problem ID: basename of output filenames
+output_timing = true
+
 <output1>
-file_type      = hst    # History data dump
-dt             = 1.e-8  # time increment between outputs
-next_time      = 1e-08  # Updated during run time
-dcycle         = 0      # Default value added at run time
-file_number    = 1      # Updated during run time
-id             = out1   # Default value added at run time
-x1_sum         = 0      # Default value added at run time
-x2_sum         = 0      # Default value added at run time
-x3_sum         = 0      # Default value added at run time
-ghost_zones    = 0      # Default value added at run time
-orbital_system = 0      # Default value added at run time
-data_format    = %12.5e # Default value added at run time
+file_type  = hst        # History data dump
+dt         = 1.e-8      # time increment between outputs
+
 <output2>
-file_type      = hdf5   # hdf5 data dump
-variable       = prim   
-dt             = 0.005  # time increment between outputs
-next_time      = 0.005  # Updated during run time
-dcycle         = 0      # Default value added at run time
-file_number    = 1      # Updated during run time
-id             = out2   # Default value added at run time
-x1_sum         = 0      # Default value added at run time
-x2_sum         = 0      # Default value added at run time
-x3_sum         = 0      # Default value added at run time
-ghost_zones    = 0      # Default value added at run time
-orbital_system = 0      # Default value added at run time
-data_format    = %12.5e # Default value added at run time
-xdmf           = 1      # Default value added at run time
+file_type  = hdf5       # hdf5 data dump
+variable   = prim
+dt         = 1.e-2      # time increment between outputs
+
 <output3>
-file_type = hdf5  # hdf5 data dump
-variable  = uov   
-dt        = -1    # time increment between outputs
-next_time = 0     # Default value added at run time
-dcycle    = 0     # Default value added at run time
+file_type  = hdf5       # hdf5 data dump
+variable   = uov
+dt         = 1.e-2      # time increment between outputs
+
 <time>
-cfl_number        = 0.3    # The Courant, Friedrichs, & Lewy (CFL) Number
-nlim              = -1     # cycle limit
-tlim              = 0.05   # time limit
-dtlim             = 1.e-10 
-integrator        = rk2    # time integration algorithm
-xorder            = 2      # order of spatial reconstruction
-ncycle_out        = 10     # interval for stdout summary info
-dt_diagnostics    = -1     
-ops_task          = true   
-start_time        = 0      # Default value added at run time
-ncycle_out_timing = 10     # Default value added at run time
-sts_integrator    = rkl2   # Default value added at run time
-sts_max_dt_ratio  = -1     # Default value added at run time
-correct_ic        = 0      # Default value added at run time
-correct_err       = 0      # Default value added at run time
+cfl_number = 0.3        # The Courant, Friedrichs, & Lewy (CFL) Number
+nlim       = -1         # cycle limit
+tlim       = 0.1        # time limit
+dtlim      = 1.e-10
+integrator  = rk2       # time integration algorithm
+xorder      = 2         # order of spatial reconstruction
+ncycle_out  = 1         # interval for stdout summary info
+dt_diagnostics = 0
+ops_task = true
+
 <mesh>
-nx1         = 64       # Number of zones in X1-direction
-x1min       = -32.0    # minimum value of X1
-x1max       = 32.0     # maximum value of X1
-ix1_bc      = periodic # inner-X1 boundary flag
-ox1_bc      = periodic # outer-X1 boundary flag
-nx2         = 64       # Number of zones in X2-direction
-x2min       = -32      # minimum value of X2
-x2max       = 32       # maximum value of X2
-ix2_bc      = periodic # inner-X2 boundary flag
-ox2_bc      = periodic # outer-X2 boundary flag
-nx3         = 64       # Number of zones in X3-direction
-x3min       = -32      # minimum value of X3
-x3max       = 32       # maximum value of X3
-ix3_bc      = periodic # inner-X3 boundary flag
-ox3_bc      = periodic # outer-X3 boundary flag
-x1rat       = 1        # Default value added at run time
-x2rat       = 1        # Default value added at run time
-x3rat       = 1        # Default value added at run time
-refinement  = none     # Default value added at run time
-num_threads = 1        # Default value added at run time
+nx1        = 64         # Number of zones in X1-direction
+x1min      = -32.0      # minimum value of X1
+x1max      = 32.0       # maximum value of X1
+ix1_bc     = periodic   # inner-X1 boundary flag
+ox1_bc     = periodic   # outer-X1 boundary flag
+
+nx2        = 64         # Number of zones in X2-direction
+x2min      = -32        # minimum value of X2
+x2max      = 32         # maximum value of X2
+ix2_bc     = periodic   # inner-X2 boundary flag
+ox2_bc     = periodic   # outer-X2 boundary flag
+
+nx3        = 64         # Number of zones in X3-direction
+x3min      = -32        # minimum value of X3
+x3max      = 32         # maximum value of X3
+ix3_bc     = periodic   # inner-X3 boundary flag
+ox3_bc     = periodic   # outer-X3 boundary flag
+
 <meshblock>
-nx1 = 32 
-nx2 = 32 
-nx3 = 32 
+nx1        = 32
+nx2        = 32
+nx3        = 32
+
 <hydro>
-gamma             = 1.666666666667       # gamma = C_p/C_v
-iso_sound_speed   = 0.4082482905         # equivalent to sqrt(gamma*p/d) for p=0.1, d=1
-neighbor_flooring = true                 
-fofc              = true                 
-ct_method         = ctc                  
-active            = true                 # Default value added at run time
-vel_decomp        = 0                    # Default value added at run time
-grav_acc1         = 0                    # Default value added at run time
-grav_acc2         = 0                    # Default value added at run time
-grav_acc3         = 0                    # Default value added at run time
-fofc_shear        = 0                    # Default value added at run time
-fofc_full         = 0                    # Default value added at run time
-prolonged_fofc    = 1                    # Default value added at run time
-dfloor            = 3.46944695195361e-18 # Default value added at run time
-pfloor            = 3.46944695195361e-18 # Default value added at run time
-tsqfloor          = 3.46944695195361e-18 # Default value added at run time
-sfloor            = 3.46944695195361e-18 # Default value added at run time
+gamma             = 1.666666666667 # gamma = C_p/C_v
+iso_sound_speed   = 0.4082482905   # equivalent to sqrt(gamma*p/d) for p=0.1, d=1
+neighbor_flooring = true
+fofc              = true
+ct_method         = ctc
+
 <cooling>
-cooling      = none                # [none, enroll, op_split]
-solver       = forward_euler       # [forward_euler]
-coolftn      = tigress             # tigress or plf
-coolftn_file = tigress_coolftn.txt 
-cfl_cool     = 0.5                 # min dt_hydro/dt_cool
-cfl_cool_sub = 0.1                 # dt_sub/dt_cool (must be less than 1)
-T_floor      = 10                  # temperature floor
-T_max        = 1e9                 # temperature ceiling
-T_PE         = 15000               # temperature below which PE heating is applied, if plf
-Gamma        = 2e-26               # heating rate in ergs / sec, if plf
-heat_ratio   = 1.0                 # Gamma/Gamma0, if tigress
+cooling       = op_split         # [none, enroll, op_split]
+solver        = forward_euler    # [forward_euler]
+coolftn       = tigress          # tigress or plf
+coolftn_file  = tigress_coolftn.txt
+
+cfl_cool      = 0.5       # min dt_hydro/dt_cool
+cfl_cool_sub  = 0.1       # dt_sub/dt_cool (must be less than 1)
+T_floor       = 10        # temperature floor
+T_max         = 1e9       # temperature ceiling
+
+T_PE          = 15000     # temperature below which PE heating is applied, if plf
+Gamma         = 2e-26     # heating rate in ergs / sec, if plf
+
+heat_ratio    = 1.0       # Gamma/Gamma0, if tigress
+
 <perturbation>
-nlow  = 2 
-nhigh = 8 
-expo  = 2 
-rseed = 1 
+nlow          = 2
+nhigh         = 8
+expo          = 2
+rseed         = 1
+
 <feedback>
-ischeme        = Subcell            
-fb_op          = 0                  
-rfb_res        = 3.0                # feedback radius in grid cells
-N_sc           = 3                  
-fkin           = 0.28               
-M_inj          = 10.0               # Mass injected in units of Msun for single SN
-E_inj          = 1.0                # Energy injected in units of 10^51 ergs
-iSN            = 1                  # turn on supernovae (in pop_synth)
-pop_synth      = single             # population synthesis model (single or SB99)
-pop_synth_file = Z014_GenevaV00.txt # copy from inputs/tables/pop_synth/
-write_rprof    = 0                  # Default value added at run time
-vmax           = -1                 # Default value added at run time
+ischeme       = Subcell
+fb_op         = 0
+rfb_res       = 3.0      # feedback radius in grid cells
+N_sc          = 3
+fkin          = 0.28
+M_inj         = 10.0     # Mass injected in units of Msun for single SN
+E_inj         = 1.0      # Energy injected in units of 10^51 ergs
+iSN           = 1        # turn on supernovae (in pop_synth)
+pop_synth     = single   # population synthesis model (single or SB99)
+pop_synth_file = Z014_GenevaV00.txt  # copy from inputs/tables/pop_synth/
+
+
 <problem>
-nH_0          = 1.    # initial number density in cm^-3
-pgas_0        = 3000  # initial gas pressure meant to be in kB K cm^-3
-B_0           = 10    # initial B_y in uG
-t_SN          = -1    # Updated during run time
-dt_SN         = -1    # SN interval, negative will give a single SN
-M_ej          = 10.0  # Mass injected in units of Msun (for manual injection)
-E_SN          = 1.0   # Energy injected in units of 10^51 ergs (for manual injection)
-t_SN_end      = 10.   
-random        = false 
-amp_den       = 0.0   # non zero to turn on
-turb_flag     = 0     # 1 to turn on
-v3d           = 5.0   # v3d
-dedt          = 0.    # place holder -- will be set by Mach and p_gas0
-m_sp          = 1.e10 # mass of star [Msun] particle put in by hand
-x_sp          = 0.0   # x-position of particle
-y_sp          = 0.0   # x-position of particle
-z_sp          = 0.0   # x-position of particle
-vx_sp         = 0.0   # x-velocity of particle
-vy_sp         = 0.0   # x-velocity of particle
-vz_sp         = 0.0   # x-velocity of particle
-npar          = 1     
-dist          = 2.0   
-Z_SN          = 0.2   # Default value added at run time
-fe_CR         = 0.1   # Default value added at run time
-GM            = 0     # Default value added at run time
-nu_iso        = 0     # Default value added at run time
-nu_aniso      = 0     # Default value added at run time
-kappa_iso     = 0     # Default value added at run time
-kappa_aniso   = 0     # Default value added at run time
-nu_scalar_iso = 0     # Default value added at run time
+nH_0          = 1.       # initial number density in cm^-3
+pgas_0        = 3000     # initial gas pressure meant to be in kB K cm^-3
+B_0           = 10       # initial B_y in uG
+
+t_SN          = 0.0
+dt_SN         = -1       # SN interval, negative will give a single SN
+M_ej          = 10.0     # Mass injected in units of Msun (for manual injection)
+E_SN          = 1.0      # Energy injected in units of 10^51 ergs (for manual injection)
+t_SN_end      = 10.
+random        = false
+
+amp_den       = 0.0      # non zero to turn on
+turb_flag     = 0        # 1 to turn on
+v3d           = 5.0      # v3d
+dedt          = 0.       # place holder -- will be set by Mach and p_gas0
+
+# for particle based injection
+m_sp          = 1.e10     # mass of star [Msun] particle put in by hand
+                         # should be very large to have an SN immediately
+x_sp          = 0.0      # x-position of particle
+y_sp          = 0.0      # x-position of particle
+z_sp          = 0.0      # x-position of particle
+vx_sp         = 0.0      # x-velocity of particle
+vy_sp         = 0.0      # x-velocity of particle
+vz_sp         = 0.0      # x-velocity of particle
+npar          = 1
+dist          = 2.0
+
 <photchem>
-photchem            = true  
-mode                = gow17 
-bookkeeping         = true  # Keep track of heating/cooling rates
-flag_op_split       = true  # Operator split update
-flag_rad_force      = false # Turn on radiation pressure force
+photchem = false
+mode = gow17
+bookkeeping = true          # Keep track of heating/cooling rates
+                            # uov can be added
+flag_op_split  = true       # Operator split update
+flag_rad_force = false      # Turn on radiation pressure force
 flag_update_dt_main = false # Update dt_main using dt_user=dt_coolchem
-cfl_photchem        = 1.0   # dt_user = cfl_photchem*t_coolchem
-evolve              = 1     # Default value added at run time
+cfl_photchem = 1.0          # dt_user = cfl_photchem*t_coolchem
+
 <photchem_ncr>
-sed_average         = input                   # input: read hnu/sigma_d/sigma_pi below
-cool_hyd_cie_flag   = false                   
-cool_dust_flag      = false                   
-h2_diss_bg_flag     = true                    
-nsub_max            = 50                      
-cfl_cool_sub        = 0.1                     
-temp_hot0           = 20000.0                 
-temp_hot1           = 35000.0                 
-z_gas               = 1.0                     
-z_dust              = 1.0                     
-chi0                = 1.0                     
-xi_cr0              = 2e-16                   # unattenuated CR ionization rate [1/s]
-shld_n_hyd0         = 1e2                     
-shld_len0           = 0.0                     # zero to turn off
-shld_pow_idx        = -0.7                    
-shld_column_hyd_cr0 = 9.35e20                 
-hnu[0]              = 18.0                    
-sigma_d[0]          = 1.0e-21                 # smaller than theoretical estimate
-sigma_pi_HI[0]      = 3.1e-18                 
-sigma_pi_H2[0]      = 4.6e-18                 
-hnu[1]              = 12.2                    
-sigma_d[1]          = 2.0e-21                 
-sigma_pi_HI[1]      = 0.0                     
-sigma_pi_H2[1]      = 0.0                     
-hnu[2]              = 9.0                     
-sigma_d[2]          = 1e-21                   
-sigma_pi_HI[2]      = 0.0                     
-sigma_pi_H2[2]      = 0.0                     
-coolftn_file        = tigress_coolftn_ncr.txt # file name for high-T cooling table
+sed_average    = input     # input: read hnu/sigma_d/sigma_pi below
+                           # computed: band-average them at startup from sed_file over the
+                           # edges of band_set, and write them back here
+cool_hyd_cie_flag = false
+cool_dust_flag = false
+h2_diss_bg_flag = true
+nsub_max = 50
+cfl_cool_sub = 0.1
+temp_hot0 = 20000.0
+temp_hot1 = 35000.0
+
+z_gas = 1.0
+z_dust = 1.0
+
+chi0 = 1.0
+xi_cr0 = 2e-16          # unattenuated CR ionization rate [1/s]
+shld_n_hyd0 = 1e2
+shld_len0 = 0.0         # zero to turn off
+shld_pow_idx = -0.7
+shld_column_hyd_cr0 = 9.35e20
+
+# Cross sections and photon energies in (LyC,LW,PE) bands
+# sigma_d is per H at Z_dust = 1 (scaled by z_dust)
+hnu[0]      = 18.0
+sigma_d[0]     = 1.0e-21 # smaller than theoretical estimate
+sigma_pi_HI[0] = 3.1e-18
+sigma_pi_H2[0] = 4.6e-18
+hnu[1]      = 12.2
+sigma_d[1]     = 2.0e-21
+sigma_pi_HI[1] = 0.0
+sigma_pi_H2[1] = 0.0
+hnu[2]      = 9.0
+sigma_d[2]     = 1e-21
+sigma_pi_HI[2] = 0.0
+sigma_pi_H2[2] = 0.0
+
+coolftn_file   = tigress_coolftn_ncr.txt  # file name for high-T cooling table
+
 <photchem_gow17>
-semi_implicit_gauss_seidel       = true                                                                         
-chi0                             = 1.0                                                                          # as <photchem_ncr>
-xi_cr0                           = 2e-16                                                                        
-h2_diss_bg_flag                  = true                                                                         
-z_gas                            = 1.0                                                                          
-z_dust                           = 1.0                                                                          
-hot_cooling                      = true                                                                         # CIE He and metal cooling above temp_hot0
-cool_hyd_cie_flag                = true                                                                         # true: CIE hydrogen cooling above temp_hot0 too, as NCR's
-temp_hot0                        = 20000.0                                                                      
-temp_hot1                        = 35000.0                                                                      
-coolftn_file                     = tigress_coolftn_ncr.txt                                                      
-rates_dir                        = /Users/jgkim/Projects/tigris-gow17/inputs/tables/rates                       
-ion_cooling_dir                  = /Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ion_cooling     
-GOW17_Z_g                        = 1                                                                            # Default value added at run time
-GOW17_xC                         = 0.00016                                                                      # Default value added at run time
-GOW17_xO                         = 0.00032                                                                      # Default value added at run time
-GOW17_xSi                        = 1.7e-06                                                                      # Default value added at run time
-GOW17_xHe                        = 0.1                                                                          # Default value added at run time
-GOW17_Z_d                        = 1                                                                            # Updated during run time
-GOW17_xS                         = 1.45e-05                                                                     # Default value added at run time
-GOW17_xN                         = 7.4e-05                                                                      # Default value added at run time
-GOW17_isothermal                 = 0                                                                            # Default value added at run time
-GOW17_temperature_fixed          = 0                                                                            # Default value added at run time
-GOW17_jacobian_hoist             = 0                                                                            # Default value added at run time
-GOW17_temperature_min_rates      = 1                                                                            # Default value added at run time
-GOW17_temperature_max_rates      = inf                                                                          # Default value added at run time
-GOW17_temperature_max_heating    = inf                                                                          # Default value added at run time
-GOW17_temperature_min_cooling    = 1                                                                            # Default value added at run time
-GOW17_temperature_max_cooling_nm = 1000000000                                                                   # Default value added at run time
-GOW17_Leff_CO_max                = 3e+20                                                                        # Default value added at run time
-GOW17_H2_rovib_cooling           = 1                                                                            # Default value added at run time
-is_kgrH2_const                   = 0                                                                            # Default value added at run time
-riccati_hp                       = 0                                                                            # Default value added at run time
-GOW17_thermo_table               = 0                                                                            # Default value added at run time
-semi_implicit_cfl                = 0.1                                                                          # Default value added at run time
-semi_implicit_yfloor             = 1e-12                                                                        # Default value added at run time
-semi_implicit_n_substep_max      = 100000                                                                       # Default value added at run time
-semi_implicit_n_substep_fixed    = 0                                                                            # Default value added at run time
-semi_implicit_stiff_threshold    = 1                                                                            # Default value added at run time
-semi_implicit_n_iter             = 1                                                                            # Default value added at run time
-semi_implicit_energy             = 1                                                                            # Default value added at run time
-semi_implicit_renormalize        = 1                                                                            # Default value added at run time
-semi_implicit_hep_first          = 1                                                                            # Default value added at run time
-semi_implicit_exact_map          = 0                                                                            # Default value added at run time
-semi_implicit_exact_block        = 0                                                                            # Default value added at run time
-semi_implicit_co_block           = 1                                                                            # Default value added at run time
-semi_implicit_exact_ghosts       = 0                                                                            # Default value added at run time
-semi_implicit_h2_first           = 0                                                                            # Default value added at run time
-semi_implicit_adaptive           = 1                                                                            # Default value added at run time
-semi_implicit_nbad_max           = 3                                                                            # Default value added at run time
-semi_implicit_refresh_rates      = 0                                                                            # Default value added at run time
-semi_implicit_table_deriv        = 0                                                                            # Default value added at run time
-semi_implicit_change_control     = 0                                                                            # Default value added at run time
-semi_implicit_change_target      = 0.1                                                                          # Default value added at run time
-semi_implicit_change_reject      = 0.2                                                                          # Default value added at run time
-semi_implicit_change_grow        = 2                                                                            # Default value added at run time
-semi_implicit_floor_frac         = 0.001                                                                        # Default value added at run time
-shld_xi_cr_flag                  = 0                                                                            # Default value added at run time
-per_channel_dust                 = 1                                                                            # Default value added at run time
-shld_column_hyd_cr0              = 9.35e+20                                                                     # Default value added at run time
-ionized_cooling                  = 1                                                                            # Default value added at run time
-ion_cooling                      = 1                                                                            # Default value added at run time
-nebular_cooling                  = 0                                                                            # Default value added at run time
-he_recombination                 = on_the_spot                                                                  # Default value added at run time
-higher_ions                      = 1                                                                            # Default value added at run time
-cie_dir                          = /Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ion_cooling/../ # Default value added at run time
+semi_implicit_gauss_seidel = true
+chi0           = 1.0       # as <photchem_ncr>
+xi_cr0         = 2e-16
+h2_diss_bg_flag = true
+z_gas          = 1.0
+z_dust         = 1.0
+hot_cooling    = true      # CIE He and metal cooling above temp_hot0
+cool_hyd_cie_flag = false  # true: CIE hydrogen cooling above temp_hot0 too, as NCR's
+temp_hot0      = 20000.0
+temp_hot1      = 35000.0
+coolftn_file   = tigress_coolftn_ncr.txt
+rates_dir      = /Users/jgkim/Projects/tigris-gow17/inputs/tables/rates
+ion_cooling_dir = /Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ion_cooling
+
 <particle1>
-type        = none  # star particle type
-output      = true  # give outputs (check if the particle is made)
-gravity     = false 
-feedback    = true  # turn on feedback from particles
-accretion   = 0     
-mass_return = false 
-type_ia_sn  = false 
-<orbital_advection>
-OAorder    = 0 # Default value added at run time
-Omega0     = 0 # Default value added at run time
-qshear     = 0 # Default value added at run time
-shboxcoord = 1 # Default value added at run time
-<rayt_point>
-rayt_point  = false # Default value added at run time
-rayt_sparse = 0     # Default value added at run time
-<rayt_diffuse>
-rayt_diffuse = false # Default value added at run time
-<dust>
-dust = false # Default value added at run time
-<postproc>
-postproc = 0 # Default value added at run time
-<cr>
-fofc = 0 # Default value added at run time
-<loadbalancing>
-balancer  = default # Default value added at run time
-tolerance = 0.5     # Default value added at run time
-interval  = 10      # Default value added at run time
-<units>
-unit_system            = ism                  # Default value added at run time
-mass_cgs               = 4.91769147364387e+31 # Updated during run time
-length_cgs             = 3.0856776e+18        # Updated during run time
-time_cgs               = 30856776000000       # Updated during run time
-mean_mass_per_hydrogen = 2.34335276e-24       # Updated during run time
-<scalar_indices>
-IDZ = 0 # Updated during run time
-ISN = 1 # Updated during run time
-IRT = 2 # Updated during run time
-IHI = 3 # Updated during run time
-<configure>
-Problem_generator           = radiative_snr                                                                                 # Updated during run time
-Coordinate_system           = cartesian                                                                                     # Updated during run time
-Equation_of_state           = adiabatic                                                                                     # Updated during run time
-Riemann_solver              = hllc                                                                                          # Updated during run time
-Magnetic_fields             = OFF                                                                                           # Updated during run time
-Dual_Energy                 = none                                                                                          # Updated during run time
-Number_of_scalars           = 25                                                                                            # Updated during run time
-Number_of_user_scalars      = 0                                                                                             # Updated during run time
-Number_of_dual_E._scalar    = 0                                                                                             # Updated during run time
-Number_of_feedback_scalar   = 3                                                                                             # Updated during run time
-Number_of_CR_scalar         = 0                                                                                             # Updated during run time
-Number_of_photchem_scalars  = 22                                                                                            # Updated during run time
-Special_relativity          = OFF                                                                                           # Updated during run time
-General_relativity          = OFF                                                                                           # Updated during run time
-Frame_transformations       = OFF                                                                                           # Updated during run time
-Self-Gravity                = OFF                                                                                           # Updated during run time
-Super-Time-Stepping         = OFF                                                                                           # Updated during run time
-Cosmic_Ray_Transport        = OFF                                                                                           # Updated during run time
-Cosmic_Ray_energy_groups    = 0                                                                                             # Updated during run time
-Point-source_rayt_groups    = 3                                                                                             # Updated during run time
-Diffuse_rayt_groups         = 3                                                                                             # Updated during run time
-Diffuse_rayt_moments        = 0                                                                                             # Updated during run time
-Debug_flags                 = OFF                                                                                           # Updated during run time
-Code_coverage_flags         = OFF                                                                                           # Updated during run time
-Linker_flags                = -L/opt/homebrew/opt/hdf5-mpi/lib  -lhdf5                                                      # Updated during run time
-Floating-point_precision    = double                                                                                        # Updated during run time
-Number_of_ghost_cells       = 2                                                                                             # Updated during run time
-MPI_parallelism             = ON                                                                                            # Updated during run time
-OpenMP_parallelism          = OFF                                                                                           # Updated during run time
-FFT                         = OFF                                                                                           # Updated during run time
-HDF5_output                 = ON                                                                                            # Updated during run time
-HDF5_precision              = single                                                                                        # Updated during run time
-Compiler                    = g++                                                                                           # Updated during run time
-Compilation_command         = mpicxx  -I/opt/homebrew/opt/hdf5-mpi/include -O3 -std=c++17 -I/opt/homebrew/opt/boost/include # Updated during run time
-Configure_date              = 2026-09-24T11:52:16+00:00                                                                     # Updated during run time
-Configure_server            = Jeong-Gyus-MacBook-Pro.local                                                                  # Updated during run time
-Configure_commit_ID         = 0f71578fd8238177a2eb19d622e73e655810602b                                                      # Updated during run time
-#------------------------- PAR_DUMP -------------------------
-<par_end>
+type          = none     # star particle type
+output        = true     # give outputs (check if the particle is made)
+gravity       = false
+feedback      = true     # turn on feedback from particles
+accretion     = 0
+mass_return   = false
+type_ia_sn    = false
