@@ -1,0 +1,23 @@
+# Bulky or machine-specific things that should not travel with a shared repo.
+# Reduced arrays a figure actually plots belong in data/ and are tracked.
+*.vtk
+*.athdf
+*.hdf5
+*.h5
+*.key
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+
+# Figure output stays out until a figure is near final: these are redrawn on
+# every tweak, and a repository of drafts is not worth the history. The script
+# is the tracked artifact; run it to get the figure.
+figures/*.pdf
+figures/*.png
+
+# Simulation output never enters this repository, not even reduced. It lives in
+# ../data/, one level above the repository root, so no `git add` can reach it.
+data/
+*.diffuse
+*.npz
+*.vtk
