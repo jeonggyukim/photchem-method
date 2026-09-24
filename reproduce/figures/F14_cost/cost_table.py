@@ -6,7 +6,6 @@ rad_snr runs write HDF5 every 0.005 code, the classic and NCR ones none). Writes
 cost_table.txt."""
 import glob
 import os
-import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion')
