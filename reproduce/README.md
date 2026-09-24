@@ -42,3 +42,9 @@ outputs to `radial_profiles.txt` and prints the H+-zone averages.
 band averages into athinput.runtime; `check_photon_frac.py athinput.runtime`
 compares the ionizing photon fractions with the SED ratios the Cloudy run uses
 (section 3; agreement 6e-4 and 7e-4 relative).
+`run_cloudy.sh` runs all three steps. The Tigris side is `athinput.static_bands5`
+(the hii pgen with `hydro/active = fixed`, no dust, no ISRF, no CRs) run as
+`mpirun -np 8 athena -i athinput.static_bands5 mesh/x1min=-6 mesh/x1max=6
+mesh/x2min=-6 mesh/x2max=6 mesh/x3min=-6 mesh/x3max=6 time/tlim=0.05 time/nlim=500
+output2/dt=0.005` with the 5-band build of `bands/build.sh`; `compare_cloudy.py
+OUT.png "5 bands:RUNDIR"` draws the radial profiles and prints the H+-zone averages.
