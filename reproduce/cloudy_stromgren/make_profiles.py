@@ -10,7 +10,9 @@ def load(fn):
 
 ovr = load("hii.ovr")
 rad = load("hii.rad")
-H, He, N, O, S = (load("hii.ele_" + e) for e in ("H", "He", "N", "O", "S"))
+H, He, O, S = (load("hii.ele_" + e) for e in ("H", "He", "O", "S"))
+import os
+N = load("hii.ele_N") if os.path.exists("hii.ele_N") else np.zeros_like(O)
 depth = ovr[:, 0]
 assert np.allclose(rad[:, 2], depth, rtol=1e-4)
 r = rad[:, 1]

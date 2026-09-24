@@ -48,3 +48,11 @@ compares the ionizing photon fractions with the SED ratios the Cloudy run uses
 mesh/x2min=-6 mesh/x2max=6 mesh/x3min=-6 mesh/x3max=6 time/tlim=0.05 time/nlim=500
 output2/dt=0.005` with the 5-band build of `bands/build.sh`; `compare_cloudy.py
 OUT.png "5 bands:RUNDIR"` draws the radial profiles and prints the H+-zone averages.
+
+## Rule
+
+Every script, harness or input that produced a number or a figure, including
+debug harnesses, is copied here when it is made and committed. The working
+folder (`~/Documents/tigris-photchem-gow17-multi-ion/`) holds runs and
+scratch; this repository is the record. `ncr_physics/` holds the checks of the
+NCR physics ported into GOW17 (hot gas, LyC path, equilibrium solver, limiter).
