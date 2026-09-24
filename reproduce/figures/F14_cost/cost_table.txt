@@ -1,0 +1,6 @@
+# problem mode cycles; per cycle [s]: all photchem hydro opsplit rayt other
+rad_snr   classic              140 3.4312e-02 0.0000e+00 2.0748e-02 6.5935e-03 0.0000e+00 6.4602e-03
+rad_snr   NCR                  140 1.0342e-01 6.4069e-02 2.8937e-02 6.1224e-03 0.0000e+00 3.5247e-03
+rad_snr   GOW17_core           140 1.1432e-01 6.2068e-02 2.5978e-02 5.9629e-03 0.0000e+00 1.9884e-02
+rad_snr   GOW17_+_O3,S3,N3     140 1.7166e-01 7.0566e-02 3.8992e-02 1.0798e-02 0.0000e+00 5.0655e-02
+hii_dtype GOW17_+_O3,S3,N3     430 1.0262e-01 6.5836e-02 1.9777e-02 3.0266e-03 1.9194e-03 1.1749e-02
