@@ -2,3 +2,4 @@ Binary: tigris-gow17 78db305a3, configure as T6_multi_ion/bands7/build.sh (-mpi 
 Run (as tst/.../rayt_point/hii_dtype.py): mpirun -np 4 athena -i athinput.hii_dtype_ions time/tlim=1.0 photchem/cfl_photchem=10.0  (105 s, 436 cycles)
 Analyze: python compare_ions.py <rundir> out.png
 Profiles: python ion_profiles.py <rundir> out.png [snapshots, default 10 25 50]
+Movie: python slice_movie.py <rundir> <outdir> (z = 0 slices, fixed colour ranges, ffmpeg)
