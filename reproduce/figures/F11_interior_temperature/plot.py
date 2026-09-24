@@ -50,16 +50,19 @@ def tigris_profile(rundir):
     T = d['press']*MUH*1e10/KB/(rho*(1.0 - x['H2'] + 0.1 + xe))
     X3, X2, X1 = np.meshgrid(d['x3v'], d['x2v'], d['x1v'], indexing='ij')
     R = np.sqrt(X1**2 + X2**2 + X3**2)
+    # bins a quarter of a cell wide; the cell centres fall at discrete radii, so some
+    # bins hold no cell and are dropped
     dx = d['x1f'][1] - d['x1f'][0]
-    rb = np.arange(0, d['x1f'][-1] + 1e-9, dx)
+    rb = np.arange(0, d['x1f'][-1] + 1e-9, 0.25*dx)
     ri = np.digitize(R.ravel(), rb)
     w = rho.ravel()
     den = np.bincount(ri, w, len(rb) + 1)[1:len(rb)]
+    full = den > 0.0
 
     def radial(f):
-        return np.bincount(ri, f.ravel()*w, len(rb) + 1)[1:len(rb)]/np.maximum(den, 1e-300)
+        return (np.bincount(ri, f.ravel()*w, len(rb) + 1)[1:len(rb)])[full]/den[full]
 
-    return 0.5*(rb[1:] + rb[:-1]), radial(T), radial(x['H+'])
+    return (0.5*(rb[1:] + rb[:-1]))[full], radial(T), radial(x['H+'])
 
 
 def radius_half(r, xhp):
@@ -74,13 +77,13 @@ for run, lab, cfile, clab, col in PAIRS:
     c = np.loadtxt(cfile)
     a1.plot(c[:, 0], c[:, 1], color=col, lw=2, alpha=0.6,
             label='%s: $R_s$ = %.3f pc' % (clab, radius_half(c[:, 0], c[:, 3])))
-    a1.plot(r, T, 'o', color=col, ms=4, label='%s: $R_s$ = %.3f pc' % (lab, radius_half(r, xhp)))
+    a1.plot(r, T, 'o', color=col, ms=2.5, label='%s: $R_s$ = %.3f pc' % (lab, radius_half(r, xhp)))
     a2.semilogy(c[:, 0], c[:, 3], color=col, lw=2, alpha=0.6)
-    a2.semilogy(r, xhp, 'o', color=col, ms=4)
+    a2.semilogy(r, xhp, 'o', color=col, ms=2.5)
     # inside the ionization front only: across it T drops by 10^3 over 0.05 pc
     m = (r > 0.1) & (r < 2.8)
     ratio = T[m]/np.interp(r[m], c[:, 0], c[:, 1])
-    a3.plot(r[m], ratio, 'o-', color=col, ms=3, label='%s / %s' % (lab.split(' (')[0], clab))
+    a3.plot(r[m], ratio, 'o-', color=col, ms=2, lw=0.8, label='%s / %s' % (lab.split(' (')[0], clab))
     print('%-9s T at 0.3, 1.0, 2.0, 2.7 pc:' % run, np.interp([0.3, 1.0, 2.0, 2.7], r, T).round(0),
           ' ratio to %s at the same radii:' % clab,
           (np.interp([0.3, 1.0, 2.0, 2.7], r, T)
