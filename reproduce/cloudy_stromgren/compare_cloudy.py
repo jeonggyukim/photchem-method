@@ -15,8 +15,10 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
 import athena_read
 
-CLOUDY = ('/Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/'
-          'cloudy_stromgren/radial_profiles.txt')
+import os
+CLOUDY = os.environ.get('CLOUDY_PROFILES',
+                        '/Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/'
+                        'T6_multi_ion/cloudy_stromgren/radial_profiles.txt')
 MUH, KB = 2.34335276e-24, 1.380649e-16
 P_TO_PK = MUH*1e10/KB
 X_HE, X_O, X_S = 0.1, 3.2e-4, 1.45e-5
