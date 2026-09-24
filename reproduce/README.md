@@ -34,3 +34,11 @@ Code revisions: all copied at Tigris `gow17` 2026-09-24, c4e12eed1, after the
 the data path). `make_sed.py` converts the SB99 table to Cloudy's `table SED`
 format and checks the photon ratios; `make_profiles.py` reduces the Cloudy
 outputs to `radial_profiles.txt` and prints the H+-zone averages.
+
+## bands
+
+`build.sh` builds -gow17 --gow17_ions=O2,S2 --gow17_bands=5 (Tigris c4e12eed1);
+`mpirun -np 1 ./athena -i athinput.hii_bands5 time/nlim=0` writes the computed
+band averages into athinput.runtime; `check_photon_frac.py athinput.runtime`
+compares the ionizing photon fractions with the SED ratios the Cloudy run uses
+(section 3; agreement 6e-4 and 7e-4 relative).
