@@ -25,6 +25,7 @@ args=(output2/dt=0.02 output3/dt=-1 time/ncycle_out=10
       photchem_gow17/photoion_xsec_file=$tables/rates/verner96_photx.dat
       job/problem_id=hii_dtype_gow17_ions)
 mkdir -p $W/run
+/bin/cp -f $tables/tigress_coolftn_ncr.txt $W/run/
 (cd $W/run && /usr/bin/time -p mpirun -np 4 ../athena \
    -i $T/inputs/rayt_point/athinput.hii_dtype_gow17_ions "${args[@]}" >run.out 2>time.out)
 echo "run exit=$?"
