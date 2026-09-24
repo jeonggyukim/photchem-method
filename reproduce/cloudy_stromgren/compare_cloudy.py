@@ -46,7 +46,7 @@ def fixed_temperature(rundir):
 
 
 def tigris_profiles(rundir):
-    fn = sorted(glob.glob(rundir + '/HII.out2.*.athdf'))[-1]
+    fn = sorted(glob.glob(rundir + '/*.out2.*.athdf'))[-1]
     d = athena_read.athdf(fn)
     nscal = sum(1 for k in d if k == 'rHI' or (k.startswith('r') and k[1:].isdigit()))
     names = CORE + IONS[:nscal - len(CORE)]
@@ -109,8 +109,8 @@ for irun, (lab, rd) in enumerate(runs):
     res.append((avg, rs))
     for n, q in enumerate(QTY):
         if q in prof:
-            axs[n].semilogy(r, prof[q], '-o', ms=3, color=col, label=lab)
-    axs[iT].plot(r, prof['T'], '-o', ms=3, color=col, label=lab)
+            axs[n].semilogy(r, prof[q], '-o', ms=3, color=col, alpha=0.6, label=lab)
+    axs[iT].plot(r, prof['T'], '-o', ms=3, color=col, alpha=0.6, label=lab)
 
 lines = ['%-9s %8s' % ('', 'Cloudy') + ''.join('%12s' % lab[:12] for lab, _ in runs)]
 for q in QTY + ['T']:

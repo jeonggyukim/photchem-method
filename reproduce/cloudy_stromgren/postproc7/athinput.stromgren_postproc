@@ -1,0 +1,169 @@
+<comment>
+problem   = a cloud in an isotropic far-ultraviolet field, by post-processing
+reference = Kim, J.-G. et al. (2023) for the chemistry; Bonnor (1956), Ebert (1955) for the cloud
+configure = -ncr -shld_ci -shld_cr --prob=photchem_postproc
+
+# A Bonnor-Ebert sphere of 1000 H per cm^3 at the centre, 2 pc in radius, in thin warm
+# gas, lit from every side by one interstellar radiation field of Draine (1978).  The
+# diffuse solver carries the field in from the faces of the box, and it and the NCR
+# photochemistry are repeated in turn until the abundances stop changing.  The result
+# is a cloud with an atomic envelope, a molecular interior, and carbon as C+, C and CO
+# in nested shells.  About 230 iterations and 10 minutes on eight cores.
+#
+# To make it your own: <problem>/iprob = 1 is a uniform sphere, iprob = 0 with
+# density_file reads a density cube; iso_chi0 is the strength of the field;
+# <rayt_diffuse>/angle_order sets the number of directions, 12 angle_order^2.
+# The cooling table named by coolftn_file is inputs/tables/tigress_coolftn_ncr.txt;
+# copy it beside the run.
+
+<job>
+problem_id = cloud
+
+<output1>
+file_type  = hst        # one row per iteration
+dcycle     = 1
+
+<output2>
+file_type  = hdf5       # the whole box, before the first iteration and at the end
+variable   = prim,uov
+dt         = 1.0e30
+
+# The plane of cells through the centre of the cloud, as text
+<output3>
+file_type  = tab
+variable   = prim
+x3_slice   = 0.046875
+dt         = 1.0e30
+
+<output4>
+file_type  = tab
+variable   = uov
+x3_slice   = 0.046875
+dt         = 1.0e30
+
+<time>
+cfl_number = 0.3
+nlim       = -1         # <postproc>/niteration ends the run
+tlim       = 1.0        # unused: the time stays at start_time
+integrator = vl2
+xorder     = 2
+ncycle_out = 1
+ops_task   = true       # the chemistry is stepped as an operator-split task
+
+<postproc>
+postproc        = true
+niteration = 200
+dt              = 0.002    # step handed to the chemistry each iteration [code time]
+threshold_abund_mean = 1.0e-3  # relative change of x_HI, x_H2 and x_e, floored at
+                               # abund_floor: its volume-weighted mean over the cells
+threshold_abund_max  = -1.0    # the largest of any cell; off.  It stays above a per cent
+                               # for 200 iterations here, held by a few cells at the surface
+abund_floor     = 1.0e-3
+threshold_temp  = 1.0e-2   # relative change of T/mu
+threshold_rad   = 1.0e-2   # relative change of a band's energy density, summed over the box
+
+<mesh>
+nx1        = 64
+x1min = -6.0
+x1max = 6.0
+ix1_bc     = outflow
+ox1_bc     = outflow
+
+nx2        = 64
+x2min = -6.0
+x2max = 6.0
+ix2_bc     = outflow
+ox2_bc     = outflow
+
+nx3        = 64
+x3min = -6.0
+x3max = 6.0
+ix3_bc     = outflow
+ox3_bc     = outflow
+
+refinement = none
+
+<meshblock>
+nx1        = 32
+nx2        = 32
+nx3        = 32
+
+<hydro>
+gamma      = 1.666666666667
+
+<problem>
+iprob = 0
+                        # of nH_amb; 2: a Bonnor-Ebert sphere of central density nH0 in it
+nH0 = 100.0
+nH_amb       = 0.05     # [H cm^-3]; thin enough to be transparent
+r_sphere     = 2.0      # [pc], iprob = 1 only
+x1_sphere    = 0.046875 # centre of the cloud [pc]: the centre of a cell, so that the
+x2_sphere    = 0.046875 # slice through it is a plane of cell centres
+x3_sphere    = 0.046875
+temp_be      = 30.0     # [K], iprob = 2 only: temperature of the isothermal sphere
+mu_be        = 2.33     # iprob = 2 only: mean mass per particle [hydrogen masses]
+xi_max       = 8.4      # iprob = 2 only: radius in units of c_s/sqrt(4 pi G rho_c), which
+                        # is 0.238 pc here; 6.451 is the largest stable sphere
+density_file =          # iprob = 0 only
+temp0 = 100.0
+equil_init   = false    # start atomic
+nsource = 1
+source_file  =
+beam_chi0 = 0.0
+iso_chi0 = 0.0
+iso_phi_lyc  = 0.0      # ionizing part of it, one-sided photon flux [cm^-2 s^-1]
+src1_x1 = 0.0
+src1_x2 = 0.0
+src1_x3 = 0.0
+src1_Q_LyC = 1e49
+src1_L_LW = 0.0
+src1_L_PE = 0.0
+fuv_from_sed = true
+
+<rayt_point>
+rayt_point = true
+rotate_rays = fixed     # a new ray orientation each trace would set a floor under the
+                        # convergence test
+
+<rayt_diffuse>
+rayt_diffuse = false
+scattering   = isotropic
+eps_scatter[0] = 1.0      # 1 - albedo; 1 = pure absorption, so one formal solution a solve
+eps_scatter[1] = 1.0
+eps_scatter[2] = 1.0
+angle_set    = healpix
+angle_order  = 2          # nside; 48 directions
+ray_bc       = open
+ray_spacing  = 1.0
+niteration   = 1
+
+<photchem>
+photchem = true
+mode = gow17
+bookkeeping = true
+flag_op_split  = true
+flag_rad_force = false
+flag_update_dt_main = false
+cfl_photchem = 1.0
+
+<photchem_gow17>
+z_dust         = 0.0
+he_recombination = on_the_spot
+ion_cooling_dir = /Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ion_cooling
+semi_implicit_gauss_seidel = true
+chi0           = 0.0
+xi_cr0         = 0.0
+h2_diss_bg_flag = false
+sed_average    = computed
+sed_format     = table
+sed_file       = /Users/jgkim/Projects/tigris-gow17/inputs/tables/sed/sb99_Z014_GenevaV00_2Myr.txt
+photoion_xsec_file = /Users/jgkim/Projects/tigris-gow17/inputs/tables/rates/verner96_photx.dat
+sigma_d[0]     = 1.0e-21
+sigma_d[1]     = 1.0e-21
+sigma_d[2]     = 1.0e-21
+sigma_d[3]     = 2.0e-21
+sigma_d[4]     = 2.0e-21
+sigma_d[5]     = 1.0e-21
+sigma_d[6]     = 1.0e-21
+rates_dir      = /Users/jgkim/Projects/tigris-gow17/inputs/tables/rates
+coolftn_file   = /Users/jgkim/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt
