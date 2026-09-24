@@ -144,8 +144,8 @@ CORE_EDGES = [
 ]
 PARTNERS = [("CO", "C+", "He+"), ("OHx", "O+", "He+"), ("CO", "HCO+", "H3+")]
 # (2body 27) H+ + O -> O+ + H and (2body 28) O+ + H -> O + H+ as O <-> O+ steps.
-O_CT = [E("O", "O+", "ct", "H$^+$", emph=True, off=0.36),
-        E("O+", "O", "ct", "H", emph=True, off=-0.36)]
+O_CT = [E("O", "O+", "ct", "", emph=True, off=0.36),
+        E("O+", "O", "ct", "", emph=True, off=-0.36)]
 
 
 def core_edges_tigris():
@@ -158,7 +158,7 @@ def core_edges_tigris():
 # (HePlusStep_); HeOTS_ s_h in the H+ creation, k_he in the He+ destruction.
 ION_GAS = [
     E("H", "H+", "euv", "13.6", -0.62, new=True),
-    E("H2", "H2+", "euv", "15.4", -0.3, new=True, lab_t=0.62, lab_off=0.5),
+    E("H2", "H2+", "euv", "15.4", -0.3, new=True, lab_t=0.72, lab_off=0.75),
     E("He", "He+", "euv", "24.6", 0.55, new=True),
     E("He+", "H+", "ots", "", -0.18, new=True),
 ]
@@ -262,7 +262,7 @@ def bulge_normal(a, b, arc):
 def draw_arrow(ax, a, b, arc, st, shrink=1.5, under=None, zorder=1.0):
     common = dict(connectionstyle=f"arc3,rad={arc}", shrinkA=shrink, shrinkB=shrink)
     if under:
-        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-", lw=st["lw"] + 3.2,
+        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-", lw=st["lw"] + 2.4,
                                      color=under, capstyle="round",
                                      zorder=zorder - 0.3, **common))
     ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-", lw=st["lw"], ls=st["ls"],
@@ -303,7 +303,7 @@ def draw_edges(ax, edges, pos, mode):
             st = grey_style(st)
         under = HIGHLIGHT if (mode == "highlight" and (e["new"] or e["emph"])) else None
         draw_arrow(ax, a, b, e["arc"], st, under=under,
-                   zorder=0.8 if greyed else 1.0, shrink=0.5 if e["off"] is not None else 1.5)
+                   zorder=0.8 if greyed else 1.6, shrink=0.5 if e["off"] is not None else 1.5)
         mids[(e["src"], e["dst"], e["kind"])] = on_arc(a, b, e["arc"], 0.5)
         if not e["label"]:
             continue
@@ -514,7 +514,7 @@ HOT_TEXT = ("Hot gas, $T > 2\\times10^4$ K, with weight $w(T)$ rising to 1 at "
             "heating and grain-assisted recombination are scaled by $1-w$.")
 
 
-def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.05):
+def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
     xr, yr = xlim[1] - xlim[0], ylim[1] - ylim[0]
     diag_h = WIDTH_IN * yr / xr
     H = top_pad + diag_h + foot_h + legend_h
@@ -525,105 +525,114 @@ def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.05):
     ax.set_aspect("equal")
     ax.axis("off")
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
-    lax = legend_axes(fig, [0.02, 0.02 / H, 0.98, (legend_h - 0.04) / H])
+    lax = legend_axes(fig, [0.03, 0.0, 0.97, legend_h / H])
     return fig, ax, fax, lax
 
 
+def footer(fax):
+    fax.text(0.5, 0.78, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
+    fax.text(0.5, 0.3, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+             linespacing=1.3)
+
+
 def fig_core():
-    fig, ax, fax, lax = canvas((-2.75, 17.85), (0.05, 8.55), 0.95, 0.3)
+    SIZE_OVERRIDE.clear()
+    boxes = boxes_legend("core")
+    lh = legend_height(CORE_KINDS, boxes)
+    fig, ax, fax, lax = canvas((-2.75, 17.85), (0.05, 9.25), lh, 0.3)
     mids = draw_edges(ax, CORE_EDGES, POS_CORE, "plain")
     draw_partners(ax, mids, POS_CORE, grey=False)
     for n, (x, y) in POS_CORE.items():
         draw_box(ax, n, x, y, "plain", GS_CORE)
     fax.text(0.5, 0.5, XE_CORE, ha="center", va="center", fontsize=FS_NOTE)
-    draw_legend(fig, lax, CORE_KINDS, boxes_legend("core"), "plain", ncol=2)
+    draw_legend(fig, lax, CORE_KINDS, boxes, "plain")
     return fig
 
 
 def draw_full(ax, mode):
-    edges = core_edges_tigris() + ION_GAS + ladder_edges(1.0)
+    edges = core_edges_tigris() + ION_GAS + ladder_edges((-1.0, 1.0))
     mids = draw_edges(ax, edges, POS_FULL, mode)
     draw_partners(ax, mids, POS_FULL, grey=(mode == "grey"))
     for n, (x, y) in POS_FULL.items():
         draw_box(ax, n, x, y, mode, GS_TIGRIS)
-    cie_xy, cie_w = (1.3, 0.6), 4.2
+    cie_xy, cie_w = (1.2, 0.6), 7.4
     draw_note_box(ax, *cie_xy, cie_w, 0.95,
-                  "O$^{3+}$ and above, S$^{4+}$ and above:\ncooling from the CIE table",
+                  "higher stages (O$^{3+}$ and up, S$^{4+}$ and up):\n"
+                  "cooling from the CIE table",
                   mode, highlight=True)
     cie_link(ax, POS_FULL["S3+"], cie_xy, cie_w)
     cie_link(ax, POS_FULL["O2+"], cie_xy, cie_w)
-    draw_planned(ax, (16.0, 2.3), (1.75, 0.0), (0.0, -1.0), mode)
-    ax.text(16.9, 3.05, "planned: N, Ne", ha="center", va="center",
+    draw_planned(ax, (16.2, 2.3), (1.75, 0.0), (0.0, -1.0), mode)
+    ax.text(17.1, 3.05, "planned: N, Ne", ha="center", va="center",
             fontsize=FS_NOTE, color=GREY_TEXT, style="italic")
-    text_halo(ax, 11.7, -0.55, "O$\\leftrightarrow$O$^+$ charge transfer is GOW17's"
-              " (2-body 27, 28), near-resonant", GREEN, fs=FS_NOTE)
+    text_halo(ax, 10.9, -0.55, "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17"
+              " (2-body 27, 28); near-resonant", GREEN, fs=FS_NOTE)
 
 
 def fig_full(mode):
-    fig, ax, fax, lax = canvas((-7.0, 19.0), (-0.85, 8.55), 1.25, 0.62)
-    draw_full(ax, mode)
-    fax.text(0.5, 0.75, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
-    fax.text(0.5, 0.27, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
-             linespacing=1.2)
+    SIZE_OVERRIDE.clear()
+    SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in ("O", "O+", "O2+")})
     version = "greycore" if mode == "grey" else "colour"
-    draw_legend(fig, lax, ALL_KINDS, boxes_legend(version), mode, ncol=3)
+    boxes = boxes_legend(version)
+    lh = legend_height(ALL_KINDS, boxes)
+    fig, ax, fax, lax = canvas((-6.6, 18.6), (-0.85, 9.25), lh, 0.62)
+    draw_full(ax, mode)
+    footer(fax)
+    draw_legend(fig, lax, ALL_KINDS, boxes, mode)
     return fig
 
 
 def fig_2panel():
-    xa, ya = (-2.75, 17.85), (0.05, 8.55)
-    xb, yb = (-2.75, 17.85), (-0.9, 3.35)
-    wa = WIDTH_IN * (ya[1] - ya[0]) / (xa[1] - xa[0])
-    wb = WIDTH_IN * (yb[1] - yb[0]) / (xb[1] - xb[0])
-    legend_h, foot_h, gap = 1.25, 0.62, 0.12
-    H = wa + gap + wb + foot_h + legend_h + 0.05
+    SIZE_OVERRIDE.clear()
+    xa, ya = (-2.75, 17.85), (0.05, 9.25)
+    xb, yb = (-2.75, 17.85), (-1.2, 3.55)
+    ha = WIDTH_IN * (ya[1] - ya[0]) / (xa[1] - xa[0])
+    hb = WIDTH_IN * (yb[1] - yb[0]) / (xb[1] - xb[0])
+    boxes = boxes_legend("2panel")
+    legend_h, foot_h, gap = legend_height(ALL_KINDS, boxes), 0.62, 0.1
+    H = ha + gap + hb + foot_h + legend_h + 0.04
     fig = plt.figure(figsize=(WIDTH_IN, H))
-    axa = fig.add_axes([0, (legend_h + foot_h + wb + gap) / H, 1, wa / H])
-    axb = fig.add_axes([0, (legend_h + foot_h) / H, 1, wb / H])
+    axa = fig.add_axes([0, (legend_h + foot_h + hb + gap) / H, 1, ha / H])
+    axb = fig.add_axes([0, (legend_h + foot_h) / H, 1, hb / H])
     for ax, xl, yl in ((axa, xa, ya), (axb, xb, yb)):
         ax.set_xlim(*xl)
         ax.set_ylim(*yl)
         ax.set_aspect("equal")
         ax.axis("off")
-    # (a) core with the ionized-gas additions
-    mids = draw_edges(axa, core_edges_tigris() + ION_GAS, POS_CORE, "highlight")
+    # (a) core with the ionized-gas additions; O <-> O+ is drawn in (b)
+    core = [e for e in core_edges_tigris() if e["kind"] != "ct"]
+    mids = draw_edges(axa, core + ION_GAS, POS_CORE, "highlight")
     draw_partners(axa, mids, POS_CORE, grey=False)
     for n, (x, y) in POS_CORE.items():
         draw_box(axa, n, x, y, "highlight", GS_TIGRIS)
-    axa.text(-2.6, 8.45, "(a)", fontsize=9, fontweight="bold", va="top")
-    text_halo(axa, 12.2, 1.75, "ladders: see (b)", DARK, fs=FS_NOTE, style="italic")
+    axa.text(-2.6, 9.15, "(a)", fontsize=9, fontweight="bold", va="top")
+    axa.text(6.6, 0.6, "O ladder and O$\\leftrightarrow$O$^+$\ncharge transfer: see (b)",
+             color=DARK, fontsize=FS_NOTE, style="italic", ha="center", va="center")
     # (b) ion ladders, left to right, ionization above each pair
+    SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in POS_LADDERS})
     pos = POS_LADDERS
-    draw_edges(axb, ladder_edges(-1.0) + O_CT_B, pos, "highlight")
+    ladder = ladder_edges((-1.0, -1.0)) + O_CT
+    draw_edges(axb, ladder, pos, "highlight")
     for n, (x, y) in pos.items():
         draw_box(axb, n, x, y, "highlight", GS_TIGRIS)
-    axb.text(-2.6, 3.3, "(b)", fontsize=9, fontweight="bold", va="top")
-    axb.text(-1.0, 0.0, "from (a)", fontsize=FS_NOTE, color=DARK, ha="right",
-             va="center", style="italic")
-    cie_xy, cie_w = (12.35, 1.3), 3.3
-    draw_note_box(axb, *cie_xy, cie_w, 1.3,
-                  "O$^{3+}$ and above,\nS$^{4+}$ and above:\ncooling from\nthe CIE table",
-                  "highlight", highlight=True)
+    axb.text(-2.6, 3.5, "(b)", fontsize=9, fontweight="bold", va="top")
+    axb.text(1.6, -1.0, "O and O$^+$ are the boxes of (a); O$\\leftrightarrow$O$^+$ "
+             "charge transfer is in GOW17 (near-resonant)", fontsize=FS_NOTE,
+             color=DARK, ha="left", va="center", style="italic")
+    cie_xy, cie_w = (12.3, 1.2), 2.9
+    draw_note_box(axb, *cie_xy, cie_w, 1.9,
+                  "higher stages\n(O$^{3+}$ and up,\nS$^{4+}$ and up):\n"
+                  "cooling from\nthe CIE table", "highlight", highlight=True)
     cie_link(axb, pos["S3+"], cie_xy, cie_w)
     cie_link(axb, pos["O2+"], cie_xy, cie_w)
-    draw_planned(axb, (15.3, 2.35), (0.0, -1.55), (1.25, 0.0), "highlight")
-    axb.text(16.55, 3.15, "planned: N, Ne", ha="center", va="center",
+    draw_planned(axb, (14.35, 2.35), (0.0, -1.55), (1.2, 0.0), "highlight")
+    axb.text(15.55, 3.15, "planned: N, Ne", ha="center", va="center",
              fontsize=FS_NOTE, color=GREY_TEXT, style="italic")
-    text_halo(axb, 1.6, -0.75, "O$\\leftrightarrow$O$^+$ charge transfer: GOW17's, "
-              "near-resonant", GREEN, fs=FS_NOTE)
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
-    fax.text(0.5, 0.75, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
-    fax.text(0.5, 0.27, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
-             linespacing=1.2)
-    lax = legend_axes(fig, [0.02, 0.02 / H, 0.98, (legend_h - 0.04) / H])
-    draw_legend(fig, lax, ALL_KINDS, boxes_legend("2panel"), "highlight", ncol=3)
+    footer(fax)
+    lax = legend_axes(fig, [0.03, 0.0, 0.97, legend_h / H])
+    draw_legend(fig, lax, ALL_KINDS, boxes, "highlight")
     return fig
-
-
-# In (b) the O <-> O+ pair runs left to right, so its charge transfer takes the
-# ladder's arc sign.
-O_CT_B = [E("O", "O+", "ct", "H$^+$", -0.12, emph=True),
-          E("O+", "O", "ct", "H", -0.12, emph=True)]
 
 
 def contact_sheet(paths, out):
