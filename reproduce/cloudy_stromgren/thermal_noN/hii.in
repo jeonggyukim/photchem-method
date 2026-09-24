@@ -44,3 +44,6 @@ save element sulphur "hii.ele_S" last
 save cooling "hii.cool" last
 save cooling each "hii.cool_each" last
 save radius "hii.rad" last
+save heating "hii.heat" last
+save ionization rates hydrogen "hii.ionr_H" last
+save ionization rates helium "hii.ionr_He" last
