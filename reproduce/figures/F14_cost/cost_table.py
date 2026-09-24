@@ -1,4 +1,4 @@
-"""F14 data: per-cycle cost from the loop_time files of the runs behind F10, F12 and F13.
+"""F14 data: per-cycle cost from the loop_time files of the rad_snr runs of F13 and the hii_dtype timing series (run_hii_cost.sh).
 Each loop_time row holds the seconds rank 0 spent over the last ncycle_out cycles, per
 task list. Columns, per cycle: All, Photchem, hydro (TimeIntegratorTaskList), OpSplit,
 RaytPoint, and other = All minus the listed tasks, which is mostly output (the GOW17
@@ -13,7 +13,10 @@ RUNS = [('rad_snr', 'classic', 'M6_rad_snr/F13_series/run_classic'),
         ('rad_snr', 'NCR', 'M6_rad_snr/F13_series/run_ncr'),
         ('rad_snr', 'GOW17 core', 'M6_rad_snr/F13_series/run_core'),
         ('rad_snr', 'GOW17 + O3,S3,N3', 'M6_rad_snr/F13_series/run_ions'),
-        ('hii_dtype', 'GOW17 + O3,S3,N3', 'M5_hii_dtype_ions/F12_run/run')]
+        ('hii_dtype', 'Simple', 'T7_cost/F14_hii/run_simple'),
+        ('hii_dtype', 'NCR', 'T7_cost/F14_hii/run_ncr'),
+        ('hii_dtype', 'GOW17 core', 'T7_cost/F14_hii/run_core'),
+        ('hii_dtype', 'GOW17 + O3,S3,N3', 'T7_cost/F14_hii/run_ions')]
 TASKS = ('All', 'Photchem', 'TimeIntegratorTaskList', 'OpSplit', 'RaytPoint', 'RaytDiffuse',
          'Userwork', 'NewDt', 'Feedback', 'SelfGravity', 'AMR', 'ProcessNewParticles',
          'MassReturn')
