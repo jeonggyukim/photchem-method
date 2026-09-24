@@ -1,0 +1,48 @@
+title static HII region, SB99 2 Myr, Q(H)=1e49, nH=100, T fixed 8000 K
+table SED "sb99_Z014_GenevaV00_2Myr.sed"
+Q(H) = 49
+sphere
+radius 16.5
+hden 2
+element helium abundance -1
+element carbon abundance -3.79588
+element nitrogen abundance -4.13077
+element oxygen abundance -3.49485
+element silicon abundance -5.76955
+element sulphur abundance -4.83863
+element lithium off
+element beryllium off
+element boron off
+element fluorine off
+element neon off
+element sodium off
+element magnesium off
+element aluminium off
+element phosphorus off
+element chlorine off
+element argon off
+element potassium off
+element calcium off
+element scandium off
+element titanium off
+element vanadium off
+element chromium off
+element manganese off
+element iron off
+element cobalt off
+element nickel off
+element copper off
+element zinc off
+constant temperature 8000 K
+stop efrac -3
+iterate to convergence
+save overview "hii.ovr" last
+save element hydrogen "hii.ele_H" last
+save element helium "hii.ele_He" last
+save element nitrogen "hii.ele_N" last
+save element oxygen "hii.ele_O" last
+save element sulphur "hii.ele_S" last
+save cooling "hii.cool" last
+save cooling each "hii.cool_each" last
+save radius "hii.rad" last
+diffuse OTS
