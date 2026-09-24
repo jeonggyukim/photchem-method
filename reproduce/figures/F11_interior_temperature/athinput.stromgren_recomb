@@ -121,6 +121,8 @@ src1_L_PE = 0.0
 fuv_from_sed = true
 
 <rayt_point>
+tau_max       = 20      # optical depth at which a ray stops
+rays_per_cell = 4       # rays crossing each cell, which sets the HEALPix level
 rayt_point = true
 rotate_rays = fixed     # a new ray orientation each trace would set a floor under the
                         # convergence test
