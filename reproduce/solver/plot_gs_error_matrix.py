@@ -2,9 +2,11 @@
 jacobian_dump.txt -> ../../figures/gs_error_matrix.{pdf,png}.
 A = I - hJ with J the species Jacobian at frozen coefficients; the species are put in
 update order and split into groups; G = -(D_B + L_B)^{-1} U_B for Gauss-Seidel and
-G = -D_B^{-1}(L_B + U_B) for Jacobi. Panels show |G| for three schemes at one molecular
-state, with the spectral radius in the title; the bottom row gives the spectral radius
-of each scheme along the run."""
+G = -D_B^{-1}(L_B + U_B) for Jacobi. Panels show the relative-error form
+|G_ij| x_j / x_i (fractional error left in i per fractional error read from j), which
+has the same eigenvalues as G and does not depend on the units of the abundances, for
+three schemes at one molecular state, with the spectral radius in the title; the bottom
+row gives the spectral radius of each scheme along the run."""
 import os
 import numpy as np
 import matplotlib
@@ -21,9 +23,13 @@ with open(path) as f:
 d = np.loadtxt(path)
 nk, ns = int(d[:, 0].max()) + 1, len(names)
 J = np.zeros((nk, ns, ns))
+X = np.zeros((nk, ns))
 t = np.zeros(nk)
 for k, tt, i, j, v in d:
-    J[int(k), int(i), int(j)] = v
+    if j < 0:
+        X[int(k), int(i)] = v
+    else:
+        J[int(k), int(i), int(j)] = v
     t[int(k)] = tt
 t_myr = t * myr
 
@@ -77,15 +83,16 @@ gs = fig.add_gridspec(2, 3, height_ratios=[1.35, 1])
 norm = LogNorm(1e-4, 1)
 for s, (title, _, _) in enumerate(schemes):
     ax = fig.add_subplot(gs[0, s])
-    G = np.abs(Gs[(s, k_show)])
+    xo = np.maximum(X[k_show][perm], 1e-30)
+    G = np.abs(Gs[(s, k_show)]) * xo[None, :] / xo[:, None]
     im = ax.imshow(np.where(G > 1e-12, G, np.nan), norm=norm, cmap='viridis')
     ax.set_xticks(range(ns), [LABEL[x] for x in ORDER], rotation=90, fontsize=9)
     ax.set_yticks(range(ns), [LABEL[x] for x in ORDER], fontsize=9)
-    ax.set_xlabel('error read at the start of the substep ($j$)')
+    ax.set_xlabel('relative error read at the start ($j$)')
     if s == 0:
-        ax.set_ylabel('error left after the pass ($i$)')
+        ax.set_ylabel('relative error left after the pass ($i$)')
     ax.set_title(f'{title}\nspectral radius {rho[s, k_show]:.3g}', fontsize=10)
-fig.colorbar(im, ax=fig.axes[:3], shrink=0.8, label='$|G_{ij}|$')
+fig.colorbar(im, ax=fig.axes[:3], shrink=0.8, label='$|G_{ij}|\\,x_j/x_i$')
 ax = fig.add_subplot(gs[1, :])
 for s, (title, _, _) in enumerate(schemes):
     ax.semilogy(t_myr, rho[s], marker='o', ms=4, label=title)

@@ -4,7 +4,8 @@
 // Appendix E. At 16 times of the reference run (default update, 12500 substeps per
 // sixteenth of t_end) the rate coefficients and ghost species are frozen and
 // J_ij = d(C_i - D_i x_i)/dx_j by finite difference of CDRates.
-// Rows: k t_code i j J_ij (code time units), with i, j in network enum order.
+// Rows: k t_code i j J_ij (code time units), with i, j in network enum order; rows
+// with j = -1 give the abundance x_i at that time.
 // Build as ../figures/F05_solver/solver_sweep.cpp.
 #include <cmath>
 #include <cstdio>
@@ -16,7 +17,7 @@ using namespace gow17;
 using G = GOW17Network;
 constexpr int NS = NSPEC;
 
-struct Sample { Real t; Real J[NS][NS]; };
+struct Sample { Real t; Real x[NS]; Real J[NS][NS]; };
 
 std::vector<Sample> Reference(int scenario, Real& t_end_out, Real& myr) {
   const Real gamma = 5.0/3.0, time_cgs = 3.0856776e18/1.0e5, edens = 1.6738234e-24*1e10;
@@ -62,6 +63,7 @@ std::vector<Sample> Reference(int scenario, Real& t_end_out, Real& myr) {
     // net.y is a View: copy the values, not the handle, before perturbing.
     Real yb[NSPEC + 1], yq[NSPEC + 1];
     for (int i = 0; i <= NSPEC; ++i) yb[i] = net.y(i);
+    for (int i = 0; i < NS; ++i) smp.x[i] = yb[i];
     View1D<Real> y(yb, NSPEC + 1), yp(yq, NSPEC + 1);
     const auto g = net.SetupNextStep(y);
     const auto base = net.CDRates(y, g);
@@ -90,7 +92,11 @@ int main() {
   const auto samples = Reference(2, t_end, myr);
   std::printf("# t_end_code %.6e myr_per_code %.6e\n", t_end, myr);
   for (size_t k = 0; k < samples.size(); ++k)
+  {
+    for (int i = 0; i < NS; ++i)
+      std::printf("%zu %.6e %d -1 %.8e\n", k, samples[k].t, i, samples[k].x[i]);
     for (int i = 0; i < NS; ++i)
       for (int j = 0; j < NS; ++j)
         std::printf("%zu %.6e %d %d %.8e\n", k, samples[k].t, i, j, samples[k].J[i][j]);
+  }
 }
