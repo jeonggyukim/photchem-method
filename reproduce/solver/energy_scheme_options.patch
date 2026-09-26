@@ -1,0 +1,136 @@
+--- a/src/photchem/network/gow17_semi_implicit.hpp	2026-09-26 17:37:57
++++ b/src/photchem/network/gow17_semi_implicit.hpp	2026-09-26 17:37:29
+@@ -104,6 +104,13 @@
+   // Tigris: advance H+ and H2 together as a 2x2 in the Gauss-Seidel update (they
+   // share the H I reservoir; NCR solves them the same way)
+   bool semi_implicit_h_block = false;
++  // Tigris: advance the energy after the species, with Edot from the updated
++  // abundances (the default advances it before, from the start-of-substep ones)
++  bool semi_implicit_energy_last = false;
++  // Tigris: take the Lyman-continuum photoheating out of Edot and add, after the
++  // species, the heat of the photoionizations the substep performed, counted from
++  // the end-of-substep neutral abundances that the reservoir step ionizes
++  bool semi_implicit_photoheat_counted = false;
+ };
+ 
+ /*!
+@@ -179,7 +186,9 @@
+         change_reject(settings.semi_implicit_change_reject),
+         change_grow(settings.semi_implicit_change_grow),
+         floor_frac(settings.semi_implicit_floor_frac),
+-        h_block(settings.semi_implicit_h_block) {}
++        h_block(settings.semi_implicit_h_block),
++        energy_last(settings.semi_implicit_energy_last),
++        photoheat_counted(settings.semi_implicit_photoheat_counted) {}
+   inline
+   ~SemiImplicit() = default;
+ 
+@@ -234,6 +243,7 @@
+   const bool change_control;
+   const Real change_target, change_reject, change_grow, floor_frac;
+   const bool h_block;
++  const bool energy_last, photoheat_counted;
+   /// Tigris: with change control, the first substep to try (0: from the
+   /// limiters); after SolveODE, the size the next substep would have had, which
+   /// a caller may keep per cell and hand back as h_start next time.
+@@ -304,6 +314,10 @@
+         pin->GetOrAddReal(module, "semi_implicit_floor_frac", 1.0e-3);
+     settings.semi_implicit_h_block =
+         pin->GetOrAddBoolean(module, "semi_implicit_h_block", false);
++    settings.semi_implicit_energy_last =
++        pin->GetOrAddBoolean(module, "semi_implicit_energy_last", false);
++    settings.semi_implicit_photoheat_counted =
++        pin->GetOrAddBoolean(module, "semi_implicit_photoheat_counted", false);
+     return settings;
+   }
+ 
+@@ -313,6 +327,7 @@
+     const Real t_end = t_start + dt;
+     Real t_now = t_start;
+     unsigned int icount = 0;
++    ode_system.SetLyCHeatingInEdot(!photoheat_counted);
+ 
+     // State at the start of the substep
+     Real y_old[ode_t::neqs];  // NOLINT(runtime/arrays)
+@@ -371,7 +386,7 @@
+           }
+           // Internal energy, operator-split from the chemistry. Done here so
+           // that the later iterations see the updated temperature.
+-          UpdateEnergy_(ghosts, edot, dt_sub, dedot_de);
++          if (!energy_last) UpdateEnergy_(ghosts, edot, dt_sub, dedot_de);
+ 
+           // The rate coefficients are strong functions of T, and the energy
+           // update just changed it. tigris recomputes the chemical rates here
+@@ -403,6 +418,25 @@
+         }
+       }
+ 
++      // Tigris: the energy after the species, and the photoheating counted from
++      // the photoionizations the substep performed. The energy has not moved, so
++      // the T-dependent coefficients are reused (species_only).
++      if (energy_last || photoheat_counted) {
++        const auto ghosts_end = ode_system.SetupNextStep(ode_system.y, true);
++        if (energy_last) {
++          Real dedot_de = 0.0;
++          const Real edot =
++              semi_implicit_table_deriv
++                  ? ode_system.EdotAndDeriv(ode_system.y, ghosts_end, dedot_de)
++                  : ode_system.Edot(ode_system.y, ghosts_end);
++          UpdateEnergy_(ghosts_end, edot, dt_sub, dedot_de);
++        }
++        if (photoheat_counted) {
++          ode_system.y(ode_t::IIE) +=
++              dt_sub * ode_system.LyCHeating(ode_system.y, ghosts_end);
++        }
++      }
++
+       // ----- Tigris: change control -----
+       if (change_control && semi_implicit_n_substep_fixed == 0) {
+         const Real e_old = y_old[ode_t::IIE], e_new = ode_system.y(ode_t::IIE);
+--- a/src/photchem/network/gow17_network.hpp	2026-09-26 17:37:57
++++ b/src/photchem/network/gow17_network.hpp	2026-09-26 17:37:29
+@@ -688,10 +688,9 @@
+       // photo electric effect on dust
+       heating += Thermo::HeatingPE(rad_(irad_GPE), zd, T, n_H * ghosts.e);
+ 
+-      // Tigris: Lyman-continuum photoheating (see SetLyC)
+-      heating += ghosts.H * xi_ph_hi_ * heat_ph_hi_ +
+-                 y_in[IH2] * xi_ph_h2_ * heat_ph_h2_;
+-      if (xi_ph_he_ > 0.0) heating += ghosts.He * xi_ph_he_ * heat_ph_he_;
++      // Tigris: Lyman-continuum photoheating (see SetLyC), unless the solver adds
++      // it after the species (LyCHeating)
++      if (lyc_heat_in_edot_) heating += LyCHeatingPerH_(y_in, ghosts);
+       if (he_ots_) {
+         // Tigris: H photoionized by He recombination photons (HeOTS)
+         Real k_he, s_h, q_h;
+@@ -2793,6 +2792,15 @@
+     xi_ph_h2_ = xi_h2;
+     heat_ph_hi_ = heat_hi;
+     heat_ph_h2_ = heat_h2;
++  }
++  //! Whether Edot carries the Lyman-continuum photoheating (default), or the
++  //! solver adds it after the species through LyCHeating
++  inline void SetLyCHeatingInEdot(const bool in_edot) { lyc_heat_in_edot_ = in_edot; }
++  //! Lyman-continuum photoheating of H I, H2 and He I at the given abundances, in
++  //! the code units of Edot
++  template <class vec_type>
++  inline Real LyCHeating(const vec_type& y, const GhostSpecies& ghosts) const {
++    return units_time_cgs * LyCHeatingPerH_(y, ghosts) * n_H / units_energy_density_cgs;
+   }
+   //! Free-free and recombination cooling of H+ always; the nebular metal-line
+   //! lump of NCR (scaled with x_HII and z_g) only while no metal ions are tracked.
+@@ -2977,6 +2985,14 @@
+   // The top tracked stages into their higher ions: C+, Si+, O++, N++ (S++ is xi_ph_siii_)
+   Real xi_ph_cii_ = 0.0, xi_ph_si_ii_ = 0.0, xi_ph_oiii_ = 0.0, xi_ph_niii_ = 0.0;
+   bool he_ots_ = false, case_a_ = false;
++  bool lyc_heat_in_edot_ = true;
++  //! Lyman-continuum photoheating [erg s^-1 per H]
++  template <class vec_type>
++  inline Real LyCHeatingPerH_(const vec_type& y, const GhostSpecies& ghosts) const {
++    Real q = ghosts.H * xi_ph_hi_ * heat_ph_hi_ + y[IH2] * xi_ph_h2_ * heat_ph_h2_;
++    if (xi_ph_he_ > 0.0) q += ghosts.He * xi_ph_he_ * heat_ph_he_;
++    return q;
++  }
+   mutable Real ka1_he_ = 0.0;  // (alpha_A - alpha_B)(He+) n_H at the substep's T
+   bool ionized_cooling_ = false, nebular_cooling_ = false;
+   Real z_g_ = 1.0;
