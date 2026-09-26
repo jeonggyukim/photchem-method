@@ -1,0 +1,24 @@
+# case 0 A ionization
+#   BDF rtol 1e-08: flag 0, 766 steps
+#   BDF rtol 1e-10: flag 0, 1722 steps
+  semi-implicit 200000: T 7.43809841e+03 x 9.57999699e-01
+  BDF rtol 1e-8       : T 7.43809115e+03 x 9.57999669e-01
+  BDF rtol 1e-10      : T 7.43809186e+03 x 9.57999671e-01
+  BDF 1e-8 vs 1e-10   : dT/T -9.53e-08 dx/x -2.64e-09
+  semi-implicit vs BDF 1e-10: dT/T +8.81e-07 dx/x +2.86e-08
+# case 1 B recombination
+#   BDF rtol 1e-08: flag 0, 320 steps
+#   BDF rtol 1e-10: flag 0, 632 steps
+  semi-implicit 200000: T 4.04645844e+03 x 3.19942291e-01
+  BDF rtol 1e-8       : T 4.04646749e+03 x 3.19939935e-01
+  BDF rtol 1e-10      : T 4.04646815e+03 x 3.19939949e-01
+  BDF 1e-8 vs 1e-10   : dT/T -1.64e-07 dx/x -4.47e-08
+  semi-implicit vs BDF 1e-10: dT/T -2.40e-06 dx/x +7.32e-06
+# case 2 C CO formation
+#   BDF rtol 1e-08: flag 0, 1920 steps
+#   BDF rtol 1e-10: flag 0, 3120 steps
+  semi-implicit 200000: T 4.42079281e+01 x 1.52220931e-04
+  BDF rtol 1e-8       : T 4.42079219e+01 x 1.52220926e-04
+  BDF rtol 1e-10      : T 4.42079220e+01 x 1.52220926e-04
+  BDF 1e-8 vs 1e-10   : dT/T -2.17e-09 dx/x -6.29e-10
+  semi-implicit vs BDF 1e-10: dT/T +1.39e-07 dx/x +3.55e-08
