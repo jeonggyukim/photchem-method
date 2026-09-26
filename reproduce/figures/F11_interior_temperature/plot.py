@@ -21,7 +21,10 @@ import athena_read
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F11_interior_temperature')
+# optional suffix of the run directories and the figure, e.g. _r20 for the runs with
+# rayt_point/rays_per_cell = 20 and tau_max = 30
+SUFFIX = sys.argv[1] if len(sys.argv) > 1 else ''
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F11_interior_temperature' + SUFFIX)
 WORKDIR = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/'
                              'recomb_ots')
 CLOUDY_DEFAULT = os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt')
@@ -73,7 +76,7 @@ def radius_half(r, xhp):
 fig, (a1, a2, a3) = plt.subplots(3, 1, figsize=(7, 9.5), sharex=True,
                                  gridspec_kw={'height_ratios': [2, 1, 1]})
 for run, lab, cfile, clab, col in PAIRS:
-    r, T, xhp = tigris_profile(os.path.join(WORKDIR, run))
+    r, T, xhp = tigris_profile(os.path.join(WORKDIR, run + SUFFIX))
     c = np.loadtxt(cfile)
     a1.plot(c[:, 0], c[:, 1], color=col, lw=2, alpha=0.6,
             label='%s: $R_s$ = %.3f pc' % (clab, radius_half(c[:, 0], c[:, 3])))
