@@ -99,7 +99,10 @@ COLS = (
     (r'$\chi_{\rm PE}$ [Draine]', lambda p, u: u['chi_PE'], 'inferno', 'log'),
     (r'$\chi_{\rm H_2}$ [Draine]', lambda p, u: u['chi_H2'], 'inferno', 'log'),
     (r'$\chi_{\rm C\,I}$ [Draine]', lambda p, u: u['chi_CI'], 'inferno', 'log'),
-    (r'$\xi_{\rm cr}/\xi_{\rm cr,0}$', lambda p, u: u['xi_CR']/XI_CR0, 'cividis', 'linear'),
+    # the field that photodissociates CO, with dust and CO self-shielding (GOW17 only;
+    # runs from before the output existed have no chi_CO column)
+    (r'$\chi_{\rm CO}$ [Draine]', lambda p, u: u.get('chi_CO', 0.0*u['temp']), 'inferno',
+     'log'),
 )
 CUTS = (
     (r'$n_{\rm H}$ [cm$^{-3}$]', 'log', None,
@@ -116,7 +119,8 @@ CUTS = (
      ((r'$\chi_{\rm PE}$', lambda p, u: u['chi_PE']),
       (r'$\chi_{\rm LW}$', lambda p, u: u['chi_LW']),
       (r'$\chi_{\rm H_2}$', lambda p, u: u['chi_H2']),
-      (r'$\chi_{\rm C\,I}$', lambda p, u: u['chi_CI']))),
+      (r'$\chi_{\rm C\,I}$', lambda p, u: u['chi_CI']),
+      (r'$\chi_{\rm CO}$', lambda p, u: u.get('chi_CO', 0.0*u['temp'])))),
     (r'$\xi_{\rm cr}/\xi_{\rm cr,0}$', 'linear', 'line',
      ((r'$\xi_{\rm cr}/\xi_{\rm cr,0}$', lambda p, u: u['xi_CR']/XI_CR0),)),
 )
