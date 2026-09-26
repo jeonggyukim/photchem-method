@@ -46,8 +46,12 @@ Out Run(int scenario, int iorder, unsigned nsub) {
                           false, true, false, false, true, 3, false, false};
   si.semi_implicit_gauss_seidel = true;
   si.semi_implicit_co_block = true;
-  si.semi_implicit_n_order =
-      SemiImplicit<G>::ParseOrder(ORDERS[iorder].c_str(), si.semi_implicit_order);
+  std::string order = ORDERS[iorder];
+  if (order.rfind("b:", 0) == 0) {
+    si.semi_implicit_h_block = true;
+    order = order.substr(2);
+  }
+  si.semi_implicit_n_order = SemiImplicit<G>::ParseOrder(order, si.semi_implicit_order);
   Real rad[G::n_freq];
   const Real chi = (scenario == 2) ? 0.0 : 1.0;
   for (int n = 0; n < G::n_freq - 1; ++n) rad[n] = chi;
@@ -72,8 +76,67 @@ Out Run(int scenario, int iorder, unsigned nsub) {
   return o;
 }
 
+// Largest relative error over the species whose reference abundance exceeds 1e-8, and
+// the species that carries it
+Real MaxError(const Out& o, const Out& ref, int* which) {
+  Real emax = 0.0;
+  *which = 0;
+  for (int s = 0; s < NSPEC; ++s) {
+    const Real e = std::fabs(o.x[s]/ref.x[s] - 1);
+    if (ref.x[s] > 1e-8 && e > emax) { emax = e; *which = s; }
+  }
+  return emax;
+}
+
+// Local search over unit orders by moving one unit to another position, scored by
+// the mean over N = 16, 64, 256 of log10 max(|dT/T|, max_s |dx_s/x_s|) in one case.
+void Search(int sc) {
+  const unsigned NS[] = {16u, 64u, 256u};
+  const Out ref = Run(sc, 0, 200000);
+  auto score = [&](const std::vector<std::string>& u) {
+    std::string s;
+    for (const auto& n : u) s += (s.empty() ? "" : ",") + n;
+    ORDERS.push_back(s);
+    Real sum = 0.0;
+    for (unsigned n : NS) {
+      const Out o = Run(sc, static_cast<int>(ORDERS.size()) - 1, n);
+      int w;
+      sum += std::log10(std::fmax(std::fabs(o.T/ref.T - 1), MaxError(o, ref, &w)));
+    }
+    ORDERS.pop_back();
+    return sum/3.0;
+  };
+  std::vector<std::string> best = {"He+", "Si+", "H2+", "H3+", "H+", "O+", "C+", "CHx",
+                                   "OHx", "CO", "H2"};
+  Real best_s = score(best);
+  std::printf("# case %d default score %.3f\n", sc, best_s);
+  for (bool improved = true; improved;) {
+    improved = false;
+    for (std::size_t a = 0; a < best.size(); ++a) {
+      for (std::size_t b = 0; b < best.size(); ++b) {
+        if (a == b) continue;
+        auto cand = best;
+        const std::string u = cand[a];
+        cand.erase(cand.begin() + a);
+        cand.insert(cand.begin() + b, u);
+        const Real s = score(cand);
+        if (s < best_s - 1e-3) { best = cand; best_s = s; improved = true; }
+      }
+    }
+  }
+  std::string s;
+  for (const auto& n : best) s += (s.empty() ? "" : ",") + n;
+  std::printf("# case %d best score %.3f  %s\n", sc, best_s, s.c_str());
+}
+
 int main(int argc, char** argv) {
-  // extra arguments: orders to compare against order 0 in place of 1-3
+  // order_check search <case>: local search for the best order in one case
+  if (argc == 3 && std::string(argv[1]) == "search") {
+    Search(std::atoi(argv[2]));
+    return 0;
+  }
+  // extra arguments: orders to compare against order 0 in place of 1-3; a "b:"
+  // prefix also sets semi_implicit_h_block
   if (argc > 1) {
     ORDERS.resize(1);
     for (int a = 1; a < argc; ++a) ORDERS.push_back(argv[a]);
@@ -96,12 +159,10 @@ int main(int argc, char** argv) {
       std::printf("%d %u", sc, n);
       for (int io = 0; io < NORDER; ++io) {
         const Out o = Run(sc, io, n);
-        Real emax = 0.0;
-        for (int s = 0; s < NSPEC; ++s) {
-          if (ref.x[s] > 1e-8) emax = std::fmax(emax, std::fabs(o.x[s]/ref.x[s] - 1));
-        }
-        std::printf(" %.6e %.6e %.6e", std::fabs(o.T/ref.T - 1),
-                    std::fabs(o.x[iy]/ref.x[iy] - 1), emax);
+        int w;
+        const Real emax = MaxError(o, ref, &w);
+        std::printf(" %.6e %.6e %.6e %s", std::fabs(o.T/ref.T - 1),
+                    std::fabs(o.x[iy]/ref.x[iy] - 1), emax, G::species_names[w].data());
       }
       std::printf("\n");
     }

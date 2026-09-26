@@ -1,0 +1,8 @@
+# case 0 default score -1.286
+# case 0 best score -1.286  He+,Si+,H2+,H3+,H+,O+,C+,CHx,OHx,CO,H2
+# case 1 default score -1.532
+# case 1 best score -1.532  He+,Si+,H2+,H3+,H+,O+,C+,CHx,OHx,CO,H2
+# case 2 default score -1.235
+# case 2 best score -1.402  Si+,He+,OHx,H2,CO,CHx,H3+,H2+,O+,C+,H+
+# case 3 default score -1.002
+# case 3 best score -1.320  He+,Si+,O+,C+,CHx,H2,H2+,OHx,H+,H3+,CO
