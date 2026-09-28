@@ -2,6 +2,8 @@
 
     python reduce.py <run_dir> <out.npz> [athena_read directory]
 
+Write out.npz to ../data/pdr_sphere/pdr_sphere_<mode>.npz, outside the repository.
+
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
 keeps the plane x3 = 0 through the centre of the sphere: n_H, x_e, x_H, x_H2, the
 carbon fractions, T, the fields and xi_cr, plus the iteration count from run.log.

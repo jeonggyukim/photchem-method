@@ -3,7 +3,7 @@
     python pdr_sphere_slices.py [npz ...]
 
 Reads the reduced mid-plane slices that reproduce/pdr_sphere/reduce.py writes
-(default: the NCR and GOW17 ones there) and writes figures/pdr_sphere_<mode>.{pdf,png}.
+(default: the NCR and GOW17 ones in ../data/pdr_sphere, beside this repository) and writes figures/pdr_sphere_<mode>.{pdf,png}.
 A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
 every side by one Draine field through the diffuse solver.
 """
@@ -17,7 +17,7 @@ import numpy as np  # noqa: E402
 from matplotlib.colors import LogNorm, Normalize  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-REDUCED = os.path.join(HERE, '..', 'reproduce', 'pdr_sphere')
+REDUCED = os.path.join(HERE, '..', '..', 'data', 'pdr_sphere')
 FIGDIR = os.path.join(HERE, '..', 'figures')
 XC_TOT = 1.6e-4       # total gas-phase carbon per H
 XI_CR0 = 2.0e-16      # unattenuated cosmic-ray ionization rate [s^-1]
