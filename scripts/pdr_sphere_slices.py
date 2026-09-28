@@ -88,7 +88,7 @@ def plot(path):
         ax = axes[2, c]
         ax.axvspan(-RADIUS, RADIUS, color='0.9', zorder=0)
         for label, f in curves:
-            if not np.isfinite(f(d)).any():  # a quantity this mode does not have
+            if not (np.nan_to_num(f(d)) > 0).any():  # a quantity this mode does not have
                 continue
             ax.plot(x, f(d)[j], label=label, lw=1.4)
         ax.set_yscale(yscale)
