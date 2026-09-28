@@ -26,7 +26,7 @@ LABEL = {'ncr': 'NCR', 'gow17': 'GOW17'}
 
 # slice panels: title, quantity, colour map, norm
 SLICES = (
-    (r'$n_{\rm H}$ [cm$^{-3}$]', lambda d: d['nH'], 'Greys', LogNorm(1e-2, 1e3)),
+    (r'$n_{\rm H}$ [cm$^{-3}$]', lambda d: d['nH'], 'Greys', None),  # set from the data
     (r'$x_{\rm e}$', lambda d: d['x_e'], 'viridis', LogNorm(1e-7, 1e-1)),
     (r'$2x_{\rm H_2}$', lambda d: 2.0*d['x_h2'], 'viridis', Normalize(0, 1)),
     (r'$x_{\rm C^+}/x_{\rm C,tot}$', lambda d: d['xCII']/XC_TOT, 'viridis',
@@ -45,7 +45,7 @@ SLICES = (
 )
 # profile panels: title, y scale, y limits, curves (label, quantity)
 PROFILES = (
-    (r'$n_{\rm H}$ [cm$^{-3}$]', 'log', (1e-2, 3e3), ((None, lambda d: d['nH']),)),
+    (r'$n_{\rm H}$ [cm$^{-3}$]', 'log', None, ((None, lambda d: d['nH']),)),
     (r'$T$ [K]', 'linear', (0, 40), (('gas', lambda d: d['temp']),
                                     ('dust', lambda d: d['temp_dust']))),
     ('hydrogen and electrons', 'log', (1e-7, 2),
@@ -66,6 +66,10 @@ PROFILES = (
 def plot(path):
     d = dict(np.load(path))
     mode = str(d['mode'])
+    tag = os.path.basename(path)[:-4]
+    nh0 = float(np.nanmax(d['nH']))
+    radius = float(np.sum(d['nH'][int(np.argmin(np.abs(d['x2v']))), :] > 0.5*nh0)
+                   * (d['x1v'][1] - d['x1v'][0]))/2.0
     x, y = d['x1v'], d['x2v']
     dx = x[1] - x[0]
     ext = (x[0] - dx/2, x[-1] + dx/2, y[0] - dx/2, y[-1] + dx/2)
@@ -75,6 +79,8 @@ def plot(path):
                         hspace=0.35)
     for n, (title, f, cmap, norm) in enumerate(SLICES):
         ax = axes[n // 6, n % 6]
+        if norm is None:
+            norm = LogNorm(1e-2, 3.0*nh0)
         im = ax.imshow(f(d), origin='lower', extent=ext, cmap=cmap,
                        norm=norm, interpolation='nearest')
         fig.colorbar(im, ax=ax, shrink=0.85)
@@ -86,26 +92,26 @@ def plot(path):
                 ax.axhline(y[j], color='C1', lw=0.8, ls='--')
     for c, (title, yscale, ylim, curves) in enumerate(PROFILES):
         ax = axes[2, c]
-        ax.axvspan(-RADIUS, RADIUS, color='0.9', zorder=0)
+        ax.axvspan(-radius, radius, color='0.9', zorder=0)
         for label, f in curves:
             if not (np.nan_to_num(f(d)) > 0).any():  # a quantity this mode does not have
                 continue
             ax.plot(x, f(d)[j], label=label, lw=1.4)
         ax.set_yscale(yscale)
-        ax.set_ylim(*ylim)
+        ax.set_ylim(*(ylim if ylim is not None else (1e-2, 3.0*nh0)))
         ax.set_xlim(ext[0], ext[1])
         ax.set_title(title, fontsize=11)
         ax.set_xlabel(r'$x_1$ [pc]', fontsize=9)
         ax.grid(alpha=0.3)
         if len(curves) > 1:
             ax.legend(fontsize=8, loc='lower center', framealpha=0.8)
-    fig.suptitle('Uniform sphere of 1000 H cm$^{-3}$ and radius 2 pc in gas of 0.05 H '
+    fig.suptitle('Uniform sphere of %.0e H cm$^{-3}$ and radius %.2g pc in gas of 0.05 H '
                  'cm$^{-3}$, one Draine field from every side, %s post-processed to '
                  'convergence (%d iterations); plane through the centre'
-                 % (LABEL[mode], int(d['niter'])), fontsize=13)
+                 % (nh0, radius, LABEL[mode], int(d['niter'])), fontsize=13)
     os.makedirs(FIGDIR, exist_ok=True)
     for ext_ in ('pdf', 'png'):
-        out = os.path.join(FIGDIR, 'pdr_sphere_%s.%s' % (mode, ext_))
+        out = os.path.join(FIGDIR, '%s.%s' % (tag, ext_))
         fig.savefig(out, dpi=150)
     plt.close(fig)
     print('wrote', out)
