@@ -117,7 +117,8 @@ equil_init   = false    # start atomic
 nsource      = 0        # no point sources
 source_file  =
 beam_chi0    = 0.0      # no beam
-iso_chi0     = 1.0      # isotropic far-ultraviolet field [Draine fields]
+iso_chi0     = 1.0      # isotropic field, in units of the field isrf
+isrf         = mmp83_draine11  # draine78, mmp83 or mmp83_draine11 (radiative_properties/isrf.hpp)
 iso_phi_lyc  = 0.0      # ionizing part of it, one-sided photon flux [cm^-2 s^-1]
 
 <rayt_point>

@@ -33,9 +33,35 @@ if gow17:
 else:
     x_e, x_h2, x_h = p['rEL'], p['rH2'], p['rHI']
 text = open(run + '/run.log').read()
+
+
+def runtime(key, default=None):
+    """First value of key in the run's athinput.runtime, as a string."""
+    for line in open(run + '/athinput.runtime'):
+        mk = re.match(r'\s*' + re.escape(key) + r'\s*=\s*(\S+)', line)
+        if mk:
+            return mk.group(1)
+    return default
+
+
+ndir = re.search(r'isotropic field of chi0 = \S+ on (\d+) directions', text)
+edges = [runtime('band_edge_um[%d]' % g) for g in (3, 4, 5)]
+chi_edge = re.search(r'chi_LW = (\S+), chi_PE = (\S+)', text)
+setup = dict(chi0=float(runtime('iso_chi0', 0)),
+             isrf=runtime('isrf', 'draine78'),
+             chi_edge=[float(x) for x in chi_edge.groups()] if chi_edge else None,
+             optical=float(runtime('iso_optical', runtime('iso_chi0', 0))),
+             ndir=int(ndir.group(1)) if ndir else -1,
+             edges_um=[float(e) for e in edges if e is not None],
+             dust_heating=runtime('dust_heating', 'legacy'),
+             cool_dust=runtime('cool_dust_flag', 'false'),
+             sigma10=runtime('sigma_dust_ir10', '2e-25'),
+             alpha_gd=runtime('alpha_gd', '3.2e-34'),
+             temp_bg=runtime('temp_bg_dust', '6'))
 m = re.search(r'converged after (\d+) iterations', text)
 np.savez_compressed(
     out, mode='gow17' if gow17 else 'ncr', niter=int(m.group(1)) if m else -1,
+    setup=repr(setup),
     x1v=d['x1v'], x2v=d['x2v'], x3=d['x3v'][k],
     nH=p['rho']/1.4, x_e=x_e, x_h=x_h, x_h2=x_h2,
     xCII=p['xCII'], xCI=p['xCI'], xCO=p['xCO'], temp=p['temp'],

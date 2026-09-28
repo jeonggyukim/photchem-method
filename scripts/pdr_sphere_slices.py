@@ -7,6 +7,7 @@ Reads the reduced mid-plane slices that reproduce/pdr_sphere/reduce.py writes
 A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
 every side by one Draine field through the diffuse solver.
 """
+import ast
 import os
 import sys
 
@@ -63,6 +64,39 @@ PROFILES = (
 )
 
 
+def suptitle_text(d, mode, nh0, radius):
+    """Three lines: the cloud; the radiation; the chemistry and the dust."""
+    s = ast.literal_eval(str(d['setup'])) if 'setup' in d else {}
+    bands = ['LyC', 'LW 912-1108 Å', 'PE 1108-2066 Å']
+    lo = 0.20664
+    for e in s.get('edges_um', []):
+        bands.append('%.2g-%.2g µm' % (lo, e))
+        lo = e
+    field = {'draine78': 'Draine (1978) UV + Mathis et al. (1983) stars',
+             'mmp83': 'Mathis et al. (1983)',
+             'mmp83_draine11': 'Mathis et al. (1983) with Draine (2011) dilutions'}[
+                 s.get('isrf', 'draine78')]
+    rad = 'isotropic %s x %g' % (field, s.get('chi0', 1))
+    if s.get('chi_edge'):
+        rad += r' ($\chi_{\rm LW}$ = %.2f, $\chi_{\rm PE}$ = %.2f)' % tuple(s['chi_edge'])
+    rad += '; bands: %s; %d directions' % (', '.join(bands), s.get('ndir', -1))
+    if mode == 'ncr' and s.get('cool_dust') == 'true':
+        heat = ('absorbed power over the transported bands'
+                if s.get('dust_heating') == 'absorbed'
+                else 'FUV bands + attenuated interstellar floor (legacy)')
+        alpha = ('Hollenbach & McKee (1989)' if float(s.get('alpha_gd', -1)) <= 0
+                 else s['alpha_gd'])
+        dust = ('dust: T_d from %s, $\\sigma_{10}$ = %s cm$^2$ H$^{-1}$, '
+                'gas-dust %s, background %s K'
+                % (heat, s.get('sigma10'), alpha, s.get('temp_bg')))
+    else:
+        dust = 'no gas-dust coupling'
+    return ('Uniform sphere of %.0e H cm$^{-3}$, radius %.2g pc, in gas of 0.05 H cm$^{-3}$; '
+            'plane through the centre\n%s\n%s post-processed to convergence '
+            '(%d iterations); %s'
+            % (nh0, radius, rad, LABEL[mode], int(d['niter']), dust))
+
+
 def plot(path):
     d = dict(np.load(path))
     mode = str(d['mode'])
@@ -75,7 +109,7 @@ def plot(path):
     ext = (x[0] - dx/2, x[-1] + dx/2, y[0] - dx/2, y[-1] + dx/2)
     j = int(np.argmin(np.abs(y)))
     fig, axes = plt.subplots(3, 6, figsize=(20, 10))
-    fig.subplots_adjust(left=0.05, right=0.97, top=0.9, bottom=0.06, wspace=0.45,
+    fig.subplots_adjust(left=0.05, right=0.97, top=0.85, bottom=0.06, wspace=0.45,
                         hspace=0.35)
     for n, (title, f, cmap, norm) in enumerate(SLICES):
         ax = axes[n // 6, n % 6]
@@ -105,10 +139,7 @@ def plot(path):
         ax.grid(alpha=0.3)
         if len(curves) > 1:
             ax.legend(fontsize=8, loc='lower center', framealpha=0.8)
-    fig.suptitle('Uniform sphere of %.0e H cm$^{-3}$ and radius %.2g pc in gas of 0.05 H '
-                 'cm$^{-3}$, one Draine field from every side, %s post-processed to '
-                 'convergence (%d iterations); plane through the centre'
-                 % (nh0, radius, LABEL[mode], int(d['niter'])), fontsize=13)
+    fig.suptitle(suptitle_text(d, mode, nh0, radius), fontsize=12, linespacing=1.5)
     os.makedirs(FIGDIR, exist_ok=True)
     for ext_ in ('pdf', 'png'):
         out = os.path.join(FIGDIR, '%s.%s' % (tag, ext_))
