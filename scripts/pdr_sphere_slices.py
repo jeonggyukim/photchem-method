@@ -80,9 +80,10 @@ def suptitle_text(d, mode, nh0, radius):
     if s.get('chi_edge'):
         rad += r' ($\chi_{\rm LW}$ = %.2f, $\chi_{\rm PE}$ = %.2f)' % tuple(s['chi_edge'])
     rad += '; bands: %s; %d directions' % (', '.join(bands), s.get('ndir', -1))
-    if mode == 'ncr' and s.get('cool_dust') == 'true':
+    if ((mode == 'ncr' and s.get('cool_dust') == 'true')
+            or (mode == 'gow17' and s.get('dust_cooling') == 'true')):
         heat = ('absorbed power over the transported bands'
-                if s.get('dust_heating') == 'absorbed'
+                if mode == 'gow17' or s.get('dust_heating') == 'absorbed'
                 else 'FUV bands + attenuated interstellar floor (legacy)')
         alpha = ('Hollenbach & McKee (1989)' if float(s.get('alpha_gd', -1)) <= 0
                  else s['alpha_gd'])

@@ -49,6 +49,7 @@ edges = [runtime('band_edge_um[%d]' % g) for g in (3, 4, 5)]
 chi_edge = re.search(r'chi_LW = (\S+), chi_PE = (\S+)', text)
 setup = dict(chi0=float(runtime('iso_chi0', 0)),
              isrf=runtime('isrf', 'draine78'),
+             dust_cooling=runtime('dust_cooling', 'false'),
              chi_edge=[float(x) for x in chi_edge.groups()] if chi_edge else None,
              optical=float(runtime('iso_optical', runtime('iso_chi0', 0))),
              ndir=int(ndir.group(1)) if ndir else -1,
