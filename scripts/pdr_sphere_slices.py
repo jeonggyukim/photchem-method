@@ -34,7 +34,8 @@ SLICES = (
     (r'$x_{\rm C}/x_{\rm C,tot}$', lambda d: d['xCI']/XC_TOT, 'viridis', Normalize(0, 1)),
     (r'$x_{\rm CO}/x_{\rm C,tot}$', lambda d: d['xCO']/XC_TOT, 'viridis',
      Normalize(0, 1)),
-    (r'$T$ [K]', lambda d: d['temp'], 'magma', Normalize(5, 40)),
+    # cloud only: the ambient gas (~3000 K) saturates
+    (r'$T$ [K]', lambda d: d['temp'], 'magma', Normalize(5, 35)),
     (r'$\chi_{\rm PE}$', lambda d: d['chi_PE'], 'inferno', LogNorm(1e-3, 1)),
     (r'$\chi_{\rm LW}$', lambda d: d['chi_LW'], 'inferno', LogNorm(1e-6, 1)),
     (r'$\chi_{\rm H_2}$', lambda d: d['chi_H2'], 'inferno', LogNorm(1e-12, 1)),
@@ -45,7 +46,7 @@ SLICES = (
 # profile panels: title, y scale, y limits, curves (label, quantity)
 PROFILES = (
     (r'$n_{\rm H}$ [cm$^{-3}$]', 'log', (1e-2, 3e3), ((None, lambda d: d['nH']),)),
-    (r'$T$ [K]', 'log', (5, 1e4), (('gas', lambda d: d['temp']),
+    (r'$T$ [K]', 'linear', (0, 40), (('gas', lambda d: d['temp']),
                                     ('dust', lambda d: d['temp_dust']))),
     ('hydrogen and electrons', 'log', (1e-7, 2),
      ((r'$x_{\rm e}$', lambda d: d['x_e']), (r'$x_{\rm H}$', lambda d: d['x_h']),
