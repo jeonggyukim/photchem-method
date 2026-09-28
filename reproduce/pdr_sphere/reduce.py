@@ -6,7 +6,7 @@ Write out.npz to ../data/pdr_sphere/pdr_sphere_<mode>.npz, outside the repositor
 
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
 keeps the plane x3 = 0 through the centre of the sphere: n_H, x_e, x_H, x_H2, the
-carbon fractions, T, the fields and xi_cr, plus the iteration count from run.log.
+carbon fractions, T, T_d (NaN where the mode does not solve it), the fields and xi_cr, plus the iteration count from run.log.
 The GOW17 output names its first scalar rHI although it holds He+; its species
 follow gow17_core.hpp: He+ OHx CHx CO C+ HCO+ H2 H+ H3+ H2+ O+ Si+.
 """
@@ -41,5 +41,7 @@ np.savez_compressed(
     xCII=p['xCII'], xCI=p['xCI'], xCO=p['xCO'], temp=p['temp'],
     chi_PE=p['chi_PE'], chi_LW=p['chi_LW'], chi_H2=p['chi_H2'], chi_CI=p['chi_CI'],
     chi_CO=p['chi_CO'] if 'chi_CO' in p else np.full_like(p['temp'], np.nan),
-    xi_CR=p['xi_CR'])
+    xi_CR=p['xi_CR'],
+    temp_dust=p['temp_dust'] if 'temp_dust' in p and np.any(p['temp_dust'] > 0)
+    else np.full_like(p['temp'], np.nan))
 print('wrote', out, 'from', dump)

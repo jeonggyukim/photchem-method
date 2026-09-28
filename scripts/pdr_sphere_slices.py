@@ -45,7 +45,8 @@ SLICES = (
 # profile panels: title, y scale, y limits, curves (label, quantity)
 PROFILES = (
     (r'$n_{\rm H}$ [cm$^{-3}$]', 'log', (1e-2, 3e3), ((None, lambda d: d['nH']),)),
-    (r'$T$ [K]', 'log', (5, 1e4), ((None, lambda d: d['temp']),)),
+    (r'$T$ [K]', 'log', (5, 1e4), (('gas', lambda d: d['temp']),
+                                    ('dust', lambda d: d['temp_dust']))),
     ('hydrogen and electrons', 'log', (1e-7, 2),
      ((r'$x_{\rm e}$', lambda d: d['x_e']), (r'$x_{\rm H}$', lambda d: d['x_h']),
       (r'$2x_{\rm H_2}$', lambda d: 2.0*d['x_h2']))),
@@ -86,6 +87,8 @@ def plot(path):
         ax = axes[2, c]
         ax.axvspan(-RADIUS, RADIUS, color='0.9', zorder=0)
         for label, f in curves:
+            if not np.isfinite(f(d)).any():  # a quantity this mode does not have
+                continue
             ax.plot(x, f(d)[j], label=label, lw=1.4)
         ax.set_yscale(yscale)
         ax.set_ylim(*ylim)
