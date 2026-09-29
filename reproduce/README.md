@@ -1,7 +1,7 @@
 # reproduce
 
 Inputs, harnesses and scripts that regenerate each number and figure the paper
-quotes, grouped by the section they serve. Code revision: Tigris branch `gow17`
+quotes, grouped by the section they serve. Code revision: Tigris branch `rayt-photchem-updates` (was `gow17`)
 at the commit named in each subdirectory's entry below.
 
 The C++ harnesses include Tigris headers directly and build with
