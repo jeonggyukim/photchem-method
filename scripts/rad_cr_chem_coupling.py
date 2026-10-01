@@ -45,9 +45,9 @@ PAPER = STYLE == 'paper'
 SIM = '--mhd' in sys.argv
 # --cr-left: cosmic-ray transport in the upper left and radiation in the upper right.
 CRL = '--cr-left' in sys.argv
-# --crpic=A|B|C: the picture at the top of the cosmic-ray box. Default, a cosmic ray
+# --crpic=A|B: the picture at the top of the cosmic-ray box. Default, a cosmic ray
 # gyrating along B; A, a cosmic ray scattered by the waves it drives; B, the
-# self-confinement loop as a diagram; C, A with ion-neutral damping of the waves.
+# self-confinement loop as a diagram.
 CRPIC = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--crpic=')), '')
 NAME = ('rad_cr_chem_coupling' + {'2d': '', '3d': '_3d', '3d2': '_3d2'}[MODE]
         + '_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else '')
@@ -71,7 +71,7 @@ LABELS = {
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
         'chem_to_mhd': (r'$n\Gamma - n^2\Lambda$', 19),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 17),
-        'mhd_note': ('galactic shear\nturbulence\nstar formation\nfeedback', 16),
+        'mhd_note': ('star formation\ngravity\ngalactic shear\nstellar feedback', 15),
     },
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
@@ -93,7 +93,7 @@ LABELS = {
                       r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
-        'mhd_note': ('galactic shear\nturbulence\nstar formation\nfeedback', 14),
+        'mhd_note': ('star formation\ngravity\ngalactic shear\nstellar feedback', 14),
         'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
                     r'gas temperature $T$', 10),
     },
@@ -263,22 +263,6 @@ def draw_cr_loop(ax, x0, y):
                                  lw=1.6, zorder=3))
 
 
-def draw_cr_damped(ax, x0, y):
-    """C: A, with the gas below the field line: ions (carried by the wave) colliding
-    with neutrals, which drains the waves (ion-neutral damping)."""
-    yl = y + 0.12
-    resonant_waves(ax, x0, yl, 0.24)
-    yg = y - 0.4
-    for k, xi in enumerate(np.linspace(x0 + 0.7, x0 + 2.9, 4)):
-        atom(ax, xi, yg, 0.07, COL_CR, '+', k=1.0)
-        xn = xi + 0.27
-        atom(ax, xn, yg - 0.03*(-1)**k, 0.07, '0.7')
-        ax.plot([xi + 0.08, xn - 0.08], [yg, yg - 0.015*(-1)**k], color='#D55E00',
-                lw=1.0, ls=(0, (1, 1)), zorder=2)
-    ax.text(x0 + 3.3, yg, 'ion–neutral\ndamping', ha='left', va='center', fontsize=12,
-            color='#D55E00', linespacing=1.1)
-
-
 def atom(ax, x, y, r, fc, label=None, lc='white', k=1.0):
     ax.add_patch(Circle((x, y), k*r, fc=fc, ec='0.25', lw=0.8, zorder=3))
     if label:
@@ -409,8 +393,6 @@ def main():
         draw_cr_scatter(ax, 6.5 + ocr, 7.95)
     elif CRPIC == 'B':
         draw_cr_loop(ax, 6.5 + ocr, 7.95)
-    elif CRPIC == 'C':
-        draw_cr_damped(ax, 6.5 + ocr, 7.95)
     else:
         draw_cosmic_ray(ax, 6.95 + ocr, 10.9 + ocr, 7.95)
 
@@ -448,8 +430,8 @@ def main():
         r'\sigma_{\parallel,\rm IN} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|'
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
-    # pictures B and C reach lower, so the equations start lower and sit closer
-    y_eq, dy_eq = (6.95, 0.53) if CRPIC in ('B', 'C') else (7.2, 0.58)
+    # picture B reaches lower, so the equations start lower and sit closer
+    y_eq, dy_eq = (6.95, 0.53) if CRPIC == 'B' else (7.2, 0.58)
     for k, s in enumerate(cr_eq):
         ax.text(9.125 + ocr, y_eq - dy_eq*k, s, ha='center', va='center', fontsize=13,
                 color='0.1')
@@ -503,7 +485,7 @@ def main():
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
     # from the chemistry act on the gas, which moves, compresses and carries B.
     if SIM:
-        x0, x1, y0, y1 = 6.8, 8.9, 4.75, 7.15
+        x0, x1, y0, y1 = 6.65, 9.05, 4.75, 7.15
         xg = 0.5*(x0 + x1)
         box(ax, x0, y0, x1, y1, COL_MHD, 'Gas Dynamics')
         s, fs = LABELS['mhd_body']
