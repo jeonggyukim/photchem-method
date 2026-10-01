@@ -1,15 +1,16 @@
 """Schematic of how radiation, cosmic rays and the photochemistry of the gas couple.
 
-    python rad_cr_chem_coupling.py [3d2|3d|2d] [talk|paper] [--mhd]
+    python rad_cr_chem_coupling.py [3d2|3d|2d] [talk|paper] [--mhd] [--cr-left]
 
 The first argument picks the drawing of the ray tracers: both in 3D (3d2, default),
 point sources in 3D only (3d), or flat (2d). The second picks the labels: symbols in
 large type for slides (talk, default), or symbols with a few words each for a paper.
 
 --mhd adds a gas-dynamics box for a coupled simulation, with the forces and heating
-the other modules exert on the gas.
+the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray boxes.
 
-Writes rad_cr_chem_coupling[_3d2|_3d]_{talk,paper}[_mhd] .png and .pdf to ../figures.
+Writes rad_cr_chem_coupling[_3d2|_3d]_{talk,paper}[_mhd][_crleft] .png and .pdf to
+../figures.
 The 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside this
 script.
 """
@@ -35,8 +36,10 @@ PAPER = STYLE == 'paper'
 # the others takes the radiation force, the cosmic-ray force and heating, and the
 # net heating of the gas, and supplies rho, v, B to all three.
 SIM = '--mhd' in sys.argv
+# --cr-left: cosmic-ray transport in the upper left and radiation in the upper right.
+CRL = '--cr-left' in sys.argv
 NAME = ('rad_cr_chem_coupling' + {'2d': '', '3d': '_3d', '3d2': '_3d2'}[MODE]
-        + '_' + STYLE + ('_mhd' if SIM else ''))
+        + '_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else ''))
 
 # Labels per style: (text, font size).
 LABELS = {
@@ -184,39 +187,57 @@ def draw_molecules(ax, x, y):
 
 
 def main():
-    top = 8.9   # upper edge of the two upper boxes
-    cy = -1.8 if SIM else 0.0   # the chemistry box moves down to make room for MHD
-    bot = 0.6 + cy
-    fig, ax = plt.subplots(figsize=(12.0, 12.0*(top + 0.25 - bot)/12.0))
+    top = 8.9   # upper edge of the upper boxes
+    # With --mhd the gas-dynamics box is a third column between radiation and cosmic
+    # rays, so the figure widens to about 16:9 instead of growing taller.
+    xc = 3.7 if SIM else 0.0    # shift of the cosmic-ray box
+    xm = 1.85 if SIM else 0.0   # shift of the chemistry box
+    width = 12.0 + xc
+    bot = 0.6
+    fig, ax = plt.subplots(figsize=(width, top + 0.25 - bot))
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-    ax.set_xlim(0, 12.0)
+    ax.set_xlim(0, width)
     ax.set_ylim(bot, top + 0.25)
     ax.set_aspect('equal')
     ax.axis('off')
 
+    # --cr-left mirrors the arrows and their labels about the vertical centre line and
+    # swaps the two upper boxes; the chemistry and gas boxes are centred already.
+    def mx(x):
+        return width - x if CRL else x
+
+    def hflip(h):
+        return {'left': 'right', 'right': 'left'}.get(h, h) if CRL else h
+
+    orad = width - 5.75 if CRL else 0.0   # shift of the radiation box
+    ocr = 0.25 - 6.5 if CRL else xc       # shift of the cosmic-ray box
+
     # radiation transfer
-    box(ax, 0.25, 4.4, 5.5, top, COL_RAD, 'Radiation transfer')
+    box(ax, 0.25 + orad, 4.4, 5.5 + orad, top, COL_RAD, 'Radiation transfer')
     if FLAT:
-        draw_point_source(ax, 1.55, 6.9)
+        draw_point_source(ax, 1.55 + orad, 6.9)
     else:
         fig.canvas.draw()
         to_fig = ax.transData + fig.transFigure.inverted()
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3, 5.75), (2.85, 8.45)])
+        (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3 + orad, 5.75), (2.85 + orad, 8.45)])
         inset = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset.set_facecolor('none')
         draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.8)
     s, fs = LABELS['point']
-    ax.text(1.55, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT, linespacing=1.25)
+    ax.text(1.55 + orad, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT,
+            linespacing=1.25)
     if MODE == '3d2':
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95, 5.75), (5.45, 8.45)])
+        (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95 + orad, 5.75),
+                                                   (5.45 + orad, 8.45)])
         inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset2.set_facecolor('none')
         draw_diffuse_rays(inset2, lw=0.45, zoom=1.05)
     else:
-        draw_diffuse(ax, 4.28, 6.9, 1.5, 1.25)
+        draw_diffuse(ax, 4.28 + orad, 6.9, 1.5, 1.25)
     s, fs = LABELS['diffuse']
-    ax.text(4.28, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT, linespacing=1.25)
-    ax.text(2.92, 4.62, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu + \eta_\nu$'
+    ax.text(4.28 + orad, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT,
+            linespacing=1.25)
+    ax.text(2.92 + orad, 4.62, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu + \eta_\nu$'
             r'$,\qquad J_\nu = \frac{1}{4\pi}\oint I_\nu\,d\Omega$', ha='center',
             va='bottom', fontsize=15, color='0.1')
 
@@ -226,20 +247,25 @@ def main():
     # Armillotta et al. (2022, Eqs. 16 and 17), the smaller of the nonlinear-Landau and
     # the ion-neutral values, with their dependence on n_i, n_n and T
     # (c_s^{-1/2} ~ T^{-1/4}; 1/v_A,i ~ n_i^{1/2}).
-    box(ax, 6.5, 4.4, 11.75, top, COL_CR, 'Cosmic-ray transport')
-    draw_cosmic_ray(ax, 6.95, 10.9, 7.95)
+    box(ax, 6.5 + ocr, 4.4, 11.75 + ocr, top, COL_CR, 'Cosmic-ray transport')
+    draw_cosmic_ray(ax, 6.95 + ocr, 10.9 + ocr, 7.95)
 
     # radiation -> cosmic rays: the inverse-Compton losses of cosmic-ray electrons need
     # the radiation energy density (Linzer et al. 2025, App. C.2), so this link exists
-    # only when the electrons are followed; dashed for that reason.
-    ax.add_patch(FancyArrowPatch((5.52, 6.4), (6.48, 6.4),
+    # only when the electrons are followed; dashed for that reason. With --mhd it
+    # passes over the gas-dynamics box.
+    y_ic = 8.15 if SIM else 6.4
+    x_ic = 0.5*(5.5 + 6.5 + xc)
+    ax.add_patch(FancyArrowPatch((mx(5.52), y_ic), (mx(6.48 + xc), y_ic),
                                  arrowstyle='-|>,head_length=8,head_width=4.5',
                                  color=COL_RAD, lw=2.0, ls=(0, (4, 2)), shrinkA=0,
                                  shrinkB=0))
     s, fs = LABELS['rad_to_cr']
-    ax.text(6.0, 6.55, s, ha='center', va='bottom', fontsize=fs, color=COL_RAD)
+    ax.text(x_ic, y_ic + 0.15, s, ha='center', va='bottom', fontsize=fs, color=COL_RAD)
     s, fs = LABELS['rad_to_cr_note']
-    ax.text(6.0, 6.25, s, ha='center', va='top', fontsize=fs, color=COL_RAD,
+    if SIM:
+        s = s.replace('-\n', '-').replace('\n', ' ')
+    ax.text(x_ic, y_ic - 0.15, s, ha='center', va='top', fontsize=fs, color=COL_RAD,
             linespacing=1.15)
     cr_eq = [
         r'$\dfrac{\partial e_{\rm c}}{\partial t} + \nabla\cdot\mathbf{F}_{\rm c} = '
@@ -259,71 +285,76 @@ def main():
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
     for k, s in enumerate(cr_eq):
-        ax.text(9.125, 7.2 - 0.52*k, s, ha='center', va='center', fontsize=13,
+        ax.text(9.125 + ocr, 7.2 - 0.52*k, s, ha='center', va='center', fontsize=13,
                 color='0.1')
 
     # photochemistry
-    box(ax, 2.9, 0.75 + cy, 9.1, 2.55 + cy, COL_CHEM, 'Photochemistry and thermal balance')
-    dy = (0.17 if PAPER else 0.0) + cy   # room for the species line below
-    draw_molecules(ax, 3.75, 1.45 + dy)
-    ax.text(5.6, 1.6 + dy, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
+    box(ax, 2.9 + xm, 0.75, 9.1 + xm, 2.55, COL_CHEM, 'Photochemistry and thermal balance')
+    dy = 0.17 if PAPER else 0.0   # room for the species line below
+    draw_molecules(ax, 3.75 + xm, 1.45 + dy)
+    ax.text(5.6 + xm, 1.6 + dy, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
             va='center', fontsize=15, color='0.1')
-    ax.text(7.35, 1.6 + dy, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
+    ax.text(7.35 + xm, 1.6 + dy, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
             va='center', fontsize=15, color='0.1')
     s, fs = LABELS['species']
     if s:
-        ax.text(6.0, 0.95 + cy, s, ha='center', va='center', fontsize=fs, color=TXT)
+        ax.text(6.0 + xm, 0.95, s, ha='center', va='center', fontsize=fs, color=TXT)
 
     # radiation <-> chemistry; the two labels sit at different heights so that the
-    # one beside each inner arrow does not run into the other. With the MHD box
-    # between the inner arrows, both labels go to the outer side.
-    arrow(ax, (4.65, 4.38), (4.65, 2.57 + cy), COL_RAD)
-    arrow(ax, (4.3, 2.57 + cy), (4.3, 4.38), COL_CHEM)
+    # one beside each inner arrow does not run into the other. With --mhd the arrows
+    # run along the inner edge of the chemistry box and both labels go outside.
+    xr = 5.3 if SIM else 4.65   # radiation -> chemistry; chemistry -> radiation 0.35 left
+    arrow(ax, (mx(xr), 4.38), (mx(xr), 2.57), COL_RAD)
+    arrow(ax, (mx(xr - 0.35), 2.57), (mx(xr - 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['rad_to_chem']
     if SIM:
-        ax.text(4.1, 3.6, s, ha='right', va='center', fontsize=fs, color=COL_RAD,
-                linespacing=1.25)
-    else:
-        ax.text(4.85, 3.78 if PAPER else 3.85, s, ha='left', va='center', fontsize=fs,
+        ax.text(mx(xr - 0.55), 3.85, s, ha=hflip('right'), va='center', fontsize=fs,
                 color=COL_RAD, linespacing=1.25)
+    else:
+        ax.text(mx(4.85), 3.78 if PAPER else 3.85, s, ha=hflip('left'), va='center',
+                fontsize=fs, color=COL_RAD, linespacing=1.25)
     s, fs = LABELS['chem_to_rad']
-    ax.text(4.1, 1.7 if SIM else 3.5, s, ha='right', va='center', fontsize=fs,
-            color=COL_CHEM, linespacing=1.25)
+    ax.text(mx(xr - 0.55), 2.95 if SIM else 3.5, s, ha=hflip('right'), va='center',
+            fontsize=fs, color=COL_CHEM, linespacing=1.25)
 
     # cosmic rays <-> chemistry
-    arrow(ax, (7.35, 4.38), (7.35, 2.57 + cy), COL_CR)
-    arrow(ax, (7.7, 2.57 + cy), (7.7, 4.38), COL_CHEM)
+    xq = 10.4 if SIM else 7.35   # cosmic rays -> chemistry; chemistry -> CR 0.35 right
+    arrow(ax, (mx(xq), 4.38), (mx(xq), 2.57), COL_CR)
+    arrow(ax, (mx(xq + 0.35), 2.57), (mx(xq + 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['cr_to_chem']
     if SIM:
-        ax.text(7.9, 3.6, s, ha='left', va='center', fontsize=fs, color=COL_CR,
-                linespacing=1.25)
-    else:
-        ax.text(7.15, 2.88 if PAPER else 3.0, s, ha='right', va='center', fontsize=fs,
+        ax.text(mx(xq + 0.55), 3.85, s, ha=hflip('left'), va='center', fontsize=fs,
                 color=COL_CR, linespacing=1.25)
+    else:
+        ax.text(mx(7.15), 2.88 if PAPER else 3.0, s, ha=hflip('right'), va='center',
+                fontsize=fs, color=COL_CR, linespacing=1.25)
     s, fs = LABELS['chem_to_cr']
-    ax.text(7.9, 1.7 if SIM else 3.5, s, ha='left', va='center', fontsize=fs,
-            color=COL_CHEM, linespacing=1.25)
+    ax.text(mx(xq + 0.55), 2.95 if SIM else 3.5, s, ha=hflip('left'), va='center',
+            fontsize=fs, color=COL_CHEM, linespacing=1.25)
 
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
     # from the chemistry act on the gas, which moves, compresses and carries B.
     if SIM:
-        box(ax, 4.9, 1.75, 7.1, 3.25, COL_MHD, 'Gas dynamics')
+        x0, x1 = 6.5, 9.2 + xc - 3.7
+        xg = 0.5*(x0 + x1)
+        box(ax, x0, 4.4, x1, 7.45, COL_MHD, 'Gas dynamics')
         s, fs = LABELS['mhd_body']
-        ax.text(6.0, 2.68, s, ha='center', va='center', fontsize=fs, color='0.1')
+        ax.text(xg, 6.55, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
-        ax.text(6.0, 2.17, s, ha='center', va='center', fontsize=fs, color=TXT,
+        ax.text(xg, 5.0, s, ha='center', va='center', fontsize=fs, color=TXT,
                 linespacing=1.2)
-        arrow(ax, (5.2, 4.38), (5.2, 3.27), COL_RAD)
-        arrow(ax, (6.8, 4.38), (6.8, 3.27), COL_CR)
-        arrow(ax, (6.0, 2.57 + cy), (6.0, 1.73), COL_CHEM)
+        y_f = 5.75
+        arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)
+        arrow(ax, (mx(6.48 + xc), y_f), (mx(x1 + 0.02), y_f), COL_CR)
+        arrow(ax, (xg, 2.57), (xg, 4.38), COL_CHEM)
         s, fs = LABELS['rad_to_mhd']
-        ax.text(5.32, 3.85, s, ha='left', va='center', fontsize=fs, color=COL_RAD,
-                linespacing=1.15)
+        ax.text(mx(0.5*(5.5 + x0)), y_f + 0.12, s, ha='center', va='bottom',
+                fontsize=fs, color=COL_RAD, linespacing=1.15)
         s, fs = LABELS['cr_to_mhd']
-        ax.text(6.68, 3.85, s, ha='right', va='center', fontsize=fs, color=COL_CR,
-                linespacing=1.15)
+        ax.text(mx(0.5*(x1 + 6.5 + xc)), y_f + 0.12, s, ha='center', va='bottom',
+                fontsize=fs, color=COL_CR, linespacing=1.15)
         s, fs = LABELS['chem_to_mhd']
-        ax.text(6.12, 1.25, s, ha='left', va='center', fontsize=fs, color=COL_CHEM,
+        ax.text(xg + 0.15, 3.45, s, ha='left', va='center', fontsize=fs, color=COL_CHEM,
                 linespacing=1.15)
 
     os.makedirs(OUT, exist_ok=True)
