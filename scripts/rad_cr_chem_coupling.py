@@ -64,7 +64,7 @@ LABELS = {
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
         'chem_to_mhd': (r'$n\Gamma - n^2\Lambda$', 19),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 17),
-        'mhd_note': ('turbulence\nshocks\nself-gravity\nSNe', 16),
+        'mhd_note': ('galactic shear\nturbulence\nstar formation\nfeedback', 16),
     },
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
@@ -84,7 +84,7 @@ LABELS = {
                       r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
-        'mhd_note': ('turbulence\nshocks\nself-gravity\nsupernovae', 14),
+        'mhd_note': ('galactic shear\nturbulence\nstar formation\nfeedback', 14),
         'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
                     r'gas temperature $T$', 10),
     },
