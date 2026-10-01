@@ -62,23 +62,31 @@ def optical_depth(p, q, centre, radius, kappa, nseg=40):
 
 
 def draw_diffuse_rays(ax, n=8, nbundle=3, pixels=(0, 5, 11), lw=0.7, kappa=0.55,
-                      zoom=1.0):
+                      zoom=1.0, cloud=None):
+    """With `cloud` (a clumpy_cloud.Cloud on the n^3 box) the rays cross that density
+    field instead of a uniform sphere."""
     centre, radius = np.full(3, 0.5*n), 0.3*n
     for a in (0, n):
         for b in (0, n):
             ax.plot([0, n], [a, a], [b, b], color='0.55', lw=0.6)
             ax.plot([a, a], [0, n], [b, b], color='0.55', lw=0.6)
             ax.plot([a, a], [b, b], [0, n], color='0.55', lw=0.6)
-    u, v = np.mgrid[0:2*np.pi:40j, 0:np.pi:20j]
-    ax.plot_surface(centre[0] + radius*np.cos(u)*np.sin(v),
-                    centre[1] + radius*np.sin(u)*np.sin(v),
-                    centre[2] + radius*np.cos(v), color='0.45', alpha=0.25,
-                    linewidth=0, shade=False)
+    if cloud is None:
+        u, v = np.mgrid[0:2*np.pi:40j, 0:np.pi:20j]
+        ax.plot_surface(centre[0] + radius*np.cos(u)*np.sin(v),
+                        centre[1] + radius*np.sin(u)*np.sin(v),
+                        centre[2] + radius*np.cos(v), color='0.45', alpha=0.25,
+                        linewidth=0, shade=False)
+    else:
+        cloud.draw(ax)
     dirs = np.array(hp.pix2vec(1, list(pixels), nest=True)).T
     for d, col in zip(dirs, COLORS):
         rgba = np.array(to_rgba(col))
         for p, q in ray_paths(d, n, nbundle):
-            pts, tau = optical_depth(p, q, centre, radius, kappa)
+            if cloud is None:
+                pts, tau = optical_depth(p, q, centre, radius, kappa)
+            else:
+                pts, tau = cloud.tau(p, q, kappa)
             for k in range(len(pts) - 1):
                 c = rgba.copy()
                 c[3] = 0.15 + 0.85*np.exp(-tau[k])

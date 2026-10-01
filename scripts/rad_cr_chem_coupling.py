@@ -24,7 +24,14 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Ellipse, FancyArrowPatch, FancyBboxPatch, Rectangle
 
 from adaptive_rays_3d import draw_ray_tree
+from clumpy_cloud import Cloud
 from diffuse_rays_3d import draw_diffuse_rays
+
+# Two point sources on different sides of the cloud, each with its adaptive ray tree
+# aimed at it: (position, aim, narrow) on a 16^3 grid; the second follows one child
+# at its first two splits, so its cone is a quarter as wide.
+POINT_SOURCES = [((5.0, 6.0, 5.0), (0.8, 0.5, 0.35), 1),
+                 ((14.0, 3.0, 4.5), (-0.47, 0.81, 0.40), 2)]
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 _ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
@@ -57,7 +64,7 @@ LABELS = {
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
         'chem_to_mhd': (r'$n\Gamma - n^2\Lambda$', 19),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 17),
-        'mhd_note': ('turbulence, shocks,\ngravity, SNe', 13),
+        'mhd_note': ('turbulence\nshocks\nself-gravity\nSNe', 16),
     },
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
@@ -77,7 +84,7 @@ LABELS = {
                       r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
-        'mhd_note': ('turbulence, shocks,\nself-gravity, SNe', 12),
+        'mhd_note': ('turbulence\nshocks\nself-gravity\nsupernovae', 14),
         'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
                     r'gas temperature $T$', 10),
     },
@@ -163,27 +170,43 @@ def atom(ax, x, y, r, fc, label=None, lc='white'):
                 fontweight='bold', zorder=4)
 
 
-def draw_molecules(ax, x, y):
-    """H2 being dissociated by a far-ultraviolet photon, C+, CO and an electron."""
-    ax.plot([x - 0.14, x + 0.14], [y, y], color='0.25', lw=2.5, zorder=2)
-    atom(ax, x - 0.14, y, 0.13, 'white', 'H', '0.2')
-    atom(ax, x + 0.14, y, 0.13, 'white', 'H', '0.2')
-    ax.text(x, y - 0.3, r'H$_2$', ha='center', va='top', fontsize=9.5, color=TXT)
+def photon(ax, x, y, label, color):
+    """A wavy photon arriving at (x, y) from the upper left, labelled at its tail."""
     s = np.linspace(0, 1, 200)
-    ax.plot(x - 0.75 + 0.5*s, y + 0.45 - 0.3*s + 0.04*np.sin(2*np.pi*6*s), color='#8E44AD',
-            lw=1.2)
-    ax.annotate('', xy=(x - 0.2, y + 0.12), xytext=(x - 0.27, y + 0.16),
-                arrowprops=dict(arrowstyle='-|>', color='#8E44AD', lw=1.2))
-    ax.text(x - 0.78, y + 0.5, r'$h\nu$', fontsize=9.5, color='#8E44AD', va='bottom')
+    ax.plot(x - 0.5 + 0.36*s, y + 0.22 - 0.16*s + 0.035*np.sin(2*np.pi*5*s),
+            color=color, lw=1.2)
+    ax.annotate('', xy=(x - 0.1, y + 0.04), xytext=(x - 0.16, y + 0.07),
+                arrowprops=dict(arrowstyle='-|>', color=color, lw=1.2))
+    ax.text(x - 0.5, y + 0.25, label, fontsize=11, color=color, ha='center',
+            va='bottom')
 
-    atom(ax, x + 0.8, y, 0.15, '0.3', r'C$^+$')
-    ax.text(x + 0.8, y - 0.3, r'C$^+$', ha='center', va='top', fontsize=9.5, color=TXT)
-    ax.plot([x + 1.38, x + 1.62], [y, y], color='0.25', lw=2.5, zorder=2)
-    atom(ax, x + 1.38, y, 0.14, '0.3', 'C')
-    atom(ax, x + 1.62, y, 0.14, '#D55E00', 'O')
-    ax.text(x + 1.5, y - 0.3, 'CO', ha='center', va='top', fontsize=9.5, color=TXT)
-    atom(ax, x + 1.12, y + 0.5, 0.06, COL_CR)
-    ax.text(x + 1.22, y + 0.5, r'e$^-$', fontsize=9.5, va='center', color=TXT)
+
+def electron(ax, x, y):
+    """An electron leaving (x, y) toward the upper right."""
+    ax.annotate('', xy=(x + 0.27, y + 0.2), xytext=(x + 0.1, y + 0.07),
+                arrowprops=dict(arrowstyle='-|>', color=COL_CR, lw=1.0))
+    atom(ax, x + 0.31, y + 0.23, 0.05, COL_CR)
+    ax.text(x + 0.39, y + 0.25, r'e$^-$', fontsize=9, va='center', color=TXT)
+
+
+def draw_molecules(ax, x, y):
+    """Top row: a Lyman-continuum photon ionizing H, and a far-ultraviolet photon
+    ejecting a photoelectron from a grain.  Bottom row: H2, C+ and CO."""
+    yt, yb = y + 0.2, y - 0.33
+    photon(ax, x, yt, 'LyC', '#8E44AD')
+    atom(ax, x, yt, 0.13, 'white', r'H$^+$', '0.2')
+    electron(ax, x, yt)
+    photon(ax, x + 1.25, yt, 'FUV', '#D55E00')
+    atom(ax, x + 1.25, yt, 0.15, '#A0785A', 'gr')
+    electron(ax, x + 1.25, yt)
+
+    ax.plot([x - 0.04, x + 0.24], [yb, yb], color='0.25', lw=2.5, zorder=2)
+    atom(ax, x - 0.04, yb, 0.13, 'white', 'H', '0.2')
+    atom(ax, x + 0.24, yb, 0.13, 'white', 'H', '0.2')
+    atom(ax, x + 0.75, yb, 0.15, '0.3', r'C$^+$')
+    ax.plot([x + 1.18, x + 1.42], [yb, yb], color='0.25', lw=2.5, zorder=2)
+    atom(ax, x + 1.18, yb, 0.14, '0.3', 'C')
+    atom(ax, x + 1.42, yb, 0.14, '#D55E00', 'O')
 
 
 def main():
@@ -219,27 +242,34 @@ def main():
     else:
         fig.canvas.draw()
         to_fig = ax.transData + fig.transFigure.inverted()
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3 + orad, 5.75), (2.85 + orad, 8.45)])
+        (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3 + orad, 5.95), (2.85 + orad, 8.6)])
         inset = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset.set_facecolor('none')
-        draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.8)
+        draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.3, sources=POINT_SOURCES,
+                      cloud=Cloud(16.0, (10.0, 10.0, 8.0), 3.8), kappa=0.25)
     s, fs = LABELS['point']
-    ax.text(1.55 + orad, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT,
+    ax.text(1.55 + orad, 5.95, s, ha='center', va='top', fontsize=fs, color=TXT,
             linespacing=1.25)
     if MODE == '3d2':
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95 + orad, 5.75),
-                                                   (5.45 + orad, 8.45)])
+        (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95 + orad, 5.95),
+                                                   (5.45 + orad, 8.6)])
         inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset2.set_facecolor('none')
-        draw_diffuse_rays(inset2, lw=0.45, zoom=1.05)
+        draw_diffuse_rays(inset2, lw=0.45, zoom=1.05,
+                          cloud=Cloud(8.0, (4.0, 4.0, 4.0), 2.6, seed=7))
     else:
         draw_diffuse(ax, 4.28 + orad, 6.9, 1.5, 1.25)
     s, fs = LABELS['diffuse']
-    ax.text(4.28 + orad, 5.75, s, ha='center', va='top', fontsize=fs, color=TXT,
+    ax.text(4.28 + orad, 5.95, s, ha='center', va='top', fontsize=fs, color=TXT,
             linespacing=1.25)
-    ax.text(2.92 + orad, 4.62, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu + \eta_\nu$'
-            r'$,\qquad J_\nu = \frac{1}{4\pi}\oint I_\nu\,d\Omega$', ha='center',
-            va='bottom', fontsize=15, color='0.1')
+    # the transfer equation, then the energy density (inverse-Compton losses) and the
+    # flux (radiation force) that the other boxes take from it
+    ax.text(2.92 + orad, 5.08, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
+            r' + \eta_\nu$', ha='center', va='center', fontsize=15, color='0.1')
+    ax.text(2.92 + orad, 4.62, r'$\mathcal{E}_{\rm rad} = \dfrac{1}{c}\int\!\oint I_\nu'
+            r'\,d\Omega\,d\nu,\quad \mathbf{F}_{\rm rad} = \int\!\oint I_\nu\,'
+            r'\hat{\mathbf{n}}\,d\Omega\,d\nu$', ha='center', va='center', fontsize=14,
+            color='0.1')
 
     # cosmic-ray transport: the two-moment equations of Armillotta et al. (2021,
     # Eqs. 1, 2 and 4), with the isotropic pressure P_c = e_c/3 that turns the bracket
@@ -291,7 +321,7 @@ def main():
     # photochemistry
     box(ax, 2.9 + xm, 0.75, 9.1 + xm, 2.55, COL_CHEM, 'Photochemistry and thermal balance')
     dy = 0.17 if PAPER else 0.0   # room for the species line below
-    draw_molecules(ax, 3.75 + xm, 1.45 + dy)
+    draw_molecules(ax, 3.6 + xm, 1.45 + dy)
     ax.text(5.6 + xm, 1.6 + dy, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
             va='center', fontsize=15, color='0.1')
     ax.text(7.35 + xm, 1.6 + dy, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
@@ -300,37 +330,30 @@ def main():
     if s:
         ax.text(6.0 + xm, 0.95, s, ha='center', va='center', fontsize=fs, color=TXT)
 
-    # radiation <-> chemistry; the two labels sit at different heights so that the
-    # one beside each inner arrow does not run into the other. With --mhd the arrows
-    # run along the inner edge of the chemistry box and both labels go outside.
+    # radiation <-> chemistry: each label sits on the side of its own arrow, the
+    # downward one inside and the upward one outside, at different heights so that
+    # neither runs into the other.
     xr = 5.3 if SIM else 4.65   # radiation -> chemistry; chemistry -> radiation 0.35 left
     arrow(ax, (mx(xr), 4.38), (mx(xr), 2.57), COL_RAD)
     arrow(ax, (mx(xr - 0.35), 2.57), (mx(xr - 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['rad_to_chem']
-    if SIM:
-        ax.text(mx(xr - 0.55), 3.85, s, ha=hflip('right'), va='center', fontsize=fs,
-                color=COL_RAD, linespacing=1.25)
-    else:
-        ax.text(mx(4.85), 3.78 if PAPER else 3.85, s, ha=hflip('left'), va='center',
-                fontsize=fs, color=COL_RAD, linespacing=1.25)
+    ax.text(mx(xr + 0.2), 3.78 if PAPER else 3.85, s, ha=hflip('left'), va='center',
+            fontsize=fs, color=COL_RAD, linespacing=1.25)
     s, fs = LABELS['chem_to_rad']
-    ax.text(mx(xr - 0.55), 2.95 if SIM else 3.5, s, ha=hflip('right'), va='center',
-            fontsize=fs, color=COL_CHEM, linespacing=1.25)
+    ax.text(mx(xr - 0.55), 3.5, s, ha=hflip('right'), va='center', fontsize=fs,
+            color=COL_CHEM, linespacing=1.25)
 
-    # cosmic rays <-> chemistry
+    # cosmic rays <-> chemistry; with --mhd the cosmic-ray label goes higher, above
+    # the label of the chemistry -> gas arrow.
     xq = 10.4 if SIM else 7.35   # cosmic rays -> chemistry; chemistry -> CR 0.35 right
     arrow(ax, (mx(xq), 4.38), (mx(xq), 2.57), COL_CR)
     arrow(ax, (mx(xq + 0.35), 2.57), (mx(xq + 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['cr_to_chem']
-    if SIM:
-        ax.text(mx(xq + 0.55), 3.85, s, ha=hflip('left'), va='center', fontsize=fs,
-                color=COL_CR, linespacing=1.25)
-    else:
-        ax.text(mx(7.15), 2.88 if PAPER else 3.0, s, ha=hflip('right'), va='center',
-                fontsize=fs, color=COL_CR, linespacing=1.25)
+    ax.text(mx(xq - 0.2), 3.85 if SIM else (2.88 if PAPER else 3.0), s,
+            ha=hflip('right'), va='center', fontsize=fs, color=COL_CR, linespacing=1.25)
     s, fs = LABELS['chem_to_cr']
-    ax.text(mx(xq + 0.55), 2.95 if SIM else 3.5, s, ha=hflip('left'), va='center',
-            fontsize=fs, color=COL_CHEM, linespacing=1.25)
+    ax.text(mx(xq + 0.55), 3.5, s, ha=hflip('left'), va='center', fontsize=fs,
+            color=COL_CHEM, linespacing=1.25)
 
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
     # from the chemistry act on the gas, which moves, compresses and carries B.
@@ -339,10 +362,10 @@ def main():
         xg = 0.5*(x0 + x1)
         box(ax, x0, 4.4, x1, 7.45, COL_MHD, 'Gas dynamics')
         s, fs = LABELS['mhd_body']
-        ax.text(xg, 6.55, s, ha='center', va='center', fontsize=fs, color='0.1')
+        ax.text(xg, 6.6, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
-        ax.text(xg, 5.0, s, ha='center', va='center', fontsize=fs, color=TXT,
-                linespacing=1.2)
+        ax.text(xg, 5.25, s, ha='center', va='center', fontsize=fs, color=TXT,
+                linespacing=1.3)
         y_f = 5.75
         arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)
         arrow(ax, (mx(6.48 + xc), y_f), (mx(x1 + 0.02), y_f), COL_CR)
@@ -354,8 +377,8 @@ def main():
         ax.text(mx(0.5*(x1 + 6.5 + xc)), y_f + 0.12, s, ha='center', va='bottom',
                 fontsize=fs, color=COL_CR, linespacing=1.15)
         s, fs = LABELS['chem_to_mhd']
-        ax.text(xg + 0.15, 3.45, s, ha='left', va='center', fontsize=fs, color=COL_CHEM,
-                linespacing=1.15)
+        ax.text(mx(xg + 0.15), 3.0, s, ha=hflip('left'), va='center', fontsize=fs,
+                color=COL_CHEM, linespacing=1.15)
 
     os.makedirs(OUT, exist_ok=True)
     for ext in ('png', 'pdf'):

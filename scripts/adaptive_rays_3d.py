@@ -18,6 +18,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 OUT = os.path.expanduser('~/Dropbox/Research/Rayt-Method/figures/photchem-postproc')
 COPY = os.path.expanduser('~/Documents/photchem-postproc')
@@ -56,8 +57,14 @@ def ray_tree(ncell=16, f=1.0, src=(5.0, 6.0, 5.0), narrow=1, aim=(0.8, 0.5, 0.35
 
 
 def draw_ray_tree(ax, ncell=16, f=1.0, lw=0.7, grid=True, cmap='plasma', zoom=1.0,
-                  ms=1.5, narrow=1):
-    """Draw the grid's edges and the ray tree on a 3D axes."""
+                  ms=1.5, narrow=1, sources=None, cloud=None, kappa=0.5):
+    """Draw the grid's edges and the ray tree on a 3D axes.  `sources` is a list of
+    (position, aim) pairs, one tree each; with `cloud` (a clumpy_cloud.Cloud on the
+    ncell^3 box) the cloud is drawn and each ray fades with the optical depth it has
+    crossed since leaving its source."""
+    if sources is not None or cloud is not None:
+        return draw_ray_forest(ax, ncell, f, lw, grid, cmap, zoom, ms, narrow,
+                               sources, cloud, kappa)
     segs, splits = ray_tree(ncell, f, narrow=narrow)
     lmax = max(s[2] for s in segs)
     src = segs[0][0] if segs[0][2] == 0 else np.full(3, 0.5*ncell)
@@ -84,6 +91,67 @@ def draw_ray_tree(ax, ncell=16, f=1.0, lw=0.7, grid=True, cmap='plasma', zoom=1.
         ax.scatter(*p, color=col[lev], s=ms, depthshade=False)
     ax.scatter(*src, marker='*', s=160, color='#FFD23F', edgecolor='#C77800',
                depthshade=False, zorder=10)
+    ax.set_xlim(0, n)
+    ax.set_ylim(0, n)
+    ax.set_zlim(0, n)
+    ax.set_box_aspect((1, 1, 1), zoom=zoom)
+    ax.view_init(elev=20, azim=-60)
+    ax.set_axis_off()
+    return col
+
+
+def draw_box(ax, n, grid):
+    for a in (0, n):
+        for b in (0, n):
+            ax.plot([0, n], [a, a], [b, b], color='0.55', lw=0.6)
+            ax.plot([a, a], [0, n], [b, b], color='0.55', lw=0.6)
+            ax.plot([a, a], [b, b], [0, n], color='0.55', lw=0.6)
+    if grid:
+        for c in np.arange(2, n, 2):
+            ax.plot([c, c], [n, n], [0, n], color='0.85', lw=0.4)
+            ax.plot([0, n], [n, n], [c, c], color='0.85', lw=0.4)
+            ax.plot([0, 0], [c, c], [0, n], color='0.85', lw=0.4)
+            ax.plot([0, 0], [0, n], [c, c], color='0.85', lw=0.4)
+            ax.plot([c, c], [0, n], [0, 0], color='0.85', lw=0.4)
+            ax.plot([0, n], [c, c], [0, 0], color='0.85', lw=0.4)
+
+
+def draw_ray_forest(ax, ncell, f, lw, grid, cmap, zoom, ms, narrow, sources, cloud,
+                    kappa, nsub=10):
+    """Several ray trees, optionally through a cloud; see draw_ray_tree."""
+    if sources is None:
+        sources = [((5.0, 6.0, 5.0), (0.8, 0.5, 0.35))]
+    n = ncell
+    draw_box(ax, n, grid)
+    if cloud is not None:
+        cloud.draw(ax)
+    # a source may carry its own `narrow` as a third element
+    trees = [(np.asarray(sa[0], dtype=float),)
+             + ray_tree(n, f, sa[0], sa[2] if len(sa) > 2 else narrow, sa[1])
+             for sa in sources]
+    lmax = max(sg[2] for _, segs, _ in trees for sg in segs)
+    cm = plt.get_cmap(cmap)
+    col = [np.array(cm(0.1 + 0.75*lev/lmax)) for lev in range(lmax + 1)]
+    lines, colors = [], []
+    for src, segs, splits in trees:
+        for p, q, lev in segs:
+            if cloud is None:
+                lines.append([p, q])
+                colors.append(col[lev])
+                continue
+            tau0 = cloud.tau(src, p, kappa, nseg=20)[1][-1]
+            pts, tau = cloud.tau(p, q, kappa, nseg=nsub)
+            for k in range(nsub):
+                c = col[lev].copy()
+                c[3] = 0.12 + 0.88*np.exp(-(tau0 + tau[k]))
+                lines.append([pts[k], pts[k + 1]])
+                colors.append(c)
+        for p, lev in splits:
+            ax.scatter(*p, color=col[lev], s=ms, depthshade=False)
+    ax.add_collection3d(Line3DCollection(lines, colors=colors, linewidths=lw))
+    for src, _, _ in trees:
+        ax.scatter(*src, marker='*', s=160, color='#FFD23F', edgecolor='#C77800',
+                   depthshade=False, zorder=10)
     ax.set_xlim(0, n)
     ax.set_ylim(0, n)
     ax.set_zlim(0, n)
