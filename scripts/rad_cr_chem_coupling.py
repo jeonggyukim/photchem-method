@@ -54,6 +54,7 @@ LABELS = {
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
         'chem_to_mhd': (r'$n\Gamma - n^2\Lambda$', 19),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 17),
+        'mhd_note': ('turbulence, shocks,\ngravity, SNe', 13),
     },
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
@@ -73,6 +74,7 @@ LABELS = {
                       r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
+        'mhd_note': ('turbulence, shocks,\nself-gravity, SNe', 12),
         'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
                     r'gas temperature $T$', 10),
     },
@@ -303,11 +305,13 @@ def main():
             color=COL_CHEM, linespacing=1.25)
 
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
-    # from the chemistry act on the gas; rho, v, B go back to every module.
+    # from the chemistry act on the gas, which moves, compresses and carries B.
     if SIM:
-        box(ax, 4.9, 1.75, 7.1, 3.25, COL_MHD, 'MHD')
+        box(ax, 4.9, 1.75, 7.1, 3.25, COL_MHD, 'Gas dynamics')
         s, fs = LABELS['mhd_body']
-        ax.text(6.0, 2.35, s, ha='center', va='center', fontsize=fs, color='0.1',
+        ax.text(6.0, 2.68, s, ha='center', va='center', fontsize=fs, color='0.1')
+        s, fs = LABELS['mhd_note']
+        ax.text(6.0, 2.17, s, ha='center', va='center', fontsize=fs, color=TXT,
                 linespacing=1.2)
         arrow(ax, (5.2, 4.38), (5.2, 3.27), COL_RAD)
         arrow(ax, (6.8, 4.38), (6.8, 3.27), COL_CR)
