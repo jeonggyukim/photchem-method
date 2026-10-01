@@ -69,7 +69,7 @@ LABELS = {
         'chem_to_rad': (r'$\chi_\nu$, $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 19),
         'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
                        r'$\Gamma_{\rm st}$', 19),
-        'chem_to_cr': (r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
+        'chem_to_cr': (r'$\rho_{\rm i},\ \rho_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 19),
         'species': ('', 10),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 18),
@@ -92,8 +92,8 @@ LABELS = {
         'cr_to_chem': ('ionization, heating\n'
                        r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
                        r'$\Gamma_{\rm st}$', 14.5),
-        'chem_to_cr': ('ion and neutral fractions, $T$\n$\\rightarrow$ wave damping\n'
-                       r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
+        'chem_to_cr': ('ion and neutral densities, $T$\n$\\rightarrow$ wave damping\n'
+                       r'$\rho_{\rm i},\ \rho_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 14.5),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 15.5),
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
@@ -243,7 +243,7 @@ def draw_cr_loop(ax, x0, y):
     nodes = {'grad': (x0 + 0.75, y, r'$\nabla P_{\rm c}$'),
              'wave': (x0 + 2.6, y, r'waves $\delta\mathbf{B}$'),
              'scat': (x0 + 4.45, y, r'$\sigma_\parallel$'),
-             'damp': (x0 + 2.6, y - 0.5, 'wave damping: ion–neutral, nonlinear Landau')}
+             'damp': (x0 + 2.6, y - 0.6, 'wave damping: ion–neutral, nonlinear Landau')}
     texts = {}
     for key, (xn, yn, s) in nodes.items():
         texts[key] = ax.text(xn, yn, s, ha='center', va='center', fontsize=13,
@@ -260,18 +260,23 @@ def draw_cr_loop(ax, x0, y):
         bb = texts[key].get_bbox_patch().get_window_extent()
         return inv.transform((bb.x0, bb.y0))[0], inv.transform((bb.x1, bb.y1))[0]
 
-    def link(a, b, text, rad=0.0, dy=0.13, col=COL_CR):
-        (xa_, ya_, _), (xb_, yb_, _) = nodes[a], nodes[b]
+    def link(a, b, text, rad=0.0, dy=0.13, col=COL_CR, xt=None, ha='center'):
+        ya_, yb_ = nodes[a][1], nodes[b][1]
         gap = 0.06
         ax.add_patch(FancyArrowPatch((edges(a)[1] + gap, ya_), (edges(b)[0] - gap, yb_),
                                      shrinkA=0, shrinkB=0,
                                      arrowstyle='-|>,head_length=6,head_width=3.5',
                                      connectionstyle='arc3,rad=%g' % rad, color=col,
                                      lw=1.6, zorder=3))
-        ax.text(0.5*(xa_ + xb_), 0.5*(ya_ + yb_) + dy, text, ha='center',
-                va='bottom' if dy > 0 else 'top', fontsize=10.5, color=col)
-    link('grad', 'wave', r'streaming, $v_{\rm D}>v_{\rm A,i}$', dy=-0.12)
-    link('wave', 'scat', 'scattering', dy=-0.12)
+        if xt is None:
+            xt = 0.5*(edges(a)[1] + edges(b)[0])
+        ax.text(xt, 0.5*(ya_ + yb_) + dy, text, ha=ha,
+                va='bottom' if dy > 0 else 'top', fontsize=10.5, color=col,
+                linespacing=1.1)
+    # the streaming label ends left of the damping arrow, which rises at x0 + 2.6
+    link('grad', 'wave', r'streaming instability (if $v_{\rm D}>v_{\rm A,i}$)', dy=-0.19,
+         xt=x0 + 2.5, ha='right')
+    link('wave', 'scat', 'scattering', dy=-0.19)
     ax.add_patch(FancyArrowPatch((x0 + 4.45, y + 0.2), (x0 + 0.75, y + 0.2),
                                  shrinkA=2, shrinkB=2,
                                  arrowstyle='-|>,head_length=6,head_width=3.5',
@@ -280,7 +285,7 @@ def draw_cr_loop(ax, x0, y):
     ax.text(x0 + 2.6, y + 0.35, r'limits $v_{\rm D}\rightarrow v_{\rm A,i}$', ha='center',
             va='center', fontsize=10.5, color='0.4', zorder=4,
             bbox=dict(boxstyle='square,pad=0.1', fc='#E5EFF7', ec='none'))
-    ax.add_patch(FancyArrowPatch((x0 + 2.6, y - 0.36), (x0 + 2.6, y - 0.16),
+    ax.add_patch(FancyArrowPatch((x0 + 2.6, y - 0.45), (x0 + 2.6, y - 0.16),
                                  arrowstyle='-[,widthB=0.6,lengthB=0.2', color='#D55E00',
                                  lw=1.6, zorder=3))
 
@@ -397,11 +402,11 @@ def main():
             linespacing=1.25)
     # the transfer equation, then the energy density (inverse-Compton losses) and the
     # flux (radiation force) that the other boxes take from it
-    ax.text(2.92 + orad, 5.25, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
-            r' + \eta_\nu$', ha='center', va='center', fontsize=15, color='0.1')
-    ax.text(2.92 + orad, 4.8, r'$\mathcal{E}_\nu = \dfrac{1}{c}\oint I_\nu\,d\Omega,'
-            r'\quad \mathbf{F}_\nu = \oint I_\nu\,\hat{\mathbf{n}}\,d\Omega$', ha='center',
-            va='center', fontsize=15, color='0.1')
+    ax.text(2.92 + orad, 5.27, r'$\mathbf{\hat{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
+            r' + \eta_\nu$', ha='center', va='center', fontsize=17, color='0.1')
+    ax.text(2.92 + orad, 4.78, r'$\mathcal{E}_\nu = \dfrac{1}{c}\oint I_\nu\,d\Omega,'
+            r'\quad \mathbf{F}_\nu = \oint I_\nu\,\mathbf{\hat{n}}\,d\Omega$', ha='center',
+            va='center', fontsize=17, color='0.1')
 
     # cosmic-ray transport: the two-moment equations of Armillotta et al. (2021,
     # Eqs. 1, 2 and 4), with the isotropic pressure P_c = e_c/3 that turns the bracket
@@ -445,10 +450,10 @@ def main():
         r'[\mathbf{F}_{\rm c} - \frac{4}{3}\mathbf{v}e_{\rm c}],\ \ '
         r'\sigma_{\rm tot}^{-1} = \sigma_{\parallel}^{-1} + '
         r'\dfrac{v_{\rm A,i}\,(P_{\rm c} + e_{\rm c})}'
-        r'{|\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|}$',
-        r'$\sigma_{\parallel,\rm NLL} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|^{1/2}'
+        r'{|\mathbf{\hat{B}}\cdot\nabla P_{\rm c}|}$',
+        r'$\sigma_{\parallel,\rm NLL} \propto |\mathbf{\hat{B}}\cdot\nabla P_{\rm c}|^{1/2}'
         r'\,T^{-1/4}\,n_{\rm i}^{-1/4},\ \ '
-        r'\sigma_{\parallel,\rm IN} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|'
+        r'\sigma_{\parallel,\rm IN} \propto |\mathbf{\hat{B}}\cdot\nabla P_{\rm c}|'
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
     # picture B reaches lower, so the equations start lower and sit closer
@@ -512,7 +517,7 @@ def main():
         s, fs = LABELS['mhd_body']
         ax.text(xg, 6.5, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
-        ax.text(xg, 5.4, s, ha='center', va='center', fontsize=fs, color=TXT,
+        ax.text(xg, 5.58, s, ha='center', va='center', fontsize=fs, color=TXT,
                 linespacing=1.25)
         y_f = 5.75
         arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)

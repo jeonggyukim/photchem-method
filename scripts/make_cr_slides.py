@@ -316,7 +316,8 @@ only, hence dashed.
 
 Cosmic rays -> chemistry: ionization ξ_cr ∝ e_c, ionization heating Γ_cr, and
 streaming heating Γ_st.
-Chemistry -> cosmic rays: x_i, x_n and T set σ_∥ (through wave damping) and v_A,i.
+Chemistry -> cosmic rays: the ion and neutral densities ρ_i, ρ_n and T set σ_∥ (through
+wave growth and damping) and v_A,i = B/√(4πρ_i).
 
 Gas dynamics: star formation, gravity, galactic shear, stellar feedback. It takes the
 radiation force f_rad, the CR force G and the net heating nΓ − n²Λ, and supplies ρ, v,
@@ -412,8 +413,14 @@ Ions: n_i^−1/2 comes from 1/n_i (growth: fewer ions to push, faster growth, mo
 scattering) times 1/v_A,i ∝ n_i^1/2 (drive: larger v_A,i, smaller drift excess). At fixed
 n_H, σ_∥,IN ∝ x_i^−1/2 n_H^−3/2: lower ionization means slower diffusion but faster
 streaming (v_A,i ∝ x_i^−1/2). The ion fraction from the chemistry enters three times: wave
-growth, wave speed, and damping through n_n — hence x_i, x_n, T on the chemistry ->
+growth, wave speed, and damping through n_n — hence ρ_i, ρ_n, T on the chemistry ->
 CR arrow.
+
+Direction of the instability: the pressure gradient pushes the drift v_D up; the
+streaming instability grows only when v_D > v_A,i, and it brings v_D back down — the
+resonant CRs give momentum to the waves, the waves scatter them toward isotropy in the
+wave frame, and the drive vanishes at v_D = v_A,i. Hence "(if v_D > v_A,i)" on the arrow:
+the condition for growth, not its effect.
 
 The damping heats the gas: the energy CRs lose to the waves is the streaming heating
 v_s·G. σ_∥ enters σ_tot, which sets G.
