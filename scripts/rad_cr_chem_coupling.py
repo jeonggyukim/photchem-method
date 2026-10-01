@@ -448,12 +448,12 @@ def main():
         r'\dfrac{v_{\rm A,i}\,(P_{\rm c} + e_{\rm c})}'
         r'{|\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|}$',
         r'$\sigma_{\parallel,\rm NLL} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|^{1/2}'
-        r'\,T^{-1/4}\,n_{\rm i}^{-1/4}$',
-        r'$\sigma_{\parallel,\rm IN} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|'
+        r'\,T^{-1/4}\,n_{\rm i}^{-1/4},\ \ '
+        r'\sigma_{\parallel,\rm IN} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|'
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
     # pictures B and C reach lower, so the equations start lower and sit closer
-    y_eq, dy_eq = (6.95, 0.48) if CRPIC in ('B', 'C') else (7.2, 0.52)
+    y_eq, dy_eq = (6.95, 0.53) if CRPIC in ('B', 'C') else (7.2, 0.58)
     for k, s in enumerate(cr_eq):
         ax.text(9.125 + ocr, y_eq - dy_eq*k, s, ha='center', va='center', fontsize=13,
                 color='0.1')
