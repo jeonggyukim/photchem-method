@@ -259,7 +259,7 @@ Radiation transfer. Point sources use adaptive rays that split as they spread
 the external background and scattering. Both cross the same clumpy cloud here, and each
 ray fades with the optical depth it has crossed. From the specific intensity we take
 the spectral energy density E_ν = (1/c) ∮ I_ν dΩ and flux F_ν = ∮ I_ν n̂ dΩ. Band
-integrals of E_ν feed the chemistry, E_rad = ∫ E_ν dν the inverse-Compton losses, and
+integrals of E_ν feed the chemistry, the spectrum E_ν sets the inverse-Compton losses, and
 f_rad = (1/c) ∫ χ_ν F_ν dν the radiation force on the gas.
 
 Radiation -> chemistry: band energy densities E_LyC, E_FUV and the shielded
@@ -308,8 +308,10 @@ Cosmic-ray transport: the two-moment equations of Armillotta et al. (2021).
 - ∇P_c is a gradient of a scalar: the tensor form ∇·P_c reduces to ∇P_c for
   isotropic pressure P_c = e_c/3.
 
-Radiation -> cosmic rays (dashed): inverse-Compton losses of CR electrons need E_rad
-(Linzer et al. 2025). The power is P = (4/3) σ_T c γ² U_rad. At fixed energy σ_T ∝ m⁻²
+Radiation -> cosmic rays (dashed): inverse-Compton losses of CR electrons need the
+radiation spectrum E_ν (Linzer et al. 2025): in the Thomson limit only the total
+U_rad = ∫ E_ν dν matters, but at high electron energy the Klein–Nishina suppression
+depends on photon energy. In the Thomson limit the power is P = (4/3) σ_T c γ² U_rad. At fixed energy σ_T ∝ m⁻²
 and γ² ∝ m⁻², so P ∝ m⁻⁴: a proton loses (1836)⁴ ≈ 10¹³ times less than an electron. A
 1 GeV electron in 1 eV cm⁻³ loses its energy in ≈ 3×10⁸ yr. TIGRESS transports protons
 only, hence dashed.

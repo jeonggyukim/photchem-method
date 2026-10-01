@@ -72,7 +72,7 @@ LABELS = {
         'chem_to_cr': (r'$\rho_{\rm i},\ \rho_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 19),
         'species': ('', 10),
-        'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 18),
+        'rad_to_cr': (r'$\mathcal{E}_\nu$', 18),
         'rad_to_cr_note': ('inverse\nCompton\n(CR e$^-$)', 14),
         'rad_to_mhd': (r'$\mathbf{f}_{\rm rad}$', 19),
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
@@ -95,7 +95,7 @@ LABELS = {
         'chem_to_cr': ('ion and neutral densities, $T$\n$\\rightarrow$ wave damping\n'
                        r'$\rho_{\rm i},\ \rho_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 14.5),
-        'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 15.5),
+        'rad_to_cr': (r'$\mathcal{E}_\nu$', 15.5),
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
         'rad_to_mhd': ('radiation\npressure\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
         'cr_to_mhd': ('CR\npressure\n' r'$\mathbf{G}$', 14.5),
