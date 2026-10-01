@@ -72,7 +72,7 @@ LABELS = {
         'cr_to_mhd': ('force,\nheating\n'
                       r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
-        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$' '\n' r'to all modules', 13),
+        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
         'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
                     r'gas temperature $T$', 10),
     },
