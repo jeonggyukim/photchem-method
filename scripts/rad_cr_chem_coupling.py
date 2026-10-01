@@ -53,7 +53,8 @@ LABELS = {
     'talk': {
         'point': ('point sources', 15),
         'diffuse': ('diffuse field', 15),
-        'rad_to_chem': (r'$J_{\rm LyC}$, $\tilde{J}_{\rm LW}$, $J_{\rm PE}$', 19),
+        'rad_to_chem': (r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
+                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 19),
         'chem_to_rad': (r'$\chi_\nu$, $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 19),
         'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 19),
         'chem_to_cr': (r'$x_{\rm i}\ \rightarrow\ \sigma_{\parallel},\ v_{\rm A,i}$', 19),
@@ -70,7 +71,8 @@ LABELS = {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
         'diffuse': ('diffuse field: parallel rays,\nexternal background, scattering', 10.5),
         'rad_to_chem': ('photoionization,\nphotodissociation,\nPE heating\n'
-                        r'$J_{\rm LyC}$, $\tilde{J}_{\rm LW}$, $J_{\rm PE}$', 14.5),
+                        r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
+                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 14.5),
         'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
                         r'shielding $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
