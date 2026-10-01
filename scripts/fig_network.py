@@ -3,13 +3,15 @@
 
     core        GOW17 core only (the AthenaK diagram of plot_gow17_network.py)
     greycore    full Tigris network, additions in colour, GOW17 core in grey
-    2panel      (a) core + ionized-gas additions, (b) ion ladders and hot gas
+    2panel      (a) core + ionized-gas additions, (b) ion ladders
     colour      full Tigris network in full colour, additions highlighted
 
 and a contact sheet of the four. The core reactions and their layout are copied
 from athenak-chem/scripts/plot_gow17_network.py. Every Tigris arrow cites the
-code in tigris-gow17/src/photchem/network/gow17_network.hpp (GOW17_ION_SET == 2,
-configure --gow17_ions=O2,S3).
+code in tigris-rayt/src/photchem/network/gow17_network.hpp (branch
+rayt-photchem-updates, configure -gow17 --photchem_ions=O3,S3,N3: O, S and N
+tracked to O III, S III, N III, plus one higher-ion species per element for
+C, Si, O, S and N; gow17_core.hpp:25-31).
 
 Usage:
     fig_network.py [--outdir ../figures]
@@ -51,7 +53,7 @@ STYLE = {
 }
 LEGEND = {
     "cr": "cosmic-ray ionization",
-    "crphoto": "CR-induced photodissociation",
+    "crphoto": "CR-induced UV photoreaction",
     "uv": "FUV photoreaction",
     "euv": "ionizing-band photoionization (eV)",
     "grain": "grain-assisted",
@@ -65,20 +67,30 @@ LEGEND = {
 TEX = {"He+": "He$^+$", "H2": "H$_2$", "H+": "H$^+$", "H2+": "H$_2^+$",
        "H3+": "H$_3^+$", "C+": "C$^+$", "CHx": "CH$_x$", "HCO+": "HCO$^+$",
        "OHx": "OH$_x$", "O+": "O$^+$", "Si+": "Si$^+$", "O2+": "O$^{2+}$",
-       "S+": "S$^+$", "S2+": "S$^{2+}$", "S3+": "S$^{3+}$",
-       "N": "N", "N+": "N$^+$", "N2+": "N$^{2+}$",
-       "Ne": "Ne", "Ne+": "Ne$^+$", "Ne2+": "Ne$^{2+}$"}
-GHOSTS = {"H", "He", "C", "O", "Si", "S", "N", "Ne"}
+       "S+": "S$^+$", "S2+": "S$^{2+}$", "N": "N", "N+": "N$^+$", "N2+": "N$^{2+}$",
+       "C_high": r"C$^{\geq 2+}$", "Si_high": r"Si$^{\geq 2+}$",
+       "O_high": r"O$^{\geq 3+}$", "S_high": r"S$^{\geq 3+}$",
+       "N_high": r"N$^{\geq 3+}$"}
+GHOSTS = {"H", "He", "C", "O", "Si", "S", "N"}
 MOLECULES = {"H2", "CHx", "OHx", "CO"}
 LIMITERS = {"H2", "CO"}
-NEW_SPECIES = {"S", "S+", "S2+", "S3+", "O2+"}
-PLANNED = {"N", "N+", "N2+", "Ne", "Ne+", "Ne2+"}
+# gow17_core.hpp:25-31 (Species enum under PHOTCHEM_IONS); S and N are ghosts
+# (GhostSpecies, gow17_network.hpp:318-319).
+NEW_SPECIES = {"S", "S+", "S2+", "S_high", "O2+", "O_high", "N", "N+", "N2+",
+               "N_high", "C_high", "Si_high"}
+# Elements that a ladder could be written for but that have no species or rates.
+OPTIONAL = ["Ne", "Mg", "Fe"]
 # Block Gauss-Seidel order (OrderedGaussSeidelUpdate, default placement of H2 last;
 # CO and HCO+ are one 2x2 block, numbered in that order).
 GS_CORE = ["He+", "Si+", "H2+", "H3+", "H+", "O+", "C+", "CHx", "OHx", "CO",
            "HCO+", "H2"]
-GS_TIGRIS = ["He+", "Si+", "S+", "S2+", "S3+", "H2+", "H3+", "H+", "O+", "O2+",
-             "C+", "CHx", "OHx", "CO", "HCO+", "H2"]
+# gow17_network.hpp:1834-1849 with the defaults semi_implicit_hep_first = true and
+# h2_first = false: step_si (Si+, Si_high), step_sn (S+, S++, S_high, N+, N++,
+# N_high), step_h2p, step_h3p, step_hp, step_o (O+, O++, O_high), step_c (C+,
+# C_high), step_chx, step_ohx, step_co, step_h2.
+GS_TIGRIS = ["He+", "Si+", "Si_high", "S+", "S2+", "S_high", "N+", "N2+", "N_high",
+             "H2+", "H3+", "H+", "O+", "O2+", "O_high", "C+", "C_high", "CHx", "OHx",
+             "CO", "HCO+", "H2"]
 
 POS_CORE = {
     "He": (7.4, 8.0), "He+": (7.4, 5.5),
@@ -90,15 +102,19 @@ POS_CORE = {
     "Si": (-1.8, 8.0), "Si+": (-1.8, 5.5),
 }
 POS_FULL = dict(POS_CORE, **{
-    "S": (-5.0, 8.0), "S+": (-5.0, 5.5), "S2+": (-5.0, 3.0), "S3+": (-5.0, 0.6),
-    "O2+": (7.4, 0.6),
+    "S": (-5.0, 8.0), "S+": (-5.0, 5.5), "S2+": (-5.0, 3.0), "S_high": (-5.0, 0.6),
+    "O2+": (7.4, 0.6), "O_high": (4.2, 0.6),
+    "N": (20.2, 8.0), "N+": (20.2, 5.5), "N2+": (20.2, 3.0), "N_high": (20.2, 0.6),
+    "Si_high": (-1.8, 3.0), "C_high": (11.0, 3.0),
 })
 POS_LADDERS = {
-    "S": (0.0, 2.6), "S+": (3.2, 2.6), "S2+": (6.4, 2.6), "S3+": (9.6, 2.6),
-    "O": (0.0, 0.0), "O+": (3.2, 0.0), "O2+": (6.4, 0.0),
+    "S": (0.0, 2.6), "S+": (3.2, 2.6), "S2+": (6.4, 2.6), "S_high": (9.6, 2.6),
+    "O": (0.0, 0.0), "O+": (3.2, 0.0), "O2+": (6.4, 0.0), "O_high": (9.6, 0.0),
+    "N": (0.0, -2.6), "N+": (3.2, -2.6), "N2+": (6.4, -2.6), "N_high": (9.6, -2.6),
+    "C+": (12.9, 2.6), "C_high": (16.1, 2.6),
+    "Si+": (12.9, 0.0), "Si_high": (16.1, 0.0),
 }
 BOX_W, BOX_H = 1.5, 0.8
-SMALL_W, SMALL_H = 1.05, 0.55
 
 
 def E(src, dst, kind, label="", arc=0.0, t=0.5, new=False, emph=False, off=None,
@@ -143,14 +159,12 @@ CORE_EDGES = [
     E("H2", "H", "coll", "H, H$_2$", 0.0), E("H", "H+", "coll", "e", -0.25),
 ]
 PARTNERS = [("CO", "C+", "He+"), ("OHx", "O+", "He+"), ("CO", "HCO+", "H3+")]
-# (2body 27) H+ + O -> O+ + H and (2body 28) O+ + H -> O + H+ as O <-> O+ steps.
-O_CT = [E("O", "O+", "ct", "", emph=True, off=0.36),
-        E("O+", "O", "ct", "", emph=True, off=-0.36)]
 
 
 def core_edges_tigris():
+    """Core arrows without (2body 27, 28); the O ladder redraws them as O <-> O+."""
     return [e for e in CORE_EDGES
-            if not ((e["src"], e["dst"]) in (("H+", "O+"), ("O+", "H+")))] + O_CT
+            if not ((e["src"], e["dst"]) in (("H+", "O+"), ("O+", "H+")))]
 
 
 # Tigris, ionized gas. gow17_network.hpp: SetLyC xi_ph_hi_ (H+ step "a") and
@@ -162,46 +176,75 @@ ION_GAS = [
     E("He", "He+", "euv", "24.6", 0.55, new=True),
     E("He+", "H+", "ots", "", -0.18, new=True),
 ]
+# C I and Si I gain collisional ionization (ICI) and charge transfer with H+
+# (ICT_ION) in step_c (gow17_network.hpp:1683-1684) and step_si (1437-1438).
+NEUTRAL_CI = [
+    E("C", "C+", "coll", "", 0.1, new=True), E("C", "C+", "ct", "", -0.1, new=True),
+    E("Si", "Si+", "coll", "", 0.12, new=True), E("Si", "Si+", "ct", "", -0.12, new=True),
+]
 
 
-def ladder_step(lo, hi, photo=None, sign=1.0, ct_ion=True, ci=True):
-    """Parallel arrows between charge states lo -> hi (ionization) and hi -> lo.
+def U(kind, label="", new=True, emph=False):
+    return (kind, label, new, emph)
 
-    Offsets are perpendicular to the pair, in units of the box half-extent;
-    sign puts ionization on one side and recombination on the other.
+
+STD_UP = lambda eth: [U("euv", eth), U("coll"), U("ct")]  # noqa: E731
+STD_DOWN = [U("ct"), U("rec")]
+
+
+def ladder_step(lo, hi, ups, downs, sign=1.0):
+    """Parallel arrows lo -> hi (ups, outermost first) and hi -> lo (downs).
+
+    Offsets are perpendicular to the pair, in units of the box half-extent,
+    0.36 apart (0.3 for six); sign puts ionization on one side and
+    recombination on the other.
     """
-    s = sign
+    arrows = [(lo, hi, u) for u in ups] + [(hi, lo, d) for d in downs]
+    n = len(arrows)
+    gap = 0.36 if n <= 5 else 0.3
     out = []
-    if photo:
-        out.append(E(lo, hi, "euv", photo, off=-0.72 * s, new=True))
-    if ci:
-        out.append(E(lo, hi, "coll", "", off=(-0.36 if ct_ion else -0.72) * s,
-                     new=True))
-    if ct_ion:
-        out.append(E(lo, hi, "ct", "", off=0.0, new=True))
-        out.append(E(hi, lo, "ct", "", off=0.36 * s, new=True))
-        out.append(E(hi, lo, "rec", "", off=0.72 * s, new=True))
-    else:
-        out.append(E(hi, lo, "rec", "", off=0.72 * s, new=True))
+    for i, (src, dst, (kind, label, new, emph)) in enumerate(arrows):
+        off = (i - 0.5 * (n - 1)) * gap * sign
+        out.append(E(src, dst, kind, label, new=new, emph=emph, off=off))
     return out
 
 
 def ladder_edges(sign):
-    """The O and S ladders of GOW17_ION_SET == 2 (--gow17_ions=O2,S3).
+    """The ion ladders of --photchem_ions=O3,S3,N3, gow17_network.hpp.
 
-    O -> O+: GOW17 already has the charge transfer (O_CT); the ladder adds
-    ion_k_[kO0][ICI] and ion_k_[kO1][IREC] (O+ step). No O I photoionization:
-    SetIonPhotoRates has no O I rate. O+ -> O++: ion_k_[kO1][ICI, ICT_ION] and
-    xi_ph_oii_; back by ion_k_[kO2][IREC, ICT_REC] (O++ step). S: S+, S++, S3+
-    steps, each stage with ICI, ICT_ION and photoionization up and IREC, ICT_REC
-    down; S3+ has no ionization out.
+    Standard step X^q -> X^{q+1}: ionizing-band photoionization (threshold in eV,
+    verner96_photx.dat), collisional ionization ion_k_[ICI], charge transfer with
+    H+ ion_k_[ICT_ION]; back by charge transfer with H ion_k_[ICT_REC] and
+    radiative recombination ion_k_[IREC]. Into X_high: HighIonization (CI and
+    CT_ION of the top stage, :3120-3124) plus the top stage's photoionization;
+    back: HighReturn (IREC, ICT_REC of the higher-ion table, :3127-3132).
+
+    O -> O+ (step_o, :1620-1645): GOW17 (2body 27, 28) charge transfer, plus
+    ICI of O I and O I by cosmic-ray-induced UV (kcr_o_, :2476); back by IREC of
+    O+. No O I photoionization: SetIonPhotoRates has no O I rate.
+    O+ -> O++ (xi_ph_oii_, 35.1 eV), O++ -> O_high (xi_ph_oiii_, 54.9 eV; :1647-1662).
+    S -> S+ (step_sn, :1460-1471): xi_ph_si_ (10.4 eV, all bands and the ISRF,
+    photchem_gow17.cpp:764), kcr_s_ (:2475), ICI, ICT_ION. S+ -> S++ (xi_ph_sii_,
+    23.3 eV), S++ -> S_high (xi_ph_siii_, 34.8 eV; :1477-1488).
+    N (:1491-1520): xi_ph_ni_ (14.5 eV), xi_ph_nii_ (29.6 eV), xi_ph_niii_
+    (47.4 eV, into N_high).
+    C+ -> C_high (step_c, :1685-1695; xi_ph_cii_, 24.4 eV) and Si+ -> Si_high
+    (step_si, :1439-1450; xi_ph_si_ii_, 16.3 eV).
     """
-    so, ss = sign
-    return (ladder_step("O", "O+", None, so, ct_ion=False)
-            + ladder_step("O+", "O2+", "35.1", so)
-            + ladder_step("S", "S+", "10.4", ss)
-            + ladder_step("S+", "S2+", "23.3", ss)
-            + ladder_step("S2+", "S3+", "34.8", ss))
+    o_up = [U("crphoto"), U("coll"), U("ct", new=False, emph=True)]
+    o_down = [U("ct", new=False, emph=True), U("rec")]
+    s_up = [U("uv", "10.4"), U("crphoto"), U("coll"), U("ct")]
+    return (ladder_step("O", "O+", o_up, o_down, sign["O"])
+            + ladder_step("O+", "O2+", STD_UP("35.1"), STD_DOWN, sign["O"])
+            + ladder_step("O2+", "O_high", STD_UP("54.9"), STD_DOWN, sign["O"])
+            + ladder_step("S", "S+", s_up, STD_DOWN, sign["S"])
+            + ladder_step("S+", "S2+", STD_UP("23.3"), STD_DOWN, sign["S"])
+            + ladder_step("S2+", "S_high", STD_UP("34.8"), STD_DOWN, sign["S"])
+            + ladder_step("N", "N+", STD_UP("14.5"), STD_DOWN, sign["N"])
+            + ladder_step("N+", "N2+", STD_UP("29.6"), STD_DOWN, sign["N"])
+            + ladder_step("N2+", "N_high", STD_UP("47.4"), STD_DOWN, sign["N"])
+            + ladder_step("C+", "C_high", STD_UP("24.4"), STD_DOWN, sign["C"])
+            + ladder_step("Si+", "Si_high", STD_UP("16.3"), STD_DOWN, sign["Si"]))
 
 
 # ---------------------------------------------------------------------------
@@ -219,7 +262,7 @@ SIZE_OVERRIDE = {}
 def box_size(name):
     if name in SIZE_OVERRIDE:
         return SIZE_OVERRIDE[name]
-    return (SMALL_W, SMALL_H) if name in PLANNED else (BOX_W, BOX_H)
+    return (BOX_W, BOX_H)
 
 
 def straight_ends(p, q, ws, wd, off):
@@ -310,7 +353,7 @@ def draw_edges(ax, edges, pos, mode):
         if e["kind"] in ("chem", "coll", "ct"):
             x, y = on_arc(a, b, e["arc"], e["t"])
             text_halo(ax, x, y, e["label"], GREY_TEXT if greyed else st["color"])
-        elif e["kind"] == "euv" and e["off"] is not None:
+        elif e["kind"] in ("euv", "uv") and e["off"] is not None:
             x, y = on_arc(a, b, 0.0, 0.5)
             if abs(a[0] - b[0]) < 1e-9:
                 sg = -1.0 if e["off"] < 0 else 1.0
@@ -345,9 +388,8 @@ def draw_partners(ax, mids, pos, grey):
 def draw_box(ax, name, x, y, mode, gs_order, label=None):
     w, h = box_size(name)
     ghost = name in GHOSTS
-    planned = name in PLANNED
     new = name in NEW_SPECIES
-    greyed = (mode == "grey" and not new) or planned
+    greyed = mode == "grey" and not new
     if greyed:
         fc = "white" if ghost else GREY_FILL
         ec, tc = GREY, GREY_TEXT
@@ -355,7 +397,7 @@ def draw_box(ax, name, x, y, mode, gs_order, label=None):
         fc = "white" if ghost else ("#E3F2DC" if name in MOLECULES else "#DCEBF7")
         ec = "#7A7A7A" if ghost else BLACK
         tc = "#5A5A5A" if ghost else "black"
-    ls = (0, (1, 1.5)) if planned else ("--" if ghost else "-")
+    ls = "--" if ghost else "-"
     lw = 2.2 if name in LIMITERS else 0.9
     if mode == "highlight" and new:
         ax.add_patch(FancyBboxPatch((x - w / 2 - 0.13, y - h / 2 - 0.13),
@@ -366,11 +408,11 @@ def draw_box(ax, name, x, y, mode, gs_order, label=None):
                                 boxstyle="round,pad=0.02,rounding_size=0.12",
                                 fc=fc, ec=ec, ls=ls, lw=lw, zorder=2))
     ax.text(x, y, label or TEX.get(name, name), ha="center", va="center",
-            fontsize=FS_SPECIES - (1.5 if planned else 0),
+            fontsize=FS_SPECIES - (0.5 if "_high" in name else 0),
             style="italic" if ghost else "normal", color=tc, zorder=4)
     if gs_order and name in gs_order:
         ax.text(x - w / 2 + 0.03, y + h / 2 - 0.01, str(gs_order.index(name) + 1),
-                fontsize=5.5 if len(gs_order) < 10 else 5.2, ha="center",
+                fontsize=5.5 if len(gs_order) < 10 else 4.8, ha="center",
                 va="center", color="white", zorder=5,
                 bbox=dict(boxstyle="circle,pad=0.15",
                           fc=GREY if greyed else BLACK, ec="none"))
@@ -390,29 +432,34 @@ def draw_note_box(ax, x, y, w, h, text, mode, fs=FS_NOTE, highlight=False, **kw)
             linespacing=1.25, **kw)
 
 
-def cie_link(ax, p, box_xy, box_w):
-    """Dotted line from a top tracked stage to the CIE box: cooling only."""
-    q = (box_xy[0] + (box_w / 2 if p[0] > box_xy[0] else -box_w / 2), box_xy[1])
-    a = box_edge(p, q)
-    ax.plot([a[0], q[0]], [a[1], q[1]], ls=(0, (1, 1.5)), lw=1.1, color=DARK,
-            zorder=0.9)
+def draw_optional(ax, x, y, w, mode, fs=FS_NOTE - 0.5):
+    """Dotted grey placeholder ladders: other elements can be added as O, S, N.
 
-
-def draw_planned(ax, origin, dx, dy, mode):
-    """N I-III and Ne I-III as a greyed ladder: no rates in the code yet."""
-    x0, y0 = origin
-    for i, names in enumerate((["N", "N+", "N2+"], ["Ne", "Ne+", "Ne2+"])):
-        pts = []
+    configure.py accepts one set, --photchem_ions=O3,S3,N3 (photchem_ion_sets);
+    another element or stage count needs its species rows, rates and update
+    step in the code, so these are drawn without reactions.
+    """
+    h = 0.42
+    bw = 0.78
+    rows = [(el, [el, el + "$^+$", "…"]) for el in OPTIONAL]
+    top = y + 0.55
+    ax.text(x, top + 0.2, "other elements:\ncan be added", ha="center", va="center",
+            fontsize=fs, color=GREY_TEXT, style="italic", linespacing=1.15)
+    x0 = x - (bw + 0.3)
+    for i, (el, names) in enumerate(rows):
+        yy = top - 0.6 - i * 0.55
         for j, n in enumerate(names):
-            x, y = x0 + i * dx[0] + j * dy[0], y0 + i * dx[1] + j * dy[1]
-            draw_box(ax, n, x, y, mode, None)
-            pts.append((x, y))
-        for p, q in zip(pts[:-1], pts[1:]):
-            a = box_edge(p, q, SMALL_W, SMALL_H)
-            b = box_edge(q, p, SMALL_W, SMALL_H)
-            ax.add_patch(FancyArrowPatch(a, b, arrowstyle="<|-|>,head_length=3,head_width=1.5",
-                                         lw=0.7, color=GREY, shrinkA=1, shrinkB=1,
-                                         zorder=1))
+            xx = x0 + j * (bw + 0.3)
+            if n != "…":
+                ax.add_patch(FancyBboxPatch((xx - bw / 2, yy - h / 2), bw, h,
+                                            boxstyle="round,pad=0.02,rounding_size=0.08",
+                                            fc="white", ec=GREY, ls=(0, (1, 1.5)), lw=0.8,
+                                            zorder=2))
+            ax.text(xx, yy, n, ha="center", va="center", fontsize=fs, color=GREY_TEXT,
+                    zorder=4)
+            if j:
+                ax.plot([xx - bw / 2 - 0.27, xx - bw / 2 - 0.03], [yy, yy],
+                        ls=(0, (1, 1.5)), lw=0.7, color=GREY, zorder=1)
 
 
 # ---------------------------------------------------------------------------
@@ -454,8 +501,6 @@ def draw_legend(fig, lax, kinds, boxes, mode, ncol=3, nbcol=4, row=0.155):
         elif kind == "partner":
             lax.plot([x + 0.02, x + 0.34], [y, y], ls=(0, (1, 2)), lw=0.9, color=PARTNER)
             lax.plot(x + 0.34, y, "o", ms=2.5, color=PARTNER)
-        elif kind == "cie":
-            lax.plot([x + 0.02, x + 0.36], [y, y], ls=(0, (1, 1.5)), lw=1.1, color=DARK)
         else:
             fc, ec, ls, lw = {
                 "ion": ("#DCEBF7", BLACK, "-", 0.9),
@@ -463,7 +508,7 @@ def draw_legend(fig, lax, kinds, boxes, mode, ncol=3, nbcol=4, row=0.155):
                 "ghost": ("white", "#7A7A7A", "--", 0.9),
                 "limit": ("white", BLACK, "-", 2.2),
                 "grey": (GREY_FILL, GREY, "-", 0.9),
-                "planned": ("white", GREY, (0, (1, 1.5)), 0.9),
+                "optional": ("white", GREY, (0, (1, 1.5)), 0.9),
                 "new": ("#DCEBF7", BLACK, "-", 0.9),
             }[kind]
             if kind == "new":
@@ -492,10 +537,8 @@ def boxes_legend(version):
         b.insert(0, ("grey", "GOW17 core (grey)"))
     if version in ("colour", "2panel"):
         b.insert(0, ("new", "added in Tigris"))
-    if version == "greycore":
-        pass
     if version != "core":
-        b += [("cie", "cooling only (CIE table)"), ("planned", "planned, not in code")]
+        b += [("optional", "can be added")]
     return b
 
 
@@ -505,12 +548,19 @@ def boxes_legend(version):
 XE_CORE = (r"$x_e = x({\rm He^+}) + x({\rm C^+}) + x({\rm HCO^+}) + x({\rm H_3^+})"
            r" + x({\rm H_2^+}) + x({\rm H^+}) + x({\rm O^+}) + x({\rm Si^+})$"
            "   (charge neutrality; electrons are a ghost species)")
-XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 16 ions [adds $2x({\rm O^{2+}})$,"
-             r" $x({\rm S^+})$, $2x({\rm S^{2+}})$, $3x({\rm S^{3+}})$]"
-             r"$\; + \; w(T)\,\Delta x_{e,\rm CIE}$ in hot gas")
+# species_table.hpp ChargeSum over species_rows (gow17_core.hpp:36-63): X_high
+# counts the charge of its lowest stage; above temp_hot0 HigherIonExtraCharge adds
+# the rest of its CIE mean charge (gow17_network.hpp:2355-2367, 3135-3150).
+XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge $q$"
+             r"$\;+\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
+             r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$ in hot gas")
+HIGH_TEXT = (r"X$^{\geq q+}$: every stage above the top tracked one, one species; "
+             "its split among stages, recombination and cooling follow CIE at $T$.\n"
+             "The ladders are a configure choice (--photchem_ions=O3,S3,N3 here: O, S, N "
+             "to O$^{2+}$, S$^{2+}$, N$^{2+}$); other elements need rates and code.")
 HOT_TEXT = ("Hot gas, $T > 2\\times10^4$ K, with weight $w(T)$ rising to 1 at "
             "$3.5\\times10^4$ K: He and metal cooling from the CIE table;\n"
-            "$x_e$ adds the CIE electrons of He$^{2+}$ and the untracked metal ions; "
+            "$x_e$ adds the CIE electrons of He$^{2+}$ and of metals beyond the tracked ions; "
             "heating and grain-assisted recombination are scaled by $1-w$.")
 
 
@@ -530,8 +580,10 @@ def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
 
 
 def footer(fax):
-    fax.text(0.5, 0.78, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
-    fax.text(0.5, 0.3, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+    fax.text(0.5, 0.88, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
+    fax.text(0.5, 0.56, HIGH_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+             linespacing=1.3)
+    fax.text(0.5, 0.17, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
              linespacing=1.3)
 
 
@@ -549,33 +601,35 @@ def fig_core():
     return fig
 
 
+SIGN_FULL = {"O": -1.0, "S": 1.0, "N": -1.0, "C": 1.0, "Si": 1.0}
+FOOT_H = 1.05
+# The core O+ -> O (H2) arrow bows under the O <-> O+ ladder arrows.
+O_H2_ARC = 1.0
+
+
+def full_core_edges():
+    return [dict(e, arc=O_H2_ARC) if (e["src"], e["dst"], e["kind"]) == ("O+", "O", "chem")
+            else e for e in core_edges_tigris()]
+
+
 def draw_full(ax, mode):
-    edges = core_edges_tigris() + ION_GAS + ladder_edges((-1.0, 1.0))
+    edges = full_core_edges() + ION_GAS + NEUTRAL_CI + ladder_edges(SIGN_FULL)
     mids = draw_edges(ax, edges, POS_FULL, mode)
     draw_partners(ax, mids, POS_FULL, grey=(mode == "grey"))
     for n, (x, y) in POS_FULL.items():
         draw_box(ax, n, x, y, mode, GS_TIGRIS)
-    cie_xy, cie_w = (1.2, 0.6), 7.4
-    draw_note_box(ax, *cie_xy, cie_w, 0.95,
-                  "higher stages (O$^{3+}$ and up, S$^{4+}$ and up):\n"
-                  "cooling from the CIE table",
-                  mode, highlight=True)
-    cie_link(ax, POS_FULL["S3+"], cie_xy, cie_w)
-    cie_link(ax, POS_FULL["O2+"], cie_xy, cie_w)
-    draw_planned(ax, (16.2, 2.3), (1.75, 0.0), (0.0, -1.0), mode)
-    ax.text(17.1, 3.05, "planned: N, Ne", ha="center", va="center",
-            fontsize=FS_NOTE, color=GREY_TEXT, style="italic")
-    text_halo(ax, 10.9, -0.55, "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17"
+    draw_optional(ax, 17.2, 1.2, 3.4, mode)
+    text_halo(ax, 10.9, -0.75, "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17"
               " (2-body 27, 28); near-resonant", GREEN, fs=FS_NOTE)
 
 
 def fig_full(mode):
     SIZE_OVERRIDE.clear()
-    SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in ("O", "O+", "O2+")})
+    SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in ("O", "O+", "O2+", "O_high")})
     version = "greycore" if mode == "grey" else "colour"
     boxes = boxes_legend(version)
     lh = legend_height(ALL_KINDS, boxes)
-    fig, ax, fax, lax = canvas((-6.6, 18.6), (-0.85, 9.25), lh, 0.62)
+    fig, ax, fax, lax = canvas((-6.9, 22.5), (-1.0, 9.25), lh, FOOT_H)
     draw_full(ax, mode)
     footer(fax)
     draw_legend(fig, lax, ALL_KINDS, boxes, mode)
@@ -585,11 +639,11 @@ def fig_full(mode):
 def fig_2panel():
     SIZE_OVERRIDE.clear()
     xa, ya = (-2.75, 17.85), (0.05, 9.25)
-    xb, yb = (-2.75, 17.85), (-1.2, 3.55)
+    xb, yb = (-2.75, 17.85), (-4.3, 3.55)
     ha = WIDTH_IN * (ya[1] - ya[0]) / (xa[1] - xa[0])
     hb = WIDTH_IN * (yb[1] - yb[0]) / (xb[1] - xb[0])
     boxes = boxes_legend("2panel")
-    legend_h, foot_h, gap = legend_height(ALL_KINDS, boxes), 0.62, 0.1
+    legend_h, foot_h, gap = legend_height(ALL_KINDS, boxes), FOOT_H, 0.1
     H = ha + gap + hb + foot_h + legend_h + 0.04
     fig = plt.figure(figsize=(WIDTH_IN, H))
     axa = fig.add_axes([0, (legend_h + foot_h + hb + gap) / H, 1, ha / H])
@@ -600,8 +654,8 @@ def fig_2panel():
         ax.set_aspect("equal")
         ax.axis("off")
     # (a) core with the ionized-gas additions; O <-> O+ is drawn in (b)
-    core = [e for e in core_edges_tigris() if e["kind"] != "ct"]
-    mids = draw_edges(axa, core + ION_GAS, POS_CORE, "highlight")
+    mids = draw_edges(axa, core_edges_tigris() + ION_GAS + NEUTRAL_CI, POS_CORE,
+                      "highlight")
     draw_partners(axa, mids, POS_CORE, grey=False)
     for n, (x, y) in POS_CORE.items():
         draw_box(axa, n, x, y, "highlight", GS_TIGRIS)
@@ -611,23 +665,15 @@ def fig_2panel():
     # (b) ion ladders, left to right, ionization above each pair
     SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in POS_LADDERS})
     pos = POS_LADDERS
-    ladder = ladder_edges((-1.0, -1.0)) + O_CT
-    draw_edges(axb, ladder, pos, "highlight")
+    sign = {k: -1.0 for k in SIGN_FULL}
+    draw_edges(axb, ladder_edges(sign), pos, "highlight")
     for n, (x, y) in pos.items():
         draw_box(axb, n, x, y, "highlight", GS_TIGRIS)
     axb.text(-2.6, 3.5, "(b)", fontsize=9, fontweight="bold", va="top")
-    axb.text(1.6, -1.0, "O and O$^+$ are the boxes of (a); O$\\leftrightarrow$O$^+$ "
-             "charge transfer is in GOW17 (near-resonant)", fontsize=FS_NOTE,
-             color=DARK, ha="left", va="center", style="italic")
-    cie_xy, cie_w = (12.3, 1.2), 2.9
-    draw_note_box(axb, *cie_xy, cie_w, 1.9,
-                  "higher stages\n(O$^{3+}$ and up,\nS$^{4+}$ and up):\n"
-                  "cooling from\nthe CIE table", "highlight", highlight=True)
-    cie_link(axb, pos["S3+"], cie_xy, cie_w)
-    cie_link(axb, pos["O2+"], cie_xy, cie_w)
-    draw_planned(axb, (14.35, 2.35), (0.0, -1.55), (1.2, 0.0), "highlight")
-    axb.text(15.55, 3.15, "planned: N, Ne", ha="center", va="center",
-             fontsize=FS_NOTE, color=GREY_TEXT, style="italic")
+    axb.text(-0.75, -4.0, "O, O$^+$, C$^+$ and Si$^+$ are the boxes of (a); "
+             "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17 (near-resonant)",
+             fontsize=FS_NOTE, color=DARK, ha="left", va="center", style="italic")
+    draw_optional(axb, 14.5, -2.45, 3.4, "highlight")
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
     footer(fax)
     lax = legend_axes(fig, [0.03, 0.0, 0.97, legend_h / H])
