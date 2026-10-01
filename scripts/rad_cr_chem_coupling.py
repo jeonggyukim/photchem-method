@@ -214,22 +214,18 @@ def scattered_helix(ax, xa, xb, y, xk, r0=0.3, pitch=(0.42, 0.2)):
 PITCH = (0.42, 0.2)
 
 
-def resonant_waves(ax, x0, y, r0, ylab):
+def resonant_waves(ax, x0, y, r0):
     """Field line, two wave packets and the scattered helix shared by A and C."""
     xk, xk2 = x0 + 1.9, x0 + 3.4
     rippled_field(ax, x0 + 0.45, x0 + 4.35, y, ((xk, PITCH[0]), (xk2, PITCH[1])))
     scattered_helix(ax, x0 + 0.5, x0 + 4.1, y, xk, r0=r0, pitch=PITCH)
-    ax.text(xk, ylab, r'$\delta\mathbf{B},\ k_1$', fontsize=13, ha='center',
-            va='bottom', color='0.3')
-    ax.text(xk2, ylab, r'$k_2>k_1$', fontsize=13, ha='center', va='bottom',
-            color='0.3')
 
 
 def draw_cr_scatter(ax, x0, y):
     """A: a cosmic ray streaming along B, scattered in pitch angle by the resonant
     Alfven waves it drives: first a long wave, then, at smaller pitch-angle cosine,
     a shorter one."""
-    resonant_waves(ax, x0, y, 0.3, y + 0.42)
+    resonant_waves(ax, x0, y, 0.3)
 
 
 def draw_cr_loop(ax, x0, y):
@@ -271,7 +267,7 @@ def draw_cr_damped(ax, x0, y):
     """C: A, with the gas below the field line: ions (carried by the wave) colliding
     with neutrals, which drains the waves (ion-neutral damping)."""
     yl = y + 0.12
-    resonant_waves(ax, x0, yl, 0.24, yl + 0.33)
+    resonant_waves(ax, x0, yl, 0.24)
     yg = y - 0.4
     for k, xi in enumerate(np.linspace(x0 + 0.7, x0 + 2.9, 4)):
         atom(ax, xi, yg, 0.07, COL_CR, '+', k=1.0)
@@ -464,10 +460,17 @@ def main():
     # takes the bottom 0.3
     ym = ct - (1.0 if PAPER else 1.2)
     draw_molecules(ax, (3.35 if PAPER else 3.45) + xm, ym - 0.15, k=1.1 if PAPER else 1.3)
-    ax.text(5.85 + xm, ym, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
+    # the two equations, and under them what every rate, heating and cooling term
+    # depends on (Kim et al. 2023, Eqs. 12-14): density, temperature, abundances,
+    # gas metallicity, dust abundance, radiation and cosmic rays
+    ye = ym + 0.2
+    ax.text(5.85 + xm, ye, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
             va='center', fontsize=15, color='0.1')
-    ax.text(7.6 + xm, ym, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
+    ax.text(7.6 + xm, ye, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
             va='center', fontsize=15, color='0.1')
+    ax.text(7.55 + xm, ye - 0.6, r'$C_i,\ D_i,\ \Gamma,\ \Lambda\,(n,\,T,\,x_s,\,'
+            r"Z'_{\rm g},\,Z'_{\rm d},\,\mathcal{E},\,\xi_{\rm cr})$", ha='center',
+            va='center', fontsize=14, color='0.1')
     s, fs = LABELS['species']
     if s:
         ax.text(6.0 + xm, cb + 0.15, s, ha='center', va='center', fontsize=fs, color=TXT)
