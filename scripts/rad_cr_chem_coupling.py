@@ -62,7 +62,8 @@ LABELS = {
                         r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 19),
         'chem_to_rad': (r'$\chi_\nu$, $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 19),
         'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 19),
-        'chem_to_cr': (r'$x_{\rm i}\ \rightarrow\ \sigma_{\parallel},\ v_{\rm A,i}$', 19),
+        'chem_to_cr': (r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
+                       r'v_{\rm A,i}$', 19),
         'species': ('', 10),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 18),
         'rad_to_cr_note': ('inverse\nCompton\n(CR e$^-$)', 14),
@@ -82,8 +83,9 @@ LABELS = {
                         r'shielding $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
                        r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 14.5),
-        'chem_to_cr': ('ion fraction $\\rightarrow$\nion–neutral damping\n'
-                       r'$x_{\rm i}\ \rightarrow\ \sigma_{\parallel},\ v_{\rm A,i}$', 14.5),
+        'chem_to_cr': ('ion and neutral fractions, $T$\n$\\rightarrow$ wave damping\n'
+                       r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
+                       r'v_{\rm A,i}$', 14.5),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 15.5),
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
         'rad_to_mhd': ('force\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
