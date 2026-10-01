@@ -255,7 +255,7 @@ def main():
                                                    (5.45 + orad, 8.6)])
         inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset2.set_facecolor('none')
-        draw_diffuse_rays(inset2, lw=0.45, zoom=1.05,
+        draw_diffuse_rays(inset2, lw=0.45, zoom=1.05, nbundle=4, spacing=1.6,
                           cloud=Cloud(8.0, (4.0, 4.0, 4.0), 2.6, seed=7))
     else:
         draw_diffuse(ax, 4.28 + orad, 6.9, 1.5, 1.25)

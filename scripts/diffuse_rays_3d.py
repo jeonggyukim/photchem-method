@@ -62,7 +62,7 @@ def optical_depth(p, q, centre, radius, kappa, nseg=40):
 
 
 def draw_diffuse_rays(ax, n=8, nbundle=3, pixels=(0, 5, 11), lw=0.7, kappa=0.55,
-                      zoom=1.0, cloud=None):
+                      zoom=1.0, cloud=None, spacing=2.0):
     """With `cloud` (a clumpy_cloud.Cloud on the n^3 box) the rays cross that density
     field instead of a uniform sphere."""
     centre, radius = np.full(3, 0.5*n), 0.3*n
@@ -82,7 +82,7 @@ def draw_diffuse_rays(ax, n=8, nbundle=3, pixels=(0, 5, 11), lw=0.7, kappa=0.55,
     dirs = np.array(hp.pix2vec(1, list(pixels), nest=True)).T
     for d, col in zip(dirs, COLORS):
         rgba = np.array(to_rgba(col))
-        for p, q in ray_paths(d, n, nbundle):
+        for p, q in ray_paths(d, n, nbundle, spacing):
             if cloud is None:
                 pts, tau = optical_depth(p, q, centre, radius, kappa)
             else:
