@@ -258,7 +258,9 @@ Radiation transfer. Point sources use adaptive rays that split as they spread
 (Abel & Wandelt 2002); the diffuse field uses parallel rays in fixed directions, with
 the external background and scattering. Both cross the same clumpy cloud here, and each
 ray fades with the optical depth it has crossed. From the specific intensity we take
-the energy density E_rad = (1/c) ∫∮ I_ν dΩ dν and the flux F_rad = ∫∮ I_ν n̂ dΩ dν.
+the spectral energy density E_ν = (1/c) ∮ I_ν dΩ and flux F_ν = ∮ I_ν n̂ dΩ. Band
+integrals of E_ν feed the chemistry, E_rad = ∫ E_ν dν the inverse-Compton losses, and
+f_rad = (1/c) ∫ χ_ν F_ν dν the radiation force on the gas.
 
 Radiation -> chemistry: band energy densities E_LyC, E_FUV and the shielded
 (pseudo) energy density Ẽ_H2 drive photoionization, photodissociation and photoelectric

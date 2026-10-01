@@ -385,10 +385,9 @@ def main():
     # flux (radiation force) that the other boxes take from it
     ax.text(2.92 + orad, 5.25, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
             r' + \eta_\nu$', ha='center', va='center', fontsize=15, color='0.1')
-    ax.text(2.92 + orad, 4.8, r'$\mathcal{E}_{\rm rad} = \dfrac{1}{c}\int\!\oint I_\nu'
-            r'\,d\Omega\,d\nu,\quad \mathbf{F}_{\rm rad} = \int\!\oint I_\nu\,'
-            r'\hat{\mathbf{n}}\,d\Omega\,d\nu$', ha='center', va='center', fontsize=14,
-            color='0.1')
+    ax.text(2.92 + orad, 4.8, r'$\mathcal{E}_\nu = \dfrac{1}{c}\oint I_\nu\,d\Omega,'
+            r'\quad \mathbf{F}_\nu = \oint I_\nu\,\hat{\mathbf{n}}\,d\Omega$', ha='center',
+            va='center', fontsize=15, color='0.1')
 
     # cosmic-ray transport: the two-moment equations of Armillotta et al. (2021,
     # Eqs. 1, 2 and 4), with the isotropic pressure P_c = e_c/3 that turns the bracket
