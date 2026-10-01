@@ -172,12 +172,12 @@ def draw_cosmic_ray(ax, x0, x1, y):
     ax.plot(xs[-1], ys[-1], 'o', ms=6, color=COL_CR, zorder=4)
 
 
-def rippled_field(ax, xa, xb, y, packets, lam=0.3, amp=0.075, width=0.32):
-    """A field line from xa to xb carrying Alfven-wave packets centred at `packets`;
-    returns the line's height as a function of x."""
+def rippled_field(ax, xa, xb, y, packets, amp=0.075, width=0.32):
+    """A field line from xa to xb carrying Alfven-wave packets, given as (centre,
+    wavelength) pairs; returns the line's height as a function of x."""
     def yf(x):
-        env = sum(np.exp(-((x - c)/width)**2) for c in packets)
-        return y + amp*env*np.sin(2*np.pi*(x - xa)/lam)
+        return y + amp*sum(np.exp(-((x - c)/width)**2)*np.sin(2*np.pi*(x - c)/lam)
+                           for c, lam in packets)
     s = np.linspace(xa, xb, 800)
     ax.plot(s, yf(s), color='0.35', lw=1.4, zorder=2)
     ax.annotate('', xy=(xb + 0.15, y), xytext=(xb - 0.05, y),
@@ -207,16 +207,29 @@ def scattered_helix(ax, xa, xb, y, xk, r0=0.3, pitch=(0.42, 0.2)):
     ax.plot(xs[-1], ys[-1], 'o', ms=6, color=COL_CR, zorder=4)
 
 
+# Helix pitch (advance along B per gyration) before and after the scattering; each
+# wave packet's wavelength equals the pitch of the orbit it resonates with, one
+# wavelength per gyration, so the shorter wave pairs with the smaller pitch angle
+# cosine (k = 1/(mu r_L)).
+PITCH = (0.42, 0.2)
+
+
+def resonant_waves(ax, x0, y, r0, ylab):
+    """Field line, two wave packets and the scattered helix shared by A and C."""
+    xk, xk2 = x0 + 1.9, x0 + 3.4
+    rippled_field(ax, x0 + 0.45, x0 + 4.35, y, ((xk, PITCH[0]), (xk2, PITCH[1])))
+    scattered_helix(ax, x0 + 0.5, x0 + 4.1, y, xk, r0=r0, pitch=PITCH)
+    ax.text(xk, ylab, r'$\delta\mathbf{B},\ k_1$', fontsize=13, ha='center',
+            va='bottom', color='0.3')
+    ax.text(xk2, ylab, r'$k_2>k_1$', fontsize=13, ha='center', va='bottom',
+            color='0.3')
+
+
 def draw_cr_scatter(ax, x0, y):
-    """A: a cosmic ray streaming along B, scattered in pitch angle at a packet of the
-    Alfven waves it drives (wavelength ~ gyroradius)."""
-    xk = x0 + 1.9
-    rippled_field(ax, x0 + 0.45, x0 + 4.35, y, (xk, x0 + 3.4))
-    scattered_helix(ax, x0 + 0.5, x0 + 4.1, y, xk)
-    ax.text(xk, y + 0.42, r'$\delta\mathbf{B}$', fontsize=13, ha='center',
-            va='bottom', color='0.3')
-    ax.text(x0 + 3.4, y + 0.42, r'$\lambda\sim r_{\rm L}$', fontsize=12, ha='center',
-            va='bottom', color='0.3')
+    """A: a cosmic ray streaming along B, scattered in pitch angle by the resonant
+    Alfven waves it drives: first a long wave, then, at smaller pitch-angle cosine,
+    a shorter one."""
+    resonant_waves(ax, x0, y, 0.3, y + 0.42)
 
 
 def draw_cr_loop(ax, x0, y):
@@ -258,11 +271,7 @@ def draw_cr_damped(ax, x0, y):
     """C: A, with the gas below the field line: ions (carried by the wave) colliding
     with neutrals, which drains the waves (ion-neutral damping)."""
     yl = y + 0.12
-    xk = x0 + 1.9
-    rippled_field(ax, x0 + 0.45, x0 + 4.35, yl, (xk, x0 + 3.4))
-    scattered_helix(ax, x0 + 0.5, x0 + 4.1, yl, xk, r0=0.24)
-    ax.text(xk, yl + 0.33, r'$\delta\mathbf{B}$', fontsize=13, ha='center',
-            va='bottom', color='0.3')
+    resonant_waves(ax, x0, yl, 0.24, yl + 0.33)
     yg = y - 0.4
     for k, xi in enumerate(np.linspace(x0 + 0.7, x0 + 2.9, 4)):
         atom(ax, xi, yg, 0.07, COL_CR, '+', k=1.0)
