@@ -450,9 +450,9 @@ def main():
             va='center', fontsize=15, color='0.1')
     ax.text(7.6 + xm, ye, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
             va='center', fontsize=15, color='0.1')
-    ax.text(7.55 + xm, ye - 0.6, r'$C_i,\ D_i,\ \Gamma,\ \Lambda\,(n,\,T,\,x_s,\,'
-            r"Z'_{\rm g},\,Z'_{\rm d},\,\mathcal{E},\,\xi_{\rm cr})$", ha='center',
-            va='center', fontsize=14, color='0.1')
+    ax.text(7.55 + xm, ye - (0.57 if PAPER else 0.65), 'rates depend on\n'
+            r"$n,\ T,\ x_s,\ Z'_{\rm g},\ Z'_{\rm d},\ \mathcal{E},\ \xi_{\rm cr}$",
+            ha='center', va='center', fontsize=14, color='0.1', linespacing=1.3)
     s, fs = LABELS['species']
     if s:
         ax.text(6.0 + xm, cb + 0.15, s, ha='center', va='center', fontsize=fs, color=TXT)
