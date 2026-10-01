@@ -244,7 +244,7 @@ by supernova blast waves. Warm <-> hot: thermal conduction heats the warm gas at
 interfaces; turbulent mixing cools the hot gas.
 
 The point for this talk: every phase boundary is set by radiation (FUV, LyC), cosmic rays,
-or the gas dynamics, which is why TIGRESS++ couples all four solvers on the next slide.
+or the gas dynamics, which is why TIGRESS++ couples them, as on the next slide.
 """)
 
 # 1. the coupled system ---------------------------------------------------------------
@@ -252,7 +252,7 @@ s = prs.slides.add_slide(BLANK)
 title(s, 'Radiation, cosmic rays, photochemistry and gas dynamics, coupled')
 figure(s, 'rad_cr_chem_coupling_3d2_talk_mhd_crleft.png')
 notes(s, """
-Four modules, each with the arrows of what it hands the others.
+Each box is a part of the physics, with arrows for what it hands the others.
 
 Radiation transfer. Point sources use adaptive rays that split as they spread
 (Abel & Wandelt 2002); the diffuse field uses parallel rays in fixed directions, with
