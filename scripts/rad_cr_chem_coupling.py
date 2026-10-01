@@ -60,7 +60,7 @@ LABELS = {
         'diffuse': ('diffuse field: parallel rays,\nexternal background, scattering', 10.5),
         'rad_to_chem': ('photoionization,\nphotodissociation,\nPE heating\n'
                         r'$J_{\rm LyC}$, $\tilde{J}_{\rm LW}$, $J_{\rm PE}$', 14.5),
-        'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, H I, H$_2$)' '\n'
+        'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
                         r'shielding $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
                        r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 14.5),
