@@ -358,18 +358,18 @@ def main():
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
     # from the chemistry act on the gas, which moves, compresses and carries B.
     if SIM:
-        x0, x1 = 6.5, 9.2 + xc - 3.7
+        x0, x1, y0, y1 = 6.8, 8.9, 4.75, 7.15
         xg = 0.5*(x0 + x1)
-        box(ax, x0, 4.4, x1, 7.45, COL_MHD, 'Gas dynamics')
+        box(ax, x0, y0, x1, y1, COL_MHD, 'Gas dynamics')
         s, fs = LABELS['mhd_body']
-        ax.text(xg, 6.6, s, ha='center', va='center', fontsize=fs, color='0.1')
+        ax.text(xg, 6.45, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
-        ax.text(xg, 5.25, s, ha='center', va='center', fontsize=fs, color=TXT,
+        ax.text(xg, 5.45, s, ha='center', va='center', fontsize=fs, color=TXT,
                 linespacing=1.3)
         y_f = 5.75
         arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)
         arrow(ax, (mx(6.48 + xc), y_f), (mx(x1 + 0.02), y_f), COL_CR)
-        arrow(ax, (xg, 2.57), (xg, 4.38), COL_CHEM)
+        arrow(ax, (xg, 2.57), (xg, y0 - 0.02), COL_CHEM)
         s, fs = LABELS['rad_to_mhd']
         ax.text(mx(0.5*(5.5 + x0)), y_f + 0.12, s, ha='center', va='bottom',
                 fontsize=fs, color=COL_RAD, linespacing=1.15)
