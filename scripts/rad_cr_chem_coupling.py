@@ -30,8 +30,14 @@ from diffuse_rays_3d import draw_diffuse_rays
 # Two point sources on different sides of the cloud, each with its adaptive ray tree
 # aimed at it: (position, aim, narrow) on a 16^3 grid; the second follows one child
 # at its first two splits, so its cone is a quarter as wide.
-POINT_SOURCES = [((5.0, 6.0, 5.0), (0.8, 0.5, 0.35), 1),
-                 ((14.0, 3.0, 4.5), (-0.47, 0.81, 0.40), 2)]
+POINT_SOURCES = [((5.0, 6.0, 5.0), (0.69, 0.51, 0.54), 1),
+                 ((14.0, 3.0, 4.5), (-0.61, 0.68, 0.41), 2)]
+
+
+def make_cloud(size):
+    """The one cloud both ray panels cross, on a box of side `size`: the same density
+    field (same seed), centre and radius in units of the box."""
+    return Cloud(size, (0.55*size, 0.55*size, 0.5*size), 0.27*size)
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 _ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
@@ -76,7 +82,7 @@ LABELS = {
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
         'diffuse': ('diffuse field: parallel rays,\nexternal background, scattering', 10.5),
-        'rad_to_chem': ('photoionization,\nphotodissociation,\nPE heating\n'
+        'rad_to_chem': ('photoionization,\nphotodissociation,\nphotoelectric heating\n'
                         r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
                         r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 14.5),
         'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
@@ -357,7 +363,7 @@ def main():
         inset = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset.set_facecolor('none')
         draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.3, sources=POINT_SOURCES,
-                      cloud=Cloud(16.0, (10.0, 10.0, 8.0), 3.8), kappa=0.25)
+                      cloud=make_cloud(16.0), kappa=0.25)
     s, fs = LABELS['point']
     ax.text(1.55 + orad, 5.95, s, ha='center', va='top', fontsize=fs, color=TXT,
             linespacing=1.25)
@@ -367,7 +373,7 @@ def main():
         inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
         inset2.set_facecolor('none')
         draw_diffuse_rays(inset2, lw=0.45, zoom=1.05, nbundle=4, spacing=1.6,
-                          cloud=Cloud(8.0, (4.0, 4.0, 4.0), 2.6, seed=7))
+                          cloud=make_cloud(8.0))
     else:
         draw_diffuse(ax, 4.28 + orad, 6.9, 1.5, 1.25)
     s, fs = LABELS['diffuse']
