@@ -67,7 +67,8 @@ LABELS = {
         'rad_to_chem': (r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
                         r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 19),
         'chem_to_rad': (r'$\chi_\nu$, $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 19),
-        'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 19),
+        'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
+                       r'$\Gamma_{\rm st}$', 19),
         'chem_to_cr': (r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 19),
         'species': ('', 10),
@@ -88,15 +89,15 @@ LABELS = {
         'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
                         r'shielding $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
-                       r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$', 14.5),
+                       r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
+                       r'$\Gamma_{\rm st}$', 14.5),
         'chem_to_cr': ('ion and neutral fractions, $T$\n$\\rightarrow$ wave damping\n'
                        r'$x_{\rm i},\ x_{\rm n},\ T\ \rightarrow\ \sigma_{\parallel},\ '
                        r'v_{\rm A,i}$', 14.5),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 15.5),
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
         'rad_to_mhd': ('force\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
-        'cr_to_mhd': ('force,\nheating\n'
-                      r'$\mathbf{G}$, $\mathbf{v}_{\rm s}\!\cdot\!\mathbf{G}$', 14.5),
+        'cr_to_mhd': ('force\n' r'$\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
         'mhd_note': ('star formation\ngravity\ngalactic shear\nstellar feedback', 14),
