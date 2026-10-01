@@ -275,10 +275,19 @@ Cosmic-ray transport: the two-moment equations of Armillotta et al. (2021).
 - Q is the CR energy injected per unit volume and time by supernovae (10 per cent of
   E_SN in Armillotta et al. 2021). Λ_coll is the collisional loss (pion production,
   Coulomb and ionization).
-- G ≡ σ_tot·[F_c − (4/3) v e_c] is the momentum exchanged between CRs and gas, the
-  force density CRs exert on the gas. The bracket is the CR flux in the gas frame
-  ((4/3) e_c v = (e_c + P_c) v is the enthalpy carried with the gas). -G appears in the
-  CR flux equation and +G in the gas momentum equation. In steady state G = −∇P_c.
+- (4/3) v e_c is the CR energy flux carried along with the gas: CRs frozen into gas
+  moving at v carry their enthalpy (e_c + P_c) v, the energy density plus the P dV work
+  of pushing through; with P_c = e_c/3 this is (4/3) e_c v, the CR counterpart of
+  (e + P) v in the hydro energy flux.
+- F_c − (4/3) v e_c is the CR flux relative to the gas: what remains is the CRs' own
+  motion through it, diffusion and streaming (the gas-frame flux to first order in
+  v/c). Only this relative motion meets the waves, which are frozen into the gas.
+- G ≡ σ_tot·[F_c − (4/3) v e_c] is the drag between the CR fluid and the gas: the
+  gas-frame flux times the coupling strength σ_tot, i.e. the force density CRs exert on
+  the gas. −G appears in the CR flux equation and +G in the gas momentum equation, so
+  momentum is conserved. Strong scattering: a tiny relative flux gives a large G; CRs
+  are pinned to the gas and the steady flux equation gives G = −∇P_c, the full CR
+  pressure gradient. Weak scattering (σ_tot → 0): CRs stream through freely, G → 0.
 - In the energy equation −(v + v_s)·G splits into −v·G, work done by CR pressure on
   the moving gas, and −v_s·G, energy CRs put into the waves while streaming, which the
   damping turns into gas heat (streaming heating Γ_st = |v_s·∇P_c|). The gas total
