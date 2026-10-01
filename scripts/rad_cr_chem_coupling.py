@@ -45,8 +45,13 @@ PAPER = STYLE == 'paper'
 SIM = '--mhd' in sys.argv
 # --cr-left: cosmic-ray transport in the upper left and radiation in the upper right.
 CRL = '--cr-left' in sys.argv
+# --crpic=A|B|C: the picture at the top of the cosmic-ray box. Default, a cosmic ray
+# gyrating along B; A, a cosmic ray scattered by the waves it drives; B, the
+# self-confinement loop as a diagram; C, A with ion-neutral damping of the waves.
+CRPIC = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--crpic=')), '')
 NAME = ('rad_cr_chem_coupling' + {'2d': '', '3d': '_3d', '3d2': '_3d2'}[MODE]
-        + '_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else ''))
+        + '_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else '')
+        + ('_cr' + CRPIC if CRPIC else ''))
 
 # Labels per style: (text, font size).
 LABELS = {
@@ -165,6 +170,108 @@ def draw_cosmic_ray(ax, x0, x1, y):
     ax.plot(xs[-1], ys[-1], 'o', ms=6, color=COL_CR, zorder=4)
 
 
+def rippled_field(ax, xa, xb, y, packets, lam=0.3, amp=0.075, width=0.32):
+    """A field line from xa to xb carrying Alfven-wave packets centred at `packets`;
+    returns the line's height as a function of x."""
+    def yf(x):
+        env = sum(np.exp(-((x - c)/width)**2) for c in packets)
+        return y + amp*env*np.sin(2*np.pi*(x - xa)/lam)
+    s = np.linspace(xa, xb, 800)
+    ax.plot(s, yf(s), color='0.35', lw=1.4, zorder=2)
+    ax.annotate('', xy=(xb + 0.15, y), xytext=(xb - 0.05, y),
+                arrowprops=dict(arrowstyle='-|>', color='0.35', lw=1.4))
+    ax.text(xb + 0.22, y + 0.02, r'$\mathbf{B}$', fontsize=13, va='center', color='0.3')
+    return yf
+
+
+def scattered_helix(ax, xa, xb, y, xk, r0=0.3, pitch=(0.42, 0.2)):
+    """A cosmic ray gyrating from xa, with its pitch (advance per gyration) changing
+    from pitch[0] to pitch[1] at the wave packet at xk: pitch-angle scattering.  The
+    orbit is drawn front and back, as in draw_cosmic_ray."""
+    xs, ys, x, phi = [], [], xa, 0.0
+    while x < xb:
+        p = pitch[0] if x < xk else pitch[1]
+        dphi = 2*np.pi/80
+        x += p*dphi/(2*np.pi)
+        phi += dphi
+        xs.append(x + 0.1*np.cos(phi))
+        ys.append(y + r0*np.sin(phi))
+    xs, ys = np.array(xs), np.array(ys)
+    front = np.cos(np.linspace(0, phi, len(xs))) > 0
+    ax.plot(np.where(front, np.nan, xs), np.where(front, np.nan, ys), color=COL_CR,
+            lw=1.0, alpha=0.45, zorder=1)
+    ax.plot(np.where(front, xs, np.nan), np.where(front, ys, np.nan), color=COL_CR,
+            lw=1.8, zorder=3)
+    ax.plot(xs[-1], ys[-1], 'o', ms=6, color=COL_CR, zorder=4)
+
+
+def draw_cr_scatter(ax, x0, y):
+    """A: a cosmic ray streaming along B, scattered in pitch angle at a packet of the
+    Alfven waves it drives (wavelength ~ gyroradius)."""
+    xk = x0 + 1.9
+    rippled_field(ax, x0 + 0.45, x0 + 4.35, y, (xk, x0 + 3.4))
+    scattered_helix(ax, x0 + 0.5, x0 + 4.1, y, xk)
+    ax.text(xk, y + 0.42, r'$\delta\mathbf{B}$', fontsize=13, ha='center',
+            va='bottom', color='0.3')
+    ax.text(x0 + 3.4, y + 0.42, r'$\lambda\sim r_{\rm L}$', fontsize=12, ha='center',
+            va='bottom', color='0.3')
+
+
+def draw_cr_loop(ax, x0, y):
+    """B: the self-confinement loop.  Streaming down the CR pressure gradient drives
+    waves, the waves scatter the cosmic rays, and scattering limits the streaming;
+    damping by the gas removes wave energy."""
+    nodes = {'grad': (x0 + 0.75, y, r'$\nabla P_{\rm c}$'),
+             'wave': (x0 + 2.6, y, r'waves $\delta\mathbf{B}$'),
+             'scat': (x0 + 4.45, y, r'$\sigma_\parallel$'),
+             'damp': (x0 + 2.6, y - 0.5, r'damping: IN ($n_{\rm n}$), NLL ($T$)')}
+    for xn, yn, s in nodes.values():
+        ax.text(xn, yn, s, ha='center', va='center', fontsize=13, color='0.1', zorder=4,
+                bbox=dict(boxstyle='round,pad=0.25', fc='white', ec=COL_CR, lw=1.2))
+
+    def link(a, b, text, rad=0.0, dy=0.13, col=COL_CR):
+        (xa_, ya_, _), (xb_, yb_, _) = nodes[a], nodes[b]
+        ax.add_patch(FancyArrowPatch((xa_, ya_), (xb_, yb_), shrinkA=26, shrinkB=26,
+                                     arrowstyle='-|>,head_length=6,head_width=3.5',
+                                     connectionstyle='arc3,rad=%g' % rad, color=col,
+                                     lw=1.6, zorder=3))
+        ax.text(0.5*(xa_ + xb_), 0.5*(ya_ + yb_) + dy, text, ha='center',
+                va='bottom' if dy > 0 else 'top', fontsize=10.5, color=col)
+    link('grad', 'wave', r'streaming, $v_{\rm D}>v_{\rm A,i}$', dy=-0.12)
+    link('wave', 'scat', 'scattering', dy=-0.12)
+    ax.add_patch(FancyArrowPatch((x0 + 4.45, y + 0.2), (x0 + 0.75, y + 0.2),
+                                 shrinkA=2, shrinkB=2,
+                                 arrowstyle='-|>,head_length=6,head_width=3.5',
+                                 connectionstyle='arc3,rad=0.08', color='0.45', lw=1.3,
+                                 ls=(0, (3, 2)), zorder=3))
+    ax.text(x0 + 2.6, y + 0.35, r'limits $v_{\rm D}\rightarrow v_{\rm A,i}$', ha='center',
+            va='center', fontsize=10.5, color='0.4', zorder=4,
+            bbox=dict(boxstyle='square,pad=0.1', fc='#E5EFF7', ec='none'))
+    ax.add_patch(FancyArrowPatch((x0 + 2.6, y - 0.36), (x0 + 2.6, y - 0.16),
+                                 arrowstyle='-[,widthB=0.6,lengthB=0.2', color='#D55E00',
+                                 lw=1.6, zorder=3))
+
+
+def draw_cr_damped(ax, x0, y):
+    """C: A, with the gas below the field line: ions (carried by the wave) colliding
+    with neutrals, which drains the waves (ion-neutral damping)."""
+    yl = y + 0.12
+    xk = x0 + 1.9
+    rippled_field(ax, x0 + 0.45, x0 + 4.35, yl, (xk, x0 + 3.4))
+    scattered_helix(ax, x0 + 0.5, x0 + 4.1, yl, xk, r0=0.24)
+    ax.text(xk, yl + 0.33, r'$\delta\mathbf{B}$', fontsize=13, ha='center',
+            va='bottom', color='0.3')
+    yg = y - 0.4
+    for k, xi in enumerate(np.linspace(x0 + 0.7, x0 + 2.9, 4)):
+        atom(ax, xi, yg, 0.07, COL_CR, '+', k=1.0)
+        xn = xi + 0.27
+        atom(ax, xn, yg - 0.03*(-1)**k, 0.07, '0.7')
+        ax.plot([xi + 0.08, xn - 0.08], [yg, yg - 0.015*(-1)**k], color='#D55E00',
+                lw=1.0, ls=(0, (1, 1)), zorder=2)
+    ax.text(x0 + 3.3, yg, 'ion–neutral\ndamping', ha='left', va='center', fontsize=12,
+            color='#D55E00', linespacing=1.1)
+
+
 def atom(ax, x, y, r, fc, label=None, lc='white', k=1.0):
     ax.add_patch(Circle((x, y), k*r, fc=fc, ec='0.25', lw=0.8, zorder=3))
     if label:
@@ -249,7 +356,7 @@ def main():
     ocr = 0.25 - 6.5 if CRL else xc       # shift of the cosmic-ray box
 
     # radiation transfer
-    box(ax, 0.25 + orad, 4.4, 5.5 + orad, top, COL_RAD, 'Radiation transfer')
+    box(ax, 0.25 + orad, 4.4, 5.5 + orad, top, COL_RAD, 'Radiation Transfer')
     if FLAT:
         draw_point_source(ax, 1.55 + orad, 6.9)
     else:
@@ -290,8 +397,15 @@ def main():
     # Armillotta et al. (2022, Eqs. 16 and 17), the smaller of the nonlinear-Landau and
     # the ion-neutral values, with their dependence on n_i, n_n and T
     # (c_s^{-1/2} ~ T^{-1/4}; 1/v_A,i ~ n_i^{1/2}).
-    box(ax, 6.5 + ocr, 4.4, 11.75 + ocr, top, COL_CR, 'Cosmic-ray transport')
-    draw_cosmic_ray(ax, 6.95 + ocr, 10.9 + ocr, 7.95)
+    box(ax, 6.5 + ocr, 4.4, 11.75 + ocr, top, COL_CR, 'Cosmic-ray Transport')
+    if CRPIC == 'A':
+        draw_cr_scatter(ax, 6.5 + ocr, 7.95)
+    elif CRPIC == 'B':
+        draw_cr_loop(ax, 6.5 + ocr, 7.95)
+    elif CRPIC == 'C':
+        draw_cr_damped(ax, 6.5 + ocr, 7.95)
+    else:
+        draw_cosmic_ray(ax, 6.95 + ocr, 10.9 + ocr, 7.95)
 
     # radiation -> cosmic rays: the inverse-Compton losses of cosmic-ray electrons need
     # the radiation energy density (Linzer et al. 2025, App. C.2), so this link exists
@@ -327,12 +441,14 @@ def main():
         r'$\sigma_{\parallel,\rm IN} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|'
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
+    # pictures B and C reach lower, so the equations start lower and sit closer
+    y_eq, dy_eq = (6.95, 0.48) if CRPIC in ('B', 'C') else (7.2, 0.52)
     for k, s in enumerate(cr_eq):
-        ax.text(9.125 + ocr, 7.2 - 0.52*k, s, ha='center', va='center', fontsize=13,
+        ax.text(9.125 + ocr, y_eq - dy_eq*k, s, ha='center', va='center', fontsize=13,
                 color='0.1')
 
     # photochemistry
-    box(ax, 2.6 + xm, cb, 9.4 + xm, ct, COL_CHEM, 'Photochemistry and thermal balance')
+    box(ax, 2.6 + xm, cb, 9.4 + xm, ct, COL_CHEM, 'Photochemistry and Thermodynamics')
     # molecules and equations sit 1.0-1.2 below the top; the paper's species line
     # takes the bottom 0.3
     ym = ct - (1.0 if PAPER else 1.2)
@@ -375,7 +491,7 @@ def main():
     if SIM:
         x0, x1, y0, y1 = 6.8, 8.9, 4.75, 7.15
         xg = 0.5*(x0 + x1)
-        box(ax, x0, y0, x1, y1, COL_MHD, 'Gas dynamics')
+        box(ax, x0, y0, x1, y1, COL_MHD, 'Gas Dynamics')
         s, fs = LABELS['mhd_body']
         ax.text(xg, 6.45, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
