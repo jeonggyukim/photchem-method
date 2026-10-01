@@ -97,8 +97,8 @@ LABELS = {
                        r'v_{\rm A,i}$', 14.5),
         'rad_to_cr': (r'$\mathcal{E}_{\rm rad}$', 15.5),
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
-        'rad_to_mhd': ('force\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
-        'cr_to_mhd': ('force\n' r'$\mathbf{G}$', 14.5),
+        'rad_to_mhd': ('radiation\npressure\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
+        'cr_to_mhd': ('CR\npressure\n' r'$\mathbf{G}$', 14.5),
         'chem_to_mhd': ('net heating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
         'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 19),
         'mhd_note': ('gravity\nturbulence\nstar formation\ngalactic shear\n'
