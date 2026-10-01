@@ -77,8 +77,9 @@ LABELS = {
         'rad_to_mhd': (r'$\mathbf{f}_{\rm rad}$', 19),
         'cr_to_mhd': (r'$\mathbf{G}$', 19),
         'chem_to_mhd': (r'$n\Gamma - n^2\Lambda$', 19),
-        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 17),
-        'mhd_note': ('star formation\ngravity\ngalactic shear\nstellar feedback', 15),
+        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 21),
+        'mhd_note': ('gravity\nturbulence\nstar formation\ngalactic shear\n'
+                     'stellar feedback', 15),
     },
     'paper': {
         'point': ('point sources: adaptive rays\nthat split as they spread', 10.5),
@@ -87,7 +88,7 @@ LABELS = {
                         r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
                         r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 14.5),
         'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
-                        r'shielding $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
+                        r'shielding columns $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
                        r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
                        r'$\Gamma_{\rm st}$', 14.5),
@@ -98,11 +99,11 @@ LABELS = {
         'rad_to_cr_note': ('inverse-\nCompton\nlosses\nof CR e$^-$', 11.5),
         'rad_to_mhd': ('force\n' r'$\mathbf{f}_{\rm rad}$', 14.5),
         'cr_to_mhd': ('force\n' r'$\mathbf{G}$', 14.5),
-        'chem_to_mhd': ('net\nheating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
-        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 15),
-        'mhd_note': ('star formation\ngravity\ngalactic shear\nstellar feedback', 14),
-        'species': ('NCR or GOW17 network (H, C, O, ... and O, S, N ion ladders); '
-                    r'gas temperature $T$', 10),
+        'chem_to_mhd': ('net heating\n' r'$n\Gamma - n^2\Lambda$', 14.5),
+        'mhd_body': (r'$\rho,\ \mathbf{v},\ \mathbf{B}$', 19),
+        'mhd_note': ('gravity\nturbulence\nstar formation\ngalactic shear\n'
+                     'stellar feedback', 14),
+        'species': ('', 10),
     },
 }[STYLE]
 
@@ -329,7 +330,7 @@ def main():
     # between it and the upper boxes is narrower there; the paper labels run to four
     # lines and keep the full gap.
     ct = 2.55 if PAPER else 3.1
-    cb = 0.6 if PAPER else 1.1
+    cb = 0.75 if PAPER else 1.1
     bot = cb - 0.15
 
     def gy(y):
@@ -428,8 +429,8 @@ def main():
         r'\nabla P_{\rm c} = -\mathbf{G} - \Lambda_{\rm coll}n_{\rm H}'
         r'\dfrac{\mathbf{F}_{\rm c}}{v_{\rm p}^2}$',
         r'$\mathbf{G} \equiv \sigma_{\rm tot}\cdot'
-        r'[\mathbf{F}_{\rm c} - \frac{4}{3}\mathbf{v}e_{\rm c}]$',
-        r'$\sigma_{\rm tot}^{-1} = \sigma_{\parallel}^{-1} + '
+        r'[\mathbf{F}_{\rm c} - \frac{4}{3}\mathbf{v}e_{\rm c}],\ \ '
+        r'\sigma_{\rm tot}^{-1} = \sigma_{\parallel}^{-1} + '
         r'\dfrac{v_{\rm A,i}\,(P_{\rm c} + e_{\rm c})}'
         r'{|\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|}$',
         r'$\sigma_{\parallel,\rm NLL} \propto |\hat{\mathbf{B}}\cdot\nabla P_{\rm c}|^{1/2}'
@@ -438,7 +439,7 @@ def main():
         r'\,n_{\rm i}^{-1/2}\,n_{\rm n}^{-1}$',
     ]
     # picture B reaches lower, so the equations start lower and sit closer
-    y_eq, dy_eq = (6.95, 0.53) if CRPIC == 'B' else (7.2, 0.58)
+    y_eq, dy_eq = (6.85, 0.62) if CRPIC == 'B' else (7.1, 0.7)
     for k, s in enumerate(cr_eq):
         ax.text(9.125 + ocr, y_eq - dy_eq*k, s, ha='center', va='center', fontsize=13,
                 color='0.1')
@@ -496,10 +497,10 @@ def main():
         xg = 0.5*(x0 + x1)
         box(ax, x0, y0, x1, y1, COL_MHD, 'Gas Dynamics')
         s, fs = LABELS['mhd_body']
-        ax.text(xg, 6.45, s, ha='center', va='center', fontsize=fs, color='0.1')
+        ax.text(xg, 6.5, s, ha='center', va='center', fontsize=fs, color='0.1')
         s, fs = LABELS['mhd_note']
-        ax.text(xg, 5.45, s, ha='center', va='center', fontsize=fs, color=TXT,
-                linespacing=1.3)
+        ax.text(xg, 5.4, s, ha='center', va='center', fontsize=fs, color=TXT,
+                linespacing=1.25)
         y_f = 5.75
         arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)
         arrow(ax, (mx(6.48 + xc), y_f), (mx(x1 + 0.02), y_f), COL_CR)

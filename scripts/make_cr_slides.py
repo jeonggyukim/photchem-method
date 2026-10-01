@@ -18,9 +18,10 @@ import sys
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Inches, Pt
+from pptx.oxml.ns import qn
+from pptx.util import Emu, Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', 'figures')
@@ -79,6 +80,172 @@ def bullets(slide, items, top=Inches(1.15), size=18):
         p.space_after = Pt(6)
         p.alignment = PP_ALIGN.LEFT
 
+
+# 0. phases of the ISM -----------------------------------------------------------------
+# Native shapes, so the slide stays editable.  Positions are taken from the SNU
+# colloquium slide (2026-05-SNU-Colloquium, page 20 of compiled-slides.pdf) in its
+# 2000-px-wide frame, shrunk by PH_S and shifted below the title bar.
+PH_S, PH_DY = 0.95, 0.25
+RED = RGBColor(0xE8, 0x1E, 0x1E)
+BLUE = RGBColor(0x10, 0x3C, 0xF0)
+DGREEN = RGBColor(0x1A, 0x7A, 0x1A)
+ARROW = RGBColor(0x1B, 0x4F, 0x7A)
+BLACK = RGBColor(0x10, 0x10, 0x10)
+SANS = 'Helvetica'
+
+
+def px(x):
+    return Emu(int(Inches(13.333/2000*x*PH_S) + (W - W*PH_S)/2))
+
+
+def py(y):
+    return Emu(int(Inches(13.333/2000*y*PH_S + PH_DY)))
+
+
+def pl(n):
+    return Emu(int(Inches(13.333/2000*n*PH_S)))
+
+
+def ph_box(slide, x0, y0, x1, y1, lines, fill=None, border=BLACK, lw=1.0, size=17):
+    """A rounded box with centred lines of (text, colour) runs."""
+    sh = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, px(x0), py(y0),
+                                pl(x1 - x0), pl(y1 - y0))
+    sh.adjustments[0] = 0.12
+    if fill is None:
+        sh.fill.solid()
+        sh.fill.fore_color.rgb = WHITE
+    else:
+        sh.fill.solid()
+        sh.fill.fore_color.rgb = fill
+    sh.line.color.rgb = border
+    sh.line.width = Pt(lw)
+    sh.shadow.inherit = False
+    tf = sh.text_frame
+    tf.word_wrap = False
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    for k, (text, color) in enumerate(lines):
+        p = tf.paragraphs[0] if k == 0 else tf.add_paragraph()
+        p.alignment = PP_ALIGN.CENTER
+        r = p.add_run()
+        r.text = text
+        r.font.size = Pt(size)
+        r.font.name = SANS
+        r.font.color.rgb = color
+    return sh
+
+
+def ph_line(slide, x0, y0, x1, y1, color=BLACK, lw=1.0, head=False):
+    c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, px(x0), py(y0), px(x1), py(y1))
+    c.line.color.rgb = color
+    c.line.width = Pt(lw)
+    if head:
+        ln = c.line._get_or_add_ln()
+        tail = ln.makeelement(qn('a:tailEnd'), {'type': 'triangle', 'w': 'med',
+                                                 'len': 'med'})
+        ln.append(tail)
+    return c
+
+
+def ph_text(slide, x, y, text, color=DGREEN, size=14, bold=True, w=420, h=60, rot=0,
+            font=SANS, align=PP_ALIGN.CENTER):
+    """Text centred at (x, y)."""
+    tb = slide.shapes.add_textbox(px(x - w/2), py(y - h/2), pl(w), pl(h))
+    tb.rotation = rot
+    tf = tb.text_frame
+    tf.word_wrap = False
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    for k, line in enumerate(text.split('\n')):
+        p = tf.paragraphs[0] if k == 0 else tf.add_paragraph()
+        p.alignment = align
+        r = p.add_run()
+        r.text = line
+        r.font.size = Pt(size)
+        r.font.bold = bold
+        r.font.name = font
+        r.font.color.rgb = color
+    return tb
+
+
+s = prs.slides.add_slide(BLANK)
+title(s, 'Phases of the ISM')
+tb = s.shapes.add_textbox(Inches(8.8), Inches(0.25), Inches(4.2), Inches(0.45))
+tb.text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
+r = tb.text_frame.paragraphs[0].add_run()
+r.text = 'Sec. 2 in Kim, J.-G. et al. (2023)'
+r.font.size, r.font.color.rgb = Pt(16), WHITE
+# axes
+ph_line(s, 135, 810, 135, 280, lw=3.5, head=True)
+ph_line(s, 90, 757, 1930, 757, lw=3.5, head=True)
+ph_text(s, 78, 470, 'HI fraction', color=BLACK, size=28, bold=False, w=420, h=70, rot=270)
+for x, t in ((340, '10'), (610, '10²'), (1175, '10⁴'), (1670, '10⁶')):
+    ph_text(s, x, 802, t, color=BLACK, size=24, bold=False, w=160, h=60,
+            font='Times New Roman')
+ph_text(s, 985, 862, 'Temperature [K]', color=BLACK, size=24, bold=False, w=600, h=60)
+# phases
+ph_box(s, 412, 276, 1266, 423, [('neutral atomic', BLACK)], fill=RGBColor(0xC0, 0xC0, 0xC0),
+       lw=3.0, size=20)
+ph_box(s, 265, 595, 623, 738, [('cold', BLACK), ('molecular', BLACK)],
+       fill=RGBColor(0x00, 0x99, 0xFF), lw=3.0, size=20)
+ph_box(s, 1001, 595, 1302, 738, [('warm', BLACK), ('ionized', BLACK)],
+       fill=RGBColor(0xFD, 0xD4, 0x7C), lw=3.0, size=20)
+ph_box(s, 1500, 595, 1897, 738, [('hot', BLACK), ('ionized', BLACK)],
+       fill=RGBColor(0xEE, 0x22, 0x11), lw=3.0, size=20)
+# transitions
+for a in ((430, 595, 548, 427), (583, 425, 470, 590), (1078, 428, 1170, 588),
+          (1200, 590, 1108, 428), (1266, 345, 1660, 595), (1305, 636, 1498, 636),
+          (1498, 665, 1307, 665)):
+    ph_line(s, *a, color=ARROW, lw=3.0, head=True)
+ph_text(s, 315, 507, 'CR ionization,\nphotodissociation', w=330, h=90)
+ph_text(s, 695, 512, 'grain-catalytic\nreactions,\nUV shielding,\ncompression', w=260, h=170)
+ph_text(s, 968, 481, 'photoionization', w=270)
+ph_text(s, 1265, 481, 'recombination', w=250)
+ph_text(s, 1468, 440, 'shock heating/ionization', w=460, rot=32)
+ph_text(s, 1403, 583, 'thermal\nconduction', w=220, h=90)
+ph_text(s, 1416, 705, 'turbulent\nmixing', w=220, h=90)
+# heating (red) and cooling (blue) of each phase
+ph_box(s, 398, 133, 1281, 251, [('photoelectric (PE) effect + cosmic rays (CRs)', RED),
+                                ('CII, OI, Lyα, recomb. on grains', BLUE)])
+ph_line(s, 785, 251, 800, 276)
+ph_box(s, 240, 895, 650, 1075, [('dust–gas interaction', BLACK), ('PE + CR + H₂', RED),
+                                ('CO rotational lines, CI', BLUE)])
+ph_line(s, 462, 740, 492, 895)
+ph_box(s, 776, 925, 1353, 1056, [('photoionization heating', RED),
+                                 ('nebular metal lines, free–free', BLUE)])
+ph_line(s, 1218, 740, 1298, 925)
+ph_box(s, 1399, 918, 1880, 1050, [('metal ions in CIE, free–free', BLUE)])
+ph_line(s, 1765, 740, 1813, 918)
+ph_box(s, 1430, 140, 1700, 245, [('Heating', RED), ('Cooling', BLUE)])
+notes(s, """
+The ISM as phases in the plane of temperature and neutral-hydrogen fraction (Kim, J.-G.
+et al. 2023, Sec. 2). Red: the main heating; blue: the main cooling.
+
+Neutral atomic gas (warm and cold neutral medium, 10²–10⁴ K): heated by the
+photoelectric effect on small grains and PAHs under the FUV field, and by cosmic-ray
+ionization; cooled by [CII] 158 μm and [OI] 63 μm fine-structure lines, Lyα at the warm
+end, and electron recombination onto grains.
+
+Cold molecular gas (~10–30 K): shielded from FUV, so photoelectric heating weakens and
+cosmic rays and H₂ formation/dissociation heating matter; cooled by CO rotational lines
+and [CI]; at high density gas and dust exchange energy through collisions (heating or
+cooling depending on T − T_d).
+
+Warm ionized gas (~10⁴ K, HII regions and diffuse ionized gas): heated by
+photoionization; cooled by collisionally excited nebular metal lines and free–free.
+
+Hot ionized gas (10⁶ K and above, supernova-heated): cooled by metal ions in collisional
+ionization equilibrium and free–free.
+
+Transitions. Molecular <-> atomic: photodissociation and cosmic-ray ionization destroy
+H₂; grain-catalysed formation, UV shielding and compression build it. Atomic <-> warm
+ionized: photoionization and recombination. Atomic -> hot: shock heating and ionization
+by supernova blast waves. Warm <-> hot: thermal conduction heats the warm gas at
+interfaces; turbulent mixing cools the hot gas.
+
+The point for this talk: every phase boundary is set by radiation (FUV, LyC), cosmic rays,
+or the gas dynamics, which is why TIGRESS++ couples all four solvers on the next slide.
+""")
 
 # 1. the coupled system ---------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
