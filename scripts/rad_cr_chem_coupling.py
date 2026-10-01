@@ -235,7 +235,7 @@ def draw_cr_loop(ax, x0, y):
     nodes = {'grad': (x0 + 0.75, y, r'$\nabla P_{\rm c}$'),
              'wave': (x0 + 2.6, y, r'waves $\delta\mathbf{B}$'),
              'scat': (x0 + 4.45, y, r'$\sigma_\parallel$'),
-             'damp': (x0 + 2.6, y - 0.5, r'damping: IN ($n_{\rm n}$), NLL ($T$)')}
+             'damp': (x0 + 2.6, y - 0.5, 'wave damping: ion–neutral, nonlinear Landau')}
     for xn, yn, s in nodes.values():
         ax.text(xn, yn, s, ha='center', va='center', fontsize=13, color='0.1', zorder=4,
                 bbox=dict(boxstyle='round,pad=0.25', fc='white', ec=COL_CR, lw=1.2))
