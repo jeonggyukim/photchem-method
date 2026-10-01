@@ -432,7 +432,7 @@ the wave amplitude, so the gas composition and temperature decide how fast CRs m
 
 # 4. energy losses ------------------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-title(s, 'Cosmic-ray energy losses')
+title(s, 'Cosmic-ray energy losses (order of magnitude)')
 bullets(s, [
     (0, 'Protons: ionization/Coulomb at low energy, pion production above ~1 GeV'),
     (1, 'Bethe: dE/dt ∝ 1/β, so t_loss ∝ E^3/2 (non-relativistic), ∝ E (relativistic)'),
@@ -447,10 +447,13 @@ bullets(s, [
     (1, 'one ~GeV group is transported; ξ_cr ∝ e_c with a fixed spectrum, attenuated by N_eff'),
 ])
 notes(s, """
+All times on this slide are order of magnitude. t_IC is computed directly from
+P = (4/3) σ_T c γ² U_rad. t_π uses σ_pp ≈ 30 mb and inelasticity ≈ 0.5. The ionization
+times use the Mannheim & Schlickeiser (1994) fit, written from memory and not checked
+against the paper: |dE/dt| ≈ 1.8×10⁻⁷ [2β²/(10⁻⁶ + 2β³)] n_H eV s⁻¹ (factor ~2).
+
 Ionization and Coulomb losses follow the Bethe stopping power, dE/dx ∝ Z²/β², so
-dE/dt = v dE/dx ∝ 1/β: slow particles lose faster and have less to lose. Times above
-use the Mannheim & Schlickeiser (1994) fit |dE/dt| ≈ 1.8×10⁻⁷ [2β²/(10⁻⁶ + 2β³)] n_H eV s⁻¹
-(order of magnitude, factor ~2). Pion production has a threshold near 280 MeV and a
+dE/dt = v dE/dx ∝ 1/β: slow particles lose faster and have less to lose. Pion production has a threshold near 280 MeV and a
 nearly constant cross-section. In ionized gas Coulomb losses on free electrons are a few
 times the neutral-gas ionization losses.
 
