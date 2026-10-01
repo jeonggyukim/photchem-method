@@ -244,13 +244,27 @@ def draw_cr_loop(ax, x0, y):
              'wave': (x0 + 2.6, y, r'waves $\delta\mathbf{B}$'),
              'scat': (x0 + 4.45, y, r'$\sigma_\parallel$'),
              'damp': (x0 + 2.6, y - 0.5, 'wave damping: ion–neutral, nonlinear Landau')}
-    for xn, yn, s in nodes.values():
-        ax.text(xn, yn, s, ha='center', va='center', fontsize=13, color='0.1', zorder=4,
-                bbox=dict(boxstyle='round,pad=0.25', fc='white', ec=COL_CR, lw=1.2))
+    texts = {}
+    for key, (xn, yn, s) in nodes.items():
+        texts[key] = ax.text(xn, yn, s, ha='center', va='center', fontsize=13,
+                             color='0.1', zorder=4,
+                             bbox=dict(boxstyle='round,pad=0.25', fc='white', ec=COL_CR,
+                                       lw=1.2))
+
+    # the boxes' extents are known only once drawn: draw, then run each arrow from the
+    # right edge of one box to the left edge of the next, whatever the label widths
+    ax.figure.canvas.draw()
+    inv = ax.transData.inverted()
+
+    def edges(key):
+        bb = texts[key].get_bbox_patch().get_window_extent()
+        return inv.transform((bb.x0, bb.y0))[0], inv.transform((bb.x1, bb.y1))[0]
 
     def link(a, b, text, rad=0.0, dy=0.13, col=COL_CR):
         (xa_, ya_, _), (xb_, yb_, _) = nodes[a], nodes[b]
-        ax.add_patch(FancyArrowPatch((xa_, ya_), (xb_, yb_), shrinkA=26, shrinkB=26,
+        gap = 0.06
+        ax.add_patch(FancyArrowPatch((edges(a)[1] + gap, ya_), (edges(b)[0] - gap, yb_),
+                                     shrinkA=0, shrinkB=0,
                                      arrowstyle='-|>,head_length=6,head_width=3.5',
                                      connectionstyle='arc3,rad=%g' % rad, color=col,
                                      lw=1.6, zorder=3))
