@@ -163,50 +163,52 @@ def draw_cosmic_ray(ax, x0, x1, y):
     ax.plot(xs[-1], ys[-1], 'o', ms=6, color=COL_CR, zorder=4)
 
 
-def atom(ax, x, y, r, fc, label=None, lc='white'):
-    ax.add_patch(Circle((x, y), r, fc=fc, ec='0.25', lw=0.8, zorder=3))
+def atom(ax, x, y, r, fc, label=None, lc='white', k=1.0):
+    ax.add_patch(Circle((x, y), k*r, fc=fc, ec='0.25', lw=0.8, zorder=3))
     if label:
-        ax.text(x, y, label, ha='center', va='center', fontsize=8, color=lc,
+        ax.text(x, y, label, ha='center', va='center', fontsize=8*k, color=lc,
                 fontweight='bold', zorder=4)
 
 
-def photon(ax, x, y, label, color):
-    """A wavy photon arriving at (x, y) from the upper left, labelled at its tail."""
+def photon(ax, x, y, label, color, k=1.0):
+    """A wavy photon arriving at (x, y) from the upper left, labelled at its tail;
+    k scales the drawing."""
     s = np.linspace(0, 1, 200)
-    ax.plot(x - 0.5 + 0.36*s, y + 0.22 - 0.16*s + 0.035*np.sin(2*np.pi*5*s),
-            color=color, lw=1.2)
-    ax.annotate('', xy=(x - 0.1, y + 0.04), xytext=(x - 0.16, y + 0.07),
-                arrowprops=dict(arrowstyle='-|>', color=color, lw=1.2))
-    ax.text(x - 0.5, y + 0.25, label, fontsize=11, color=color, ha='center',
+    ax.plot(x + k*(-0.5 + 0.36*s), y + k*(0.22 - 0.16*s + 0.035*np.sin(2*np.pi*5*s)),
+            color=color, lw=1.2*k)
+    ax.annotate('', xy=(x - 0.1*k, y + 0.04*k), xytext=(x - 0.16*k, y + 0.07*k),
+                arrowprops=dict(arrowstyle='-|>', color=color, lw=1.2*k))
+    ax.text(x - 0.5*k, y + 0.25*k, label, fontsize=11*k, color=color, ha='center',
             va='bottom')
 
 
-def electron(ax, x, y):
+def electron(ax, x, y, k=1.0):
     """An electron leaving (x, y) toward the upper right."""
-    ax.annotate('', xy=(x + 0.27, y + 0.2), xytext=(x + 0.1, y + 0.07),
-                arrowprops=dict(arrowstyle='-|>', color=COL_CR, lw=1.0))
-    atom(ax, x + 0.31, y + 0.23, 0.05, COL_CR)
-    ax.text(x + 0.39, y + 0.25, r'e$^-$', fontsize=9, va='center', color=TXT)
+    ax.annotate('', xy=(x + 0.27*k, y + 0.2*k), xytext=(x + 0.1*k, y + 0.07*k),
+                arrowprops=dict(arrowstyle='-|>', color=COL_CR, lw=1.0*k))
+    atom(ax, x + 0.31*k, y + 0.23*k, 0.05, COL_CR, k=k)
+    ax.text(x + 0.39*k, y + 0.25*k, r'e$^-$', fontsize=9*k, va='center', color=TXT)
 
 
-def draw_molecules(ax, x, y):
+def draw_molecules(ax, x, y, k=1.0):
     """Top row: a Lyman-continuum photon ionizing H, and a far-ultraviolet photon
-    ejecting a photoelectron from a grain.  Bottom row: H2, C+ and CO."""
-    yt, yb = y + 0.2, y - 0.33
-    photon(ax, x, yt, 'LyC', '#8E44AD')
-    atom(ax, x, yt, 0.13, 'white', r'H$^+$', '0.2')
-    electron(ax, x, yt)
-    photon(ax, x + 1.25, yt, 'FUV', '#D55E00')
-    atom(ax, x + 1.25, yt, 0.15, '#A0785A', 'gr')
-    electron(ax, x + 1.25, yt)
+    ejecting a photoelectron from a grain.  Bottom row: H2, C+ and CO.  k scales
+    the drawing about (x, y)."""
+    yt, yb = y + 0.2*k, y - 0.33*k
+    photon(ax, x, yt, 'LyC', '#8E44AD', k)
+    atom(ax, x, yt, 0.13, 'white', r'H$^+$', '0.2', k)
+    electron(ax, x, yt, k)
+    photon(ax, x + 1.25*k, yt, 'FUV', '#D55E00', k)
+    atom(ax, x + 1.25*k, yt, 0.15, '#A0785A', 'gr', k=k)
+    electron(ax, x + 1.25*k, yt, k)
 
-    ax.plot([x - 0.04, x + 0.24], [yb, yb], color='0.25', lw=2.5, zorder=2)
-    atom(ax, x - 0.04, yb, 0.13, 'white', 'H', '0.2')
-    atom(ax, x + 0.24, yb, 0.13, 'white', 'H', '0.2')
-    atom(ax, x + 0.75, yb, 0.15, '0.3', r'C$^+$')
-    ax.plot([x + 1.18, x + 1.42], [yb, yb], color='0.25', lw=2.5, zorder=2)
-    atom(ax, x + 1.18, yb, 0.14, '0.3', 'C')
-    atom(ax, x + 1.42, yb, 0.14, '#D55E00', 'O')
+    ax.plot([x - 0.04*k, x + 0.24*k], [yb, yb], color='0.25', lw=2.5*k, zorder=2)
+    atom(ax, x - 0.04*k, yb, 0.13, 'white', 'H', '0.2', k)
+    atom(ax, x + 0.24*k, yb, 0.13, 'white', 'H', '0.2', k)
+    atom(ax, x + 0.75*k, yb, 0.15, '0.3', r'C$^+$', k=k)
+    ax.plot([x + 1.18*k, x + 1.42*k], [yb, yb], color='0.25', lw=2.5*k, zorder=2)
+    atom(ax, x + 1.18*k, yb, 0.14, '0.3', 'C', k=k)
+    atom(ax, x + 1.42*k, yb, 0.14, '#D55E00', 'O', k=k)
 
 
 def main():
@@ -216,7 +218,16 @@ def main():
     xc = 3.7 if SIM else 0.0    # shift of the cosmic-ray box
     xm = 1.85 if SIM else 0.0   # shift of the chemistry box
     width = 12.0 + xc
-    bot = 0.6
+    # The chemistry box spans cb..ct. The talk labels are one line each, so the gap
+    # between it and the upper boxes is narrower there; the paper labels run to four
+    # lines and keep the full gap.
+    ct = 2.55 if PAPER else 3.1
+    cb = 0.6 if PAPER else 1.1
+    bot = cb - 0.15
+
+    def gy(y):
+        """Map a height in the gap as laid out for ct = 2.55 to the actual gap."""
+        return 0.5*(4.4 + ct) + (y - 3.475)*(4.4 - ct)/1.85
     fig, ax = plt.subplots(figsize=(width, top + 0.25 - bot))
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.set_xlim(0, width)
@@ -264,9 +275,9 @@ def main():
             linespacing=1.25)
     # the transfer equation, then the energy density (inverse-Compton losses) and the
     # flux (radiation force) that the other boxes take from it
-    ax.text(2.92 + orad, 5.08, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
+    ax.text(2.92 + orad, 5.25, r'$\hat{\mathbf{n}}\cdot\nabla I_\nu = -\chi_\nu I_\nu'
             r' + \eta_\nu$', ha='center', va='center', fontsize=15, color='0.1')
-    ax.text(2.92 + orad, 4.62, r'$\mathcal{E}_{\rm rad} = \dfrac{1}{c}\int\!\oint I_\nu'
+    ax.text(2.92 + orad, 4.8, r'$\mathcal{E}_{\rm rad} = \dfrac{1}{c}\int\!\oint I_\nu'
             r'\,d\Omega\,d\nu,\quad \mathbf{F}_{\rm rad} = \int\!\oint I_\nu\,'
             r'\hat{\mathbf{n}}\,d\Omega\,d\nu$', ha='center', va='center', fontsize=14,
             color='0.1')
@@ -319,40 +330,42 @@ def main():
                 color='0.1')
 
     # photochemistry
-    box(ax, 2.9 + xm, 0.75, 9.1 + xm, 2.55, COL_CHEM, 'Photochemistry and thermal balance')
-    dy = 0.17 if PAPER else 0.0   # room for the species line below
-    draw_molecules(ax, 3.6 + xm, 1.45 + dy)
-    ax.text(5.6 + xm, 1.6 + dy, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
+    box(ax, 2.6 + xm, cb, 9.4 + xm, ct, COL_CHEM, 'Photochemistry and thermal balance')
+    # molecules and equations sit 1.0-1.2 below the top; the paper's species line
+    # takes the bottom 0.3
+    ym = ct - (1.0 if PAPER else 1.2)
+    draw_molecules(ax, (3.35 if PAPER else 3.45) + xm, ym - 0.15, k=1.1 if PAPER else 1.3)
+    ax.text(5.85 + xm, ym, r'$\dfrac{dx_i}{dt} = C_i - D_i\,x_i$', ha='left',
             va='center', fontsize=15, color='0.1')
-    ax.text(7.35 + xm, 1.6 + dy, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
+    ax.text(7.6 + xm, ym, r'$\dfrac{de}{dt} = n\Gamma - n^2\Lambda$', ha='left',
             va='center', fontsize=15, color='0.1')
     s, fs = LABELS['species']
     if s:
-        ax.text(6.0 + xm, 0.95, s, ha='center', va='center', fontsize=fs, color=TXT)
+        ax.text(6.0 + xm, cb + 0.15, s, ha='center', va='center', fontsize=fs, color=TXT)
 
     # radiation <-> chemistry: each label sits on the side of its own arrow, the
     # downward one inside and the upward one outside, at different heights so that
     # neither runs into the other.
     xr = 5.3 if SIM else 4.65   # radiation -> chemistry; chemistry -> radiation 0.35 left
-    arrow(ax, (mx(xr), 4.38), (mx(xr), 2.57), COL_RAD)
-    arrow(ax, (mx(xr - 0.35), 2.57), (mx(xr - 0.35), 4.38), COL_CHEM)
+    arrow(ax, (mx(xr), 4.38), (mx(xr), ct + 0.02), COL_RAD)
+    arrow(ax, (mx(xr - 0.35), ct + 0.02), (mx(xr - 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['rad_to_chem']
-    ax.text(mx(xr + 0.2), 3.78 if PAPER else 3.85, s, ha=hflip('left'), va='center',
-            fontsize=fs, color=COL_RAD, linespacing=1.25)
+    ax.text(mx(xr + 0.2), gy(3.78 if PAPER else 3.85), s, ha=hflip('left'),
+            va='center', fontsize=fs, color=COL_RAD, linespacing=1.25)
     s, fs = LABELS['chem_to_rad']
-    ax.text(mx(xr - 0.55), 3.5, s, ha=hflip('right'), va='center', fontsize=fs,
+    ax.text(mx(xr - 0.55), gy(3.5), s, ha=hflip('right'), va='center', fontsize=fs,
             color=COL_CHEM, linespacing=1.25)
 
     # cosmic rays <-> chemistry; with --mhd the cosmic-ray label goes higher, above
     # the label of the chemistry -> gas arrow.
     xq = 10.4 if SIM else 7.35   # cosmic rays -> chemistry; chemistry -> CR 0.35 right
-    arrow(ax, (mx(xq), 4.38), (mx(xq), 2.57), COL_CR)
-    arrow(ax, (mx(xq + 0.35), 2.57), (mx(xq + 0.35), 4.38), COL_CHEM)
+    arrow(ax, (mx(xq), 4.38), (mx(xq), ct + 0.02), COL_CR)
+    arrow(ax, (mx(xq + 0.35), ct + 0.02), (mx(xq + 0.35), 4.38), COL_CHEM)
     s, fs = LABELS['cr_to_chem']
-    ax.text(mx(xq - 0.2), 3.85 if SIM else (2.88 if PAPER else 3.0), s,
+    ax.text(mx(xq - 0.2), gy(3.85 if SIM else (2.88 if PAPER else 3.0)), s,
             ha=hflip('right'), va='center', fontsize=fs, color=COL_CR, linespacing=1.25)
     s, fs = LABELS['chem_to_cr']
-    ax.text(mx(xq + 0.55), 3.5, s, ha=hflip('left'), va='center', fontsize=fs,
+    ax.text(mx(xq + 0.55), gy(3.5), s, ha=hflip('left'), va='center', fontsize=fs,
             color=COL_CHEM, linespacing=1.25)
 
     # gas dynamics: radiation force, cosmic-ray force and heating, and the net heating
@@ -369,7 +382,7 @@ def main():
         y_f = 5.75
         arrow(ax, (mx(5.52), y_f), (mx(x0 - 0.02), y_f), COL_RAD)
         arrow(ax, (mx(6.48 + xc), y_f), (mx(x1 + 0.02), y_f), COL_CR)
-        arrow(ax, (xg, 2.57), (xg, y0 - 0.02), COL_CHEM)
+        arrow(ax, (xg, ct + 0.02), (xg, y0 - 0.02), COL_CHEM)
         s, fs = LABELS['rad_to_mhd']
         ax.text(mx(0.5*(5.5 + x0)), y_f + 0.12, s, ha='center', va='bottom',
                 fontsize=fs, color=COL_RAD, linespacing=1.15)
@@ -377,7 +390,8 @@ def main():
         ax.text(mx(0.5*(x1 + 6.5 + xc)), y_f + 0.12, s, ha='center', va='bottom',
                 fontsize=fs, color=COL_CR, linespacing=1.15)
         s, fs = LABELS['chem_to_mhd']
-        ax.text(mx(xg + 0.15), 3.0, s, ha=hflip('left'), va='center', fontsize=fs,
+        ax.text(mx(xg + 0.15), gy(3.0), s, ha=hflip('left'), va='center',
+                fontsize=fs,
                 color=COL_CHEM, linespacing=1.15)
 
     os.makedirs(OUT, exist_ok=True)
