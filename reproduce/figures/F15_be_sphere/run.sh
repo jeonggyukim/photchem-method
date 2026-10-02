@@ -6,8 +6,8 @@
 # only <photchem>/mode and the build differ.
 #   bash run.sh [build|run|all]   (default all)
 set -e
-TIGRIS=${TIGRIS:-$HOME/Projects/tigris-gow17}
-RUNS=${RUNS:-$HOME/Documents/photchem-postproc/runs/be_net}
+TIGRIS=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
+RUNS=${RUNS:-${PHOTCHEM_POSTPROC_RUNS:?set PHOTCHEM_POSTPROC_RUNS to the post-processing runs directory}/be_net}
 INP=$TIGRIS/inputs/photchem/athinput.cloud_postproc
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 MPIINC=$(mpicxx --showme:incdirs | tr ' ' '\n' | head -1)

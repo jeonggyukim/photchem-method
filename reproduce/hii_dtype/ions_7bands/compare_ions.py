@@ -8,16 +8,18 @@ last snapshot.
 """
 import glob
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
 rundir, out = sys.argv[1], sys.argv[2]
 m2 = sys.argv[3] if len(sys.argv) > 3 else None
-ref = '/Users/jgkim/Projects/tigris-gow17/tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt'
+ref = paths.tigris('tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt')
 NBAND, NION = 7, 5
 MUH, KB = 2.34335276e-24, 1.380649e-16
 P_TO_PK = MUH*1e10/KB

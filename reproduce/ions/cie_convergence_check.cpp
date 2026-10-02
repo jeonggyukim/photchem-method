@@ -4,7 +4,7 @@
 // with CHIANTI's stages at and above it summed. CHIANTI's CIE has no charge
 // transfer; the network does (with the H0 left at that T).
 // Build: configure tigris-gow17 with -gow17 --gow17_ions=O2,S3,N2 (defs.hpp), then
-//   g++-16 -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src cie_convergence_check.cpp
+//   g++-16 -std=c++17 -O2 -I$TIGRIS_DIR/src cie_convergence_check.cpp
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -15,12 +15,12 @@
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
 #include "photchem/network/gow17_semi_implicit.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 
 // CHIANTI CIE fractions of element el at T, linear in log T between rows.
 std::vector<Real> Ioneq(const std::string &el, Real T) {
-  const std::string fn = std::string(getenv("HOME"))
-                         + "/Projects/tigris-gow17/inputs/tables/chianti_v11/ioneq_" + el + ".txt";
+  const std::string fn = TigrisDir() + "inputs/tables/chianti_v11/ioneq_" + el + ".txt";
   std::ifstream f(fn);
   std::string line;
   std::vector<std::vector<Real>> rows;
@@ -45,7 +45,7 @@ std::vector<Real> Ioneq(const std::string &el, Real T) {
 }
 
 int main() {
-  const std::string d = std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/rates/";
+  const std::string d = TigrisDir() + "inputs/tables/rates/";
   Rates::RecombRate rec;
   rec.Load(d + "badnell_rr_2023.dat", d + "badnell_dr_C_2023.dat", d + "badnell_dr_E_2023.dat");
   Rates::CollIonRate ci;

@@ -6,9 +6,11 @@ The top tracked stage is compared with CHIANTI's stages at and above it summed,
 since the network has no ion above it (the CIE pool return is not wired).
 """
 import sys
+from pathlib import Path
 import numpy as np
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
 # ism units: density unit m_H/cm^3, rho = 1.4 n_H; pressure unit m_H (km/s)^2
 MH, KB, MU_H = 1.6735575e-24, 1.380649e-16, 1.4
@@ -19,7 +21,7 @@ IONS = ['O++', 'S+', 'S++', 'S3+', 'N+', 'N++']
 CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1,
           'Si+': 1, 'O++': 2, 'S+': 1, 'S++': 2, 'S3+': 3, 'N+': 1, 'N++': 2}
 STAGES = {'O': ['O+', 'O++'], 'S': ['S+', 'S++', 'S3+'], 'N': ['N+', 'N++']}
-CHIANTI = '/Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ioneq_%s.txt'
+CHIANTI = paths.tigris('inputs/tables/chianti_v11', 'ioneq_%s.txt')
 
 d = athena_read.athdf(sys.argv[1])
 names = CORE + IONS

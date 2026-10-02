@@ -2,7 +2,7 @@
 # F06 NCR reference: tst/regression/scripts/tests/photchem/equil.py, iprob = 0 (density
 # sweep), z_gas = z_dust = 1, interp_mode = 1. usage: run_ncr.sh WORKDIR
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 (cd $T && python3 configure.py -ncr --prob=photchem_equil \
    --include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw >/dev/null \
    && make clean >/dev/null && make -j8 >$W/build.out 2>&1) || { echo "build failed"; exit 1; }

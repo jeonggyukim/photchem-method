@@ -3,12 +3,16 @@ Each loop_time row holds the seconds rank 0 spent over the last ncycle_out cycle
 task list. Columns, per cycle: All, Photchem, hydro (TimeIntegratorTaskList), OpSplit,
 RaytPoint, and other = All minus the listed tasks, which is mostly output (the GOW17
 rad_snr runs write HDF5 every 0.005 code, the classic and NCR ones none). Writes
-cost_table.txt."""
+cost_table.txt. The runs are read under $PHOTCHEM_RUNS."""
 import glob
 import os
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BASE = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion')
+BASE = paths.env('PHOTCHEM_RUNS')
 RUNS = [('rad_snr', 'classic', 'M6_rad_snr/F13_series/run_classic'),
         ('rad_snr', 'NCR', 'M6_rad_snr/F13_series/run_ncr'),
         ('rad_snr', 'GOW17 core', 'M6_rad_snr/F13_series/run_core'),

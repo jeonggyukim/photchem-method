@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 int main() {
-  std::ifstream f(std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt");
+  std::ifstream f(TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt");
   std::string l; std::vector<std::vector<double>> tab;
   while (std::getline(f, l)) { if (l[0] == '#') continue; std::istringstream s(l); std::vector<double> r; double v; while (s >> v) r.push_back(v); if (r.size() == 10) tab.push_back(r); }
   const Real gamma = 5.0/3.0, time_cgs = 3.0856776e18/1.0e5, edens = 1.6738234e-24*1e10, nH = 1.0;
@@ -24,7 +25,7 @@ int main() {
   s.temperature_min_cooling = 1.0; s.temperature_max_cooling_nm = 1e9;
   s.Leff_CO_max = 3.0e20; s.H2_rovib_cooling = true; s.is_kgrH2_const = true;
   s.velocity_cgs = 1e5; s.length_cgs = 3.0856776e18; s.multi_d = true; s.three_d = true;
-  HotCIETable hot; hot.Load(std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt");
+  HotCIETable hot; hot.Load(TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt");
   const bool use_hot = std::getenv("HOT") != nullptr;
   Real rad[8] = {1, 1, 1, 1, 1, 1, 1, 2e-16};
   std::printf("%8s %12s %12s %12s %8s\n", "logT", "GOW17 C/nH^2", "NCR CIE", "ratio", "heat/cool");

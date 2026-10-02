@@ -8,15 +8,17 @@
 import os
 import sys
 import warnings
+from pathlib import Path
 
 import numpy as np
 
 from lambda_table import LambdaTable
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
 
 warnings.filterwarnings('ignore')
 HERE = os.path.dirname(os.path.abspath(__file__))
 CLOUDY = os.path.join(HERE, 'cloudy_rerun')
-PYATHENA = os.path.expanduser('~/Dropbox/Projects/pyathena')
 IONS = ['o_2', 'o_3', 's_2', 's_3', 's_4', 'n_2', 'n_3', 'ne_2', 'ne_3']
 
 
@@ -110,15 +112,13 @@ def check_cloudy():
 
 
 def read_pyathena_bb(element):
-    path = os.path.join(PYATHENA, 'data', 'microphysics', 'chianti_v11',
-                        f'cool_BB_{element}.txt')
+    path = paths.pyathena('data', 'microphysics', 'chianti_v11', f'cool_BB_{element}.txt')
     d = np.loadtxt(path, comments='#')
     return d[:, 0], d[:, 1:]
 
 
 def check_pyathena():
     print("\n3. Lambda at n_e = 1 cm^-3 vs pyathena [erg cm^3 s^-1]")
-    sys.path.insert(0, PYATHENA)
     import importlib
     el_name = {'o': 'O', 's': 'S', 'n': 'N', 'ne': 'Ne'}
     print(f"{'ion':5s} {'T[K]':>7s} {'this':>10s} {'pa_1D':>10s} "

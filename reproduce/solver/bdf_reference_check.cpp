@@ -7,7 +7,7 @@
 // Output per case: T and x (x_H+ for A and B, x_CO for C) of each, and the relative
 // differences.
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include -I/opt/homebrew/opt/sundials/include
 //   bdf_reference_check.cpp -L/opt/homebrew/opt/sundials/lib -lsundials_cvode
 //   -lsundials_nvecserial -lsundials_sunmatrixdense -lsundials_sunlinsoldense

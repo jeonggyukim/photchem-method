@@ -15,7 +15,7 @@ of the upper level (sum over the ion's levels = 1), all lines in .wgfa
 including those with only theoretical wavelengths.
 
 Run:
-    export XUVTOP=$HOME/Dropbox/Projects/CHIANTI_db
+    export XUVTOP=<the CHIANTI 11 database directory>
     python build_ion_cooling.py
 """
 import os

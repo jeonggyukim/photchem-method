@@ -4,7 +4,7 @@ Ions: He0-He1, N0-N2, O0-O2, S0-S3 (stage q = lower stage). T = 1e3, 3e3, 5e3, 8
 Processes: rec = RR+DR of X^(q+1) -> X^q; ci = X^q -> X^(q+1); ctrec = X^(q+1) + H0; ction = X^q + H+.
 
 ## Run
-Compile: `/opt/homebrew/bin/g++-16 -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src tigris_rates.cpp -o tigris_rates`
+Compile: `/opt/homebrew/bin/g++-16 -std=c++17 -O2 -I$TIGRIS_DIR/src tigris_rates.cpp -o tigris_rates`
 Tigris rates: `./tigris_rates > tigris_rates.csv`
 Compare: `/opt/homebrew/Caskroom/miniforge/base/envs/pyathena/bin/python compare_rates.py` (writes rate_comparison.txt)
 

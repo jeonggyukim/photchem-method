@@ -1,15 +1,17 @@
 """Shell radius of hii_dtype with GOW17 against the stored NCR reference and the
 Spitzer / Hosokawa-Inutsuka curves, as tst/.../rayt_point/hii_dtype.py draws them."""
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
 hst, out = sys.argv[1], sys.argv[2]
-ref = '/Users/jgkim/Projects/tigris-gow17/tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt'
+ref = paths.tigris('tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt')
 muH, pc, kB, Qi, nH0 = 1.4*1.6738234e-24, 3.08567758e18, 1.38065e-16, 1e49, 1e2
 tunit = pc/1e5
 

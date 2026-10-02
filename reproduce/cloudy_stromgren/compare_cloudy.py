@@ -12,16 +12,17 @@ import glob
 import os
 import re
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
-CLOUDY = os.environ.get('CLOUDY_PROFILES',
-                        '/Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/'
-                        'T6_multi_ion/cloudy_stromgren/radial_profiles.txt')
+CLOUDY = (os.environ.get('CLOUDY_PROFILES')
+          or paths.runs('T6_multi_ion', 'cloudy_stromgren', 'radial_profiles.txt'))
 MUH, KB = 2.34335276e-24, 1.380649e-16
 P_TO_PK = MUH*1e10/KB
 X_HE, X_O, X_S, X_N = 0.1, 3.2e-4, 1.45e-5, 7.4e-5

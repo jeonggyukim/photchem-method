@@ -5,9 +5,9 @@
 //                           chianti neutral, tracked stages..., summed above the top,
 //   then tigris and chianti metal electrons per H.
 // Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include cie_fractions.cpp
-//   $HOME/Projects/tigris-gow17/src/photchem/network/gow17_thermo_table.cpp -o cie_fractions
+//   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o cie_fractions
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -16,13 +16,13 @@
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
 #include "photchem/network/gow17_semi_implicit.hpp"
+#include "../../paths.hpp"
 using namespace gow17;
 using G = GOW17Network;
 
 int main() {
-  const std::string home = getenv("HOME");
-  const std::string rd = home + "/Projects/tigris-gow17/inputs/tables/rates/";
-  const std::string cd = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
+  const std::string rd = TigrisDir() + "inputs/tables/rates/";
+  const std::string cd = TigrisDir() + "inputs/tables/chianti_v11/";
   Rates::RecombRate rec;
   rec.Load(rd + "badnell_rr_2023.dat", rd + "badnell_dr_C_2023.dat", rd + "badnell_dr_E_2023.dat");
   Rates::CollIonRate ci;

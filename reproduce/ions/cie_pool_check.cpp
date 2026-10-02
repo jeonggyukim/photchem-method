@@ -7,13 +7,13 @@
 #include <sstream>
 #include <string>
 #include "photchem/network/gow17_cie_tables.hpp"
+#include "../paths.hpp"
 int main() {
-  const std::string home = std::getenv("HOME");
-  const std::string dir = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
+  const std::string dir = TigrisDir() + "inputs/tables/chianti_v11/";
   struct E { const char *name; int z; int q_max; };
   for (E e : {E{"C", 6, 1}, E{"N", 7, 1}, E{"O", 8, 2}, E{"S", 16, 2}}) {
     gow17::CIEElement el(dir, e.name, e.z);
-    std::ifstream f(home + "/Dropbox/Projects/pyathena/data/chemistry/cie_high_pool_" +
+    std::ifstream f(PyathenaDir() + "data/chemistry/cie_high_pool_" +
                     e.name + ".txt");
     std::string line; int i = 0; double worst[3] = {0, 0, 0};
     while (std::getline(f, line)) {

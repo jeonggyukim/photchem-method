@@ -192,8 +192,8 @@ cool_hyd_cie_flag = false  # true: CIE hydrogen cooling above temp_hot0 too, as 
 temp_hot0      = 20000.0
 temp_hot1      = 35000.0
 coolftn_file   = tigress_coolftn_ncr.txt
-rates_dir      = /Users/jgkim/Projects/tigris-gow17/inputs/tables/rates
-ion_cooling_dir = /Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ion_cooling
+rates_dir      = ${TIGRIS_DIR}/inputs/tables/rates
+ion_cooling_dir = ${TIGRIS_DIR}/inputs/tables/chianti_v11/ion_cooling
 
 <particle1>
 type          = none     # star particle type

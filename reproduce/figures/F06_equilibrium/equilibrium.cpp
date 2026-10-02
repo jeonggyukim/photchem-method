@@ -9,9 +9,9 @@
 // Output per row: n_H [cm^-3], T [K], P/k [K cm^-3], t_end [code], x_e, then every
 // species per H.
 // Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include equilibrium.cpp
-//   $HOME/Projects/tigris-gow17/src/photchem/network/gow17_thermo_table.cpp -o equilibrium
+//   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o equilibrium
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -21,16 +21,16 @@
 #include "photchem/network/gow17_network.hpp"
 #include "photchem/network/gow17_semi_implicit.hpp"
 #include "photchem/sed_average.hpp"
+#include "../../paths.hpp"
 using namespace gow17;
 using G = GOW17Network;
 
 int main(int argc, char **argv) {
   const Real T0 = (argc > 1) ? std::atof(argv[1]) : 1.0e4;
   const Real chi = 1.0, xi_cr = 2.0e-16;
-  const std::string home = getenv("HOME");
-  const std::string rd = home + "/Projects/tigris-gow17/inputs/tables/rates/";
-  const std::string cd = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
-  const std::string hot = home + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt";
+  const std::string rd = TigrisDir() + "inputs/tables/rates/";
+  const std::string cd = TigrisDir() + "inputs/tables/chianti_v11/";
+  const std::string hot = TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt";
   Rates::RecombRate rec;
   rec.Load(rd + "badnell_rr_2023.dat", rd + "badnell_dr_C_2023.dat", rd + "badnell_dr_E_2023.dat");
   Rates::CollIonRate ci;

@@ -2,18 +2,20 @@
 six-ray with one lit ray, n_H = 100 cm^-3, chi = 1 at the face): species and
 temperature against column."""
 import glob, sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/athena-pp-pdr1d/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read('ATHENAPP_PDR_DIR')
 run, out = sys.argv[1], sys.argv[2]
 pc, nh0, kB, e_unit = 3.0856776e18, 100.0, 1.380649e-16, 1.6738234e-24*1e10
 names = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+']
 charge = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1, 'Si+': 1}
 
-x, _, _, d = athena_read.vtk('/Users/jgkim/Projects/athena-pp-pdr1d/tst/regression/data/chem_pdr_static.vtk')
+x, _, _, d = athena_read.vtk(paths.athenapp_pdr('tst/regression/data/chem_pdr_static.vtk'))
 xc = 0.5*(x[1:] + x[:-1])
 ap = {n: d['r' + n].ravel() for n in names}
 ap['e'] = sum(charge.get(n, 0)*ap[n] for n in names)

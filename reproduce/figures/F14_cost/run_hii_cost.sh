@@ -4,7 +4,7 @@
 # one run at a time. GOW17 core uses the same seven bands as GOW17 + ions.
 # usage: run_hii_cost.sh WORKDIR
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 tables=$T/inputs/tables
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 paths=(--include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw)

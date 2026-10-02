@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 #include "photchem/network/gow17_cie_tables.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 int main() {
-  const std::string home = std::getenv("HOME");
-  const std::string tdir = home + "/Projects/tigris-gow17/inputs/tables/";
+  const std::string tdir = TigrisDir() + "inputs/tables/";
   const std::string cdir = tdir + "chianti_v11/", rdir = tdir + "rates/";
   Rates::RecombRate rec; rec.Load(rdir + "badnell_rr_2023.dat", rdir + "badnell_dr_C_2023.dat",
                                   rdir + "badnell_dr_E_2023.dat");
@@ -28,7 +28,7 @@ int main() {
 
   // (1)
   for (int p = 0; p < 4; ++p) {
-    std::ifstream f(home + "/Dropbox/Projects/pyathena/data/chemistry/cie_high_pool_" +
+    std::ifstream f(PyathenaDir() + "data/chemistry/cie_high_pool_" +
                     els[p].name + ".txt");
     std::string line; double worst[3] = {0, 0, 0}; int nmatch = 0;
     while (std::getline(f, line)) {

@@ -1,5 +1,5 @@
 // Table-generated GOW17 ghosts and x_e vs AthenaK gow17.hpp:1802-1818 (transcribed).
-// Build: c++ -std=c++17 -O2 -I ~/Projects/tigris-gow17/src check_species_table.cpp
+// Build: c++ -std=c++17 -O2 -I $TIGRIS_DIR/src check_species_table.cpp
 #include <cmath>
 #include <cstdio>
 #include <random>

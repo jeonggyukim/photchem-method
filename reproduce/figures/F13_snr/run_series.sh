@@ -5,7 +5,7 @@
 # usage: run_series.sh WORKDIR   (WORKDIR holds athinput.snr_gow17 and src_noreturn, a copy
 # of the tigris-gow17 tree without the three returned-metal lines of SharedHighIonTable)
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 common=(-mpi -fb --prob=radiative_snr --nghost=4 -hdf5 --hdf5_path=/opt/homebrew/opt/hdf5-mpi
         --include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw)

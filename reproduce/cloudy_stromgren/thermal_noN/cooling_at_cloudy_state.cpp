@@ -7,9 +7,10 @@
 #include <string>
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
+#include "../../paths.hpp"
 using namespace gow17;
 int main() {
-  const std::string d = "/Users/jgkim/Projects/tigris-gow17/inputs/tables/";
+  const std::string d = TigrisDir() + "inputs/tables/";
   ThermoTable grid; BuildThermoTable(grid);
   Rates::RecombRate rec; rec.Load(d + "rates/badnell_rr_2023.dat",
       d + "rates/badnell_dr_C_2023.dat", d + "rates/badnell_dr_E_2023.dat");

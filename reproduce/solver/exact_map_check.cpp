@@ -9,7 +9,7 @@
 // Output per row: case N, then per variant |dT/T| |dx/x| (x = x_H+ for A and B, x_CO for C)
 // and the CPU time of the run [s].
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include exact_map_check.cpp -o exact_map_check
 #include <chrono>
 #include <cmath>

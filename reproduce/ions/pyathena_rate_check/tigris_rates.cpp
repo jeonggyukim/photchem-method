@@ -10,8 +10,9 @@
 #include "photchem/rates/recomb_rate.hpp"
 #include "photchem/rates/coll_ion_rate.hpp"
 #include "photchem/rates/ct_rate.hpp"
+#include "../../paths.hpp"
 int main() {
-  const std::string d = std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/rates/";
+  const std::string d = TigrisDir() + "inputs/tables/rates/";
   Rates::RecombRate rec; rec.Load(d + "badnell_rr_2023.dat", d + "badnell_dr_C_2023.dat",
                                   d + "badnell_dr_E_2023.dat");
   Rates::CollIonRate ci; ci.Load(d + "voronov97_coll_ion.dat");

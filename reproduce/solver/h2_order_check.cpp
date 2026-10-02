@@ -7,7 +7,7 @@
 // substeps. Output per row: case N, then per variant |dT/T| |dy/y| (y = x_H+ for A and
 // B, x_CO for C, x_H2 for D).
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include h2_order_check.cpp -o h2_order_check
 #include <cmath>
 #include <cstdio>

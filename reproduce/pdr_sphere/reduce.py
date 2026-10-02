@@ -2,6 +2,8 @@
 
     python reduce.py <run_dir> <out.npz> [athena_read directory]
 
+The athena_read directory defaults to $TIGRIS_DIR/vis/python.
+
 Write out.npz to ../data/pdr_sphere/pdr_sphere_<mode>.npz, outside the repository.
 
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
@@ -13,12 +15,15 @@ follow gow17_core.hpp: He+ OHx CHx CO C+ HCO+ H2 H+ H3+ H2+ O+ Si+.
 import glob
 import re
 import sys
+from pathlib import Path
 
 import numpy as np
 
 run, out = sys.argv[1], sys.argv[2]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
 sys.path.insert(0, sys.argv[3] if len(sys.argv) > 3 else
-                '/Users/jgkim/Projects/tigris-gow17/vis/python')
+                paths.tigris('vis', 'python'))
 import athena_read  # noqa: E402
 
 dump = sorted(glob.glob(run + '/cloud.out2.*.athdf'))[-1]

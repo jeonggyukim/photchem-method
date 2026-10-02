@@ -4,7 +4,7 @@
 # 11 diffuse groups: 7 point bands and 4 recombination groups).
 # usage: run_recomb.sh WORKDIR   (athinput.stromgren_recomb is copied there)
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 (cd $T && python3 configure.py -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 \
    --ngroup_rayt_diffuse=11 --prob=photchem_postproc -hdf5 \
@@ -12,7 +12,7 @@ export OMPI_CXX=/opt/homebrew/bin/g++-16
    --fftw_path=/opt/homebrew/opt/fftw >/dev/null && make clean >/dev/null \
    && make -j8 >$W/build.out 2>&1) || { echo "build failed"; exit 1; }
 /bin/cp -f $T/bin/athena $W/athena
-/bin/cp -f ${0:A:h}/athinput.stromgren_recomb $W/
+sed "s|\${TIGRIS_DIR}|$T|g" ${0:A:h}/athinput.stromgren_recomb > $W/athinput.stromgren_recomb
 mkdir -p $W/ots_true $W/ots_false
 (cd $W/ots_true && /usr/bin/time -p mpirun -np 8 ../athena -i ../athinput.stromgren_recomb \
    >run.out 2>time.out)

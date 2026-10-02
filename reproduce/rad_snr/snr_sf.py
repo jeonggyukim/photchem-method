@@ -2,9 +2,11 @@
 tst/regression/scripts/tests/feedback/rad_snr.py measures it, against the NCR
 reference values stored there (tolerance 5%)."""
 import sys
+from pathlib import Path
 import numpy as np
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 hst, runtime = sys.argv[1], sys.argv[2]
 h = athena_read.hst(hst); par = athena_read.athinput(runtime); u = athena_read.units(par)
 isf = h['M_hot'].argmax()

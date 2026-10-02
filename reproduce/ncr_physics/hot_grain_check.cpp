@@ -6,9 +6,10 @@
 #include <limits>
 #include <string>
 #include "photchem/network/gow17_network.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 int main() {
-  HotCIETable hot; hot.Load(std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt");
+  HotCIETable hot; hot.Load(TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt");
   const Real gamma = 5.0/3.0, time_cgs = 3.0856776e18/1.0e5, edens = 1.6738234e-24*1e10, nH = 1.0;
   GOW17Settings s;
   s.use_thermo_table = false; s.isothermal = false; s.isothermal_temperature = 0.0;

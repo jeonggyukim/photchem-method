@@ -16,14 +16,14 @@
 #include <string>
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
+#include "../../paths.hpp"
 using namespace gow17;
 using G = GOW17Network;
 
 int main(int argc, char **argv) {
-  const std::string home = getenv("HOME");
-  const std::string rd = home + "/Projects/tigris-gow17/inputs/tables/rates/";
-  const std::string cd = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
-  const std::string hot = home + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt";
+  const std::string rd = TigrisDir() + "inputs/tables/rates/";
+  const std::string cd = TigrisDir() + "inputs/tables/chianti_v11/";
+  const std::string hot = TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt";
   const Real nH = (argc > 1) ? std::atof(argv[1]) : 1.0;
   Rates::RecombRate rec;
   rec.Load(rd + "badnell_rr_2023.dat", rd + "badnell_dr_C_2023.dat", rd + "badnell_dr_E_2023.dat");

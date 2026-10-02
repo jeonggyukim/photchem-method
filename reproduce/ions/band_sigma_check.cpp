@@ -4,8 +4,9 @@
 #include <cstdlib>
 #include <string>
 #include "photchem/rates/photoion_band.hpp"
+#include "../paths.hpp"
 int main() {
-  const std::string root = std::string(getenv("HOME")) + "/Projects/tigris-gow17/";
+  const std::string root = TigrisDir();
   Radiation::Spectrum sed; sed.LoadTable(root + "inputs/tables/sed/sb99_Z014_GenevaV00_2Myr.txt");
   PhotoIon::VernerXsec xs; xs.Load(root + "inputs/tables/rates/verner96_photx.dat");
   const Real edge[4] = {sed.LambdaMin(), 911.6, 1108.0, 2066.4};

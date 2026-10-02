@@ -15,12 +15,14 @@ import glob
 import os
 import subprocess
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
 # ISM units: rho = n_H [cm^-3], pressure unit mu_H cm^-3 (km/s)^2, time unit pc/(km/s)
 MUH, KB = 2.34335276e-24, 1.380649e-16
@@ -31,8 +33,7 @@ CORE = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+',
 IONS = ['O++', 'S+', 'S++']
 CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1,
           'Si+': 1, 'O++': 2, 'S+': 1, 'S++': 2}
-REF = ('/Users/jgkim/Projects/tigris-gow17/tst/regression/data/ref_rayt_solutions/'
-       'hii_dtype_ncr.txt')
+REF = paths.tigris('tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt')
 BANDS = ['LyC', 'LW', 'PE']
 
 

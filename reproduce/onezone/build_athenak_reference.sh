@@ -2,7 +2,7 @@
 # Compile athenak_reference.cpp with the include flags of AthenaK's build-cpu
 # (read from its CMake flags.make) and link its Kokkos Serial core library.
 set -euo pipefail
-K=${ATHENAK:-$HOME/Projects/athenak-chem}
+K=${ATHENAK_DIR:?set ATHENAK_DIR to an AthenaK checkout (athenak-chem)}
 B=$K/build-cpu
 F=$B/src/CMakeFiles/athena.dir/flags.make
 read -r -a INC <<< "$(sed -n 's/^CXX_INCLUDES = //p' "$F")"

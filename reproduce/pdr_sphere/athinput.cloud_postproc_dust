@@ -221,4 +221,4 @@ sigma_pi_H2[2] = 0.0
 
 <dust>
 dust  = true               # dust band averages; photchem gets sigma_abs_d[g]
-model = /Users/jgkim/Projects/tigris-data/dust/zubko04-bare-gr-s
+model = ${TIGRIS_DATA_DIR}/dust/zubko04-bare-gr-s

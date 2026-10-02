@@ -1,16 +1,20 @@
 """Test B1 figure: Tigris GOW17 one-zone end state vs Athena++ (reference values in
 AthenaK test_GOW17_uniform_gpu.py) and AthenaK kokkos_BDF (last record of
 gow17_time_series.npz). Input: b1_uniform.txt from b1_uniform.cpp."""
+import sys
+from pathlib import Path
 import numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
 names = ["He+","OHx","CHx","CO","C+","HCO+","H2","H+","H3+","H2+","O+","Si+"]
 ref = dict(eint=28.234391212463375, **dict(zip(names, [4.4769834062208247e-07,
     1.4335562809719704e-05, 6.079905467970548e-09, 0.00013345545448828489,
     3.4978197049895243e-07, 6.033158683749207e-08, 0.44989413022994995,
     2.9430591439449927e-06, 1.2544340961540001e-06, 1.969339358254274e-09,
     8.677133317425145e-11, 6.625605806220847e-07])))
-ts = np.load("/Users/jgkim/Projects/athenak-chem/tst/test_suite/chemistry/data/gow17_time_series.npz")["time_series"][-1]
+ts = np.load(paths.athenak("tst/test_suite/chemistry/data/gow17_time_series.npz"))["time_series"][-1]
 bdf = dict(eint=float(ts["eint"]), **{n: float(ts[f"s_{i:02d}_chem_{n}"]) for i, n in enumerate(names)})
 row = np.atleast_2d(np.loadtxt("b1_uniform.txt"))[0]
 keys = ["eint"] + names

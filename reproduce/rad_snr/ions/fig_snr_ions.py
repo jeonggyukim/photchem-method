@@ -6,14 +6,16 @@ reference values marked.
 usage: python fig_snr_ions.py OUT.png
 """
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
-HERE = '/Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/M6_rad_snr/'
+HERE = paths.runs('M6_rad_snr', '')
 MH, KB, MU_H, X_HE = 1.6735575e-24, 1.380649e-16, 1.4, 0.1
 TOT = {'O': 3.2e-4, 'S': 1.45e-5, 'N': 7.4e-5}
 CORE = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+']
@@ -23,7 +25,7 @@ CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1,
 STAGES = {'O': ['O+', 'O++'], 'S': ['S+', 'S++', 'S3+'], 'N': ['N+', 'N++']}
 LABEL = {'O': ['O I', 'O II', 'O III'], 'S': ['S I', 'S II', 'S III', 'S IV'],
          'N': ['N I', 'N II', 'N III']}
-CHIANTI = '/Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ioneq_%s.txt'
+CHIANTI = paths.tigris('inputs/tables/chianti_v11', 'ioneq_%s.txt')
 REF = {'M_hot': 1483.49, 'pr': 192798., 't_sf': 0.038473}
 
 

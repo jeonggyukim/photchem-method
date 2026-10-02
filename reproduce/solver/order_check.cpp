@@ -11,7 +11,7 @@
 // instead of 1-3. Per order |dy/y| max_s|dx_s/x_s| (y = x_H+ for A and B, x_CO for C, x_H2
 // for D; the max over species whose reference abundance exceeds 1e-8).
 // Build: tigris-gow17 configured with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include order_check.cpp -o order_check
 #include <cmath>
 #include <cstdio>

@@ -1,8 +1,7 @@
 """Compare pyathena (PhotChem) ion rate coefficients with Tigris (tigris_rates.csv)."""
-import os, sys, types
+import os, types
 import numpy as np
 import pandas as pd
-sys.path.insert(0, os.path.expanduser('~/Dropbox/Projects/pyathena'))
 from pyathena.microphysics.rec_rate import RecRate
 from pyathena.microphysics.ci_rate import CollIonRate
 from pyathena.microphysics.ct_rate import ChargeTransferRate

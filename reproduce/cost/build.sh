@@ -1,7 +1,7 @@
 # Builds the NCR and GOW17 (core, 3 bands) pdr_slab binaries into this directory.
 set -e
 D=$(cd "$(dirname "$0")" && pwd)
-cd ~/Projects/tigris-gow17
+cd "${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}"
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 common=(-mpi -shld_ci -shld_cr -hdf5 -h5double --prob=photchem_postproc --hdf5_path=/opt/homebrew/opt/hdf5-mpi --include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw)
 python3 configure.py -ncr "${common[@]}" >/dev/null

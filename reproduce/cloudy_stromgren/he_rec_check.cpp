@@ -4,8 +4,9 @@
 #include <cstdlib>
 #include <string>
 #include "photchem/network/gow17_ion_table.hpp"
+#include "../paths.hpp"
 int main() {
-  const std::string d = std::string(getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/rates/";
+  const std::string d = TigrisDir() + "inputs/tables/rates/";
   Rates::RecombRate rec; rec.Load(d + "badnell_rr_2023.dat", d + "badnell_dr_C_2023.dat",
                                   d + "badnell_dr_E_2023.dat");
   for (double T : {5000.0, 8000.0, 1.0e4, 2.0e4}) {

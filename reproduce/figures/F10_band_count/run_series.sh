@@ -3,7 +3,7 @@
 # point-source bands, GOW17 + O3,S3,N3, from the current tigris-gow17 tree.
 # usage: run_series.sh WORKDIR   (WORKDIR holds athinput.stromgren_postproc)
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 for nb in 3 5 6 7; do
   (cd $T && python3 configure.py -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=$nb \

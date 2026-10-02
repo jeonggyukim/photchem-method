@@ -4,9 +4,9 @@
 // every species per H at each output, until T < 1e4 K or t = t_max.
 // usage: isochoric N_H [T0] > out.txt
 // Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$HOME/Projects/tigris-gow17/src
+//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
 //   -I/opt/homebrew/opt/hdf5-mpi/include isochoric.cpp
-//   $HOME/Projects/tigris-gow17/src/photchem/network/gow17_thermo_table.cpp -o isochoric
+//   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o isochoric
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -15,16 +15,16 @@
 #include <vector>
 #include "photchem/network/gow17_network.hpp"
 #include "photchem/network/gow17_semi_implicit.hpp"
+#include "../../paths.hpp"
 using namespace gow17;
 using G = GOW17Network;
 
 int main(int argc, char **argv) {
   const Real nH = (argc > 1) ? std::atof(argv[1]) : 1.0;
   const Real T0 = (argc > 2) ? std::atof(argv[2]) : 1.0e7;
-  const std::string home = getenv("HOME");
-  const std::string rd = home + "/Projects/tigris-gow17/inputs/tables/rates/";
-  const std::string cd = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
-  const std::string hot = home + "/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt";
+  const std::string rd = TigrisDir() + "inputs/tables/rates/";
+  const std::string cd = TigrisDir() + "inputs/tables/chianti_v11/";
+  const std::string hot = TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt";
   Rates::RecombRate rec;
   rec.Load(rd + "badnell_rr_2023.dat", rd + "badnell_dr_C_2023.dat", rd + "badnell_dr_E_2023.dat");
   Rates::CollIonRate ci;

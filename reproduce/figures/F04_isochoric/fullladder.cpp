@@ -7,8 +7,8 @@
 // usage: fullladder isochoric_n1.txt N_H > fullladder_n1.txt
 // Output per row: t, T, then per element (C, Si, O, S, N) the fractions of every stage.
 // Build: OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2
-//   -I$HOME/Projects/tigris-gow17/src -I/opt/homebrew/opt/hdf5-mpi/include fullladder.cpp
-//   $HOME/Projects/tigris-gow17/src/photchem/network/gow17_thermo_table.cpp -o fullladder
+//   -I$TIGRIS_DIR/src -I/opt/homebrew/opt/hdf5-mpi/include fullladder.cpp
+//   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o fullladder
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -20,11 +20,11 @@
 #include "photchem/rates/coll_ion_rate.hpp"
 #include "photchem/rates/ct_rate.hpp"
 #include "photchem/rates/recomb_rate.hpp"
+#include "../../paths.hpp"
 
 int main(int argc, char **argv) {
-  const std::string home = getenv("HOME");
-  const std::string rd = home + "/Projects/tigris-gow17/inputs/tables/rates/";
-  const std::string cd = home + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
+  const std::string rd = TigrisDir() + "inputs/tables/rates/";
+  const std::string cd = TigrisDir() + "inputs/tables/chianti_v11/";
   const Real nH = std::atof(argv[2]);
   Rates::RecombRate rec;
   rec.Load(rd + "badnell_rr_2023.dat", rd + "badnell_dr_C_2023.dat", rd + "badnell_dr_E_2023.dat");

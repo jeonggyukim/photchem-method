@@ -3,10 +3,11 @@
 #include <cstdio>
 #include <limits>
 #include "photchem/network/gow17_network.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 int main() {
   ThermoTable grid; BuildThermoTable(grid);
-  HotCIETable hot; hot.Load("/Users/jgkim/Projects/tigris-gow17/inputs/tables/tigress_coolftn_ncr.txt");
+  HotCIETable hot; hot.Load(TigrisDir() + "inputs/tables/tigress_coolftn_ncr.txt");
   GOW17Settings s; s.use_thermo_table = true; s.thermo_table = grid; s.isothermal = false;
   s.isothermal_temperature = 0; s.zd = 0; s.xHe = 0.1; s.xC = 1.6e-4; s.xO = 3.2e-4; s.xSi = 1.7e-6;
   s.jacobian_hoist = false; s.temperature_min_rates = 1; const Real inf = std::numeric_limits<Real>::infinity();

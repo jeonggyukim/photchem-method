@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 #include "photchem/network/gow17_cie_tables.hpp"
+#include "../paths.hpp"
 using namespace gow17;
 int main() {
-  const std::string cdir = std::string(std::getenv("HOME")) + "/Projects/tigris-gow17/inputs/tables/chianti_v11/";
+  const std::string cdir = TigrisDir() + "inputs/tables/chianti_v11/";
   struct E { const char *n; int z; int qmax; };
   for (E e : {E{"H", 1, 0}, E{"He", 2, 0}, E{"C", 6, 1}, E{"N", 7, 1}, E{"O", 8, 2},
               E{"Ne", 10, 1}, E{"Si", 14, 1}, E{"S", 16, 2}, E{"Fe", 26, 1}}) {

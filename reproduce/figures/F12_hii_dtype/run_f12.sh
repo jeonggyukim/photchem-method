@@ -3,7 +3,7 @@
 # tst/regression/scripts/tests/rayt_point/hii_dtype.py (gow17_ions mode) plus HDF5 dumps
 # every 0.02 code. usage: run_f12.sh WORKDIR
 W=${1:A}
-T=~/Projects/tigris-gow17
+T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 tables=$T/inputs/tables
 export OMPI_CXX=/opt/homebrew/bin/g++-16
 (cd $T && python3 configure.py -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 --prob=hii \

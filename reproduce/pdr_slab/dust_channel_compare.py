@@ -1,9 +1,11 @@
 """Species and T of two Tigris GOW17 slab runs against Athena++ chem_pdr_static.vtk,
 as Tigris/Athena++ ratios at a few columns."""
 import glob, sys
+from pathlib import Path
 import numpy as np
-sys.path.insert(0, '/Users/jgkim/Projects/athena-pp-pdr1d/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import paths  # noqa: E402
+athena_read = paths.athena_read('ATHENAPP_PDR_DIR')
 names = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+']
 ch = {'He+', 'C+', 'HCO+', 'H+', 'H3+', 'H2+', 'O+', 'Si+'}
 pc, nh0, kB, eu = 3.0856776e18, 100.0, 1.380649e-16, 1.6738234e-24*1e10
@@ -12,7 +14,7 @@ def prof(get, x, press, fac):
     p['e'] = sum(p[n] for n in ch)
     p['T'] = press*fac*eu/kB/(nh0*(1.1 + p['e'] - p['H2'])); p['N'] = x*pc*nh0
     return p
-x, _, _, d = athena_read.vtk('/Users/jgkim/Projects/athena-pp-pdr1d/tst/regression/data/chem_pdr_static.vtk')
+x, _, _, d = athena_read.vtk(paths.athenapp_pdr('tst/regression/data/chem_pdr_static.vtk'))
 ap = prof(lambda n: d['r' + n].ravel(), 0.5*(x[1:] + x[:-1]), d['press'].ravel(), 1.4)
 def tig(run):
     rows, head = [], None

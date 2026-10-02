@@ -9,13 +9,15 @@ import glob
 import os
 import subprocess
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+athena_read = paths.athena_read()
 
 rundir, outdir = sys.argv[1], sys.argv[2]
 os.makedirs(outdir, exist_ok=True)
