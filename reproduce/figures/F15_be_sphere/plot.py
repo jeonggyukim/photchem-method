@@ -2,10 +2,12 @@
 figure per network (NCR, GOW17 + ions), same layout as
 ai-notes/docs-code/tigris-rayt/scripts/postproc_background_slices.py.
 
-    python plot.py [RUNS]    (default ~/Documents/photchem-postproc/runs/be_net)
+    python plot.py [--from-runs] [RUNS]    (default RUNS: $PHOTCHEM_POSTPROC_RUNS/be_net)
 
 RUNS/ncr and RUNS/gow17 hold the tab slices out3 (prim) and out4 (uov) of run.sh.
-Writes ../../../figures/F15_be_sphere_{ncr,gow17}.{pdf,png}.
+Writes ../../../figures/F15_be_sphere_{ncr,gow17}.{pdf,png}. The planes come from
+reduced_{ncr,gow17}.txt when they exist; --from-runs or a RUNS argument reads the runs
+and rewrites them.
 
 GOW17 writes its species unnamed (r0 ... r21, the first labelled rHI by the NCR output
 code, though it is He+); they are mapped from the species order below.  x(H) and x(e)
@@ -16,17 +18,24 @@ import glob
 import os
 import re
 import sys
+from pathlib import Path
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LogNorm  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
-RUNS = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser(
-    '~/Documents/photchem-postproc/runs/be_net')
+ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
+FROM_RUNS = '--from-runs' in sys.argv or bool(ARGS)
+P_KEYS = ('rho', 'rHI', 'rH2', 'rEL')
+U_KEYS = ('temp', 'xCII', 'xCI', 'xCO', 'chi_PE', 'chi_LW', 'chi_H2', 'chi_CI', 'xi_CR',
+          'temp_dust', 'chi_CO')
 X_SRC = 0.046875
 XC_TOT = 1.6e-4
 XI_CR0 = 2.0e-16
@@ -126,18 +135,45 @@ CUTS = (
 )
 
 
-def figure(net, label):
-    run_dir = os.path.join(RUNS, net)
+def reduce_run(net, path):
+    """Write the plotted planes of RUNS/net and the run's convergence to path."""
+    run_dir = os.path.join(ARGS[0] if ARGS else paths.postproc_runs('be_net'), net)
     dumps = sorted(set(f.split('.')[-2] for f in glob.glob(
         os.path.join(run_dir, 'cloud.block*.out4.*.tab'))))
     runlog = os.path.join(run_dir, 'run.out')
     if len(dumps) < 2 or 'cpu time used' not in open(runlog).read():
         print('skipped', net, '(no finished run in %s)' % run_dir)
-        return
+        return False
     x, y, p = read_plane(os.path.join(run_dir, 'cloud.block*.out3.%s.tab' % dumps[-1]))
     _, _, u = read_plane(os.path.join(run_dir, 'cloud.block*.out4.%s.tab' % dumps[-1]))
     if net == 'gow17':
         p = gow17_species(p)
+    text = open(runlog).read()
+    ndir = re.search(r'on (\d+) directions', text)
+    m = re.search(r'converged after (\d+) iterations', text)
+    data = {'x': x, 'y': y, 'ndir': int(ndir.group(1)) if ndir else 48,
+            'iterations': int(m.group(1)) if m else -1}
+    data.update({'p_' + k: p[k] for k in P_KEYS})
+    data.update({'u_' + k: u[k] for k in U_KEYS if k in u})
+    # the tab files hold 6 significant digits, which %.6g reproduces exactly; the
+    # quantities gow17_species derives need all 17
+    fmts = {k: '%.6g' for k in data}
+    if net == 'gow17':
+        fmts['p_rHI'] = fmts['p_rEL'] = '%.17g'
+    reduced.save(path, 'F15: plane through the middle of the run be_net/%s (last dump), '
+                 'p_ = prim, u_ = uov;\nndir = diffuse directions, iterations to '
+                 'convergence (-1: not converged)' % net, data, fmts)
+    return True
+
+
+def figure(net, label):
+    path = os.path.join(HERE, 'reduced_%s.txt' % net)
+    if (FROM_RUNS or not os.path.exists(path)) and not reduce_run(net, path):
+        return
+    data = reduced.load(path)
+    x, y = data['x'], data['y']
+    p = {k[2:]: v for k, v in data.items() if k.startswith('p_')}
+    u = {k[2:]: v for k, v in data.items() if k.startswith('u_')}
     ncol = (len(COLS) + 1)//2
     fig, grid = plt.subplots(3, ncol, figsize=(3.3*ncol, 3.1*3), squeeze=False)
     axes = grid.reshape(1, 3*ncol)
@@ -204,15 +240,12 @@ def figure(net, label):
         ax.set_xlabel('x1 [pc]', fontsize=9); ax.grid(alpha=0.3)
         if len(curves) > 1:
             ax.legend(fontsize=7, loc='best', framealpha=0.8)
-    text = open(runlog).read()
-    ndir = re.search(r'on (\d+) directions', text)
-    ndir = ndir.group(1) if ndir else '48'
-    m = re.search(r'converged after (\d+) iterations', text)
-    ended = ('%s post-processed to convergence (%s iterations)' % (label, m.group(1)) if m
-             else '%s post-processed, NOT converged' % label)
+    niter = int(data['iterations'])
+    ended = ('%s post-processed to convergence (%d iterations)' % (label, niter)
+             if niter >= 0 else '%s post-processed, NOT converged' % label)
     fig.suptitle('%s%s, plane through its middle\nisotropic background through the diffuse '
-                 'solver (HEALPix, %s directions), %s' % (CLOUD, DUST[net], ndir, ended),
-                 fontsize=10)
+                 'solver (HEALPix, %d directions), %s'
+                 % (CLOUD, DUST[net], int(data['ndir']), ended), fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.965))
     for ext_ in ('pdf', 'png'):
         fig.savefig(os.path.join(FIG, 'F15_be_sphere_%s.%s' % (net, ext_)), dpi=150)

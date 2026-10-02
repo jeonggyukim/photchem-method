@@ -4,22 +4,26 @@ Cloudy 25 (default and `diffuse OTS`); R_s (x_H+ = 0.5) and wall time per run in
 legend. Writes ../../../figures/F10_band_count.{pdf,png}.
 
 Inputs: run_series.sh output in WORKDIR (run64_b3 .. run64_b7, each with time.out);
-Cloudy radial_profiles.txt of reproduce/cloudy_stromgren and its thermal_with_N_ots."""
+Cloudy radial_profiles.txt of reproduce/cloudy_stromgren and its thermal_with_N_ots.
+The Tigris profiles and wall times come from reduced.txt when it exists;
+`python plot.py --from-runs` reads WORKDIR ($PHOTCHEM_RUNS/T6_multi_ion/F10_bands) and
+rewrites it."""
 import glob
 import os
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F10_band_count')
-WORKDIR = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/'
-                             'F10_bands')
+REDUCED = os.path.join(HERE, 'reduced.txt')
 CLOUDY = {'Cloudy 25, default': os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'),
           'Cloudy 25, diffuse OTS': os.path.join(REPRO, 'cloudy_stromgren',
                                                  'thermal_with_N_ots', 'radial_profiles.txt')}
@@ -57,6 +61,20 @@ def radius_half(r, xhp):
     return np.interp(0.5, [xhp[i], xhp[i - 1]], [r[i], r[i - 1]])
 
 
+NBANDS = [3, 5, 6, 7]
+if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
+    athena_read = paths.athena_read()
+    data = {}
+    for nb in NBANDS:
+        run = paths.runs('T6_multi_ion', 'F10_bands', 'run64_b%d' % nb)
+        data['r_b%d' % nb], data['T_b%d' % nb], data['xhp_b%d' % nb] = tigris_profile(run)
+        data['wall_b%d' % nb] = float(open(os.path.join(run, 'time.out')).read().split()[1])
+    reduced.save(REDUCED, 'F10: density-weighted radial profiles of the Tigris runs '
+                 'T6_multi_ion/F10_bands/run64_b<n>\nand their wall time\nr [pc], T [K], '
+                 'xhp = x_H+, wall [s]', data)
+else:
+    data = reduced.load(REDUCED)
+
 fig, (a1, a2) = plt.subplots(2, 1, figsize=(7, 7.5), sharex=True,
                              gridspec_kw={'height_ratios': [2, 1]})
 for (lab, fn), col in zip(CLOUDY.items(), ['0.35', '0.65']):
@@ -66,11 +84,10 @@ for (lab, fn), col in zip(CLOUDY.items(), ['0.35', '0.65']):
     a2.semilogy(c[:, 0], c[:, 3], color=col, lw=2.5)
 # 6 bands add only the He II 54.4 eV edge, beyond which SB99 at 2 Myr emits almost no
 # photons, so 5 and 6 bands coincide: 6 is drawn dashed with open markers
-for nb, col, ls, mfc in zip([3, 5, 6, 7], ['C3', 'C1', 'C2', 'C0'], ['-', '-', '--', '-'],
+for nb, col, ls, mfc in zip(NBANDS, ['C3', 'C1', 'C2', 'C0'], ['-', '-', '--', '-'],
                             [None, None, 'none', None]):
-    run = os.path.join(WORKDIR, 'run64_b%d' % nb)
-    r, T, xhp = tigris_profile(run)
-    wall = float(open(os.path.join(run, 'time.out')).read().split()[1])
+    r, T, xhp = data['r_b%d' % nb], data['T_b%d' % nb], data['xhp_b%d' % nb]
+    wall = float(data['wall_b%d' % nb])
     lab = 'Tigris %d bands: $R_s$ = %.3f pc, %.1f s wall' % (nb, radius_half(r, xhp), wall)
     print(lab, ' T(0.3, 1.0, 2.0, 2.7 pc) =', np.interp([0.3, 1.0, 2.0, 2.7], r, T).round(0))
     kw = dict(color=col, ls=ls, marker='o', mfc=mfc, ms=5 if mfc else 3.5, lw=1)

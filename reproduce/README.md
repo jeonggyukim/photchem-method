@@ -7,21 +7,48 @@ at the commit named in each subdirectory's entry below.
 The C++ harnesses include Tigris headers directly and build with
 
     OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -ffp-contract=off \
-        -I ~/Projects/tigris-gow17/src <harness>.cpp -o <harness>
+        -I $TIGRIS_DIR/src <harness>.cpp -o <harness>
 
 after `configure.py -gow17 [...]` has written `defs.hpp`. Bit-identity checks
-need `-ffp-contract=off`. Python scripts use the `pyathena` conda env and read
-Tigris output with `vis/python/athena_read.py`.
+need `-ffp-contract=off`. Python scripts read Tigris output with
+`vis/python/athena_read.py` of the checkout in `TIGRIS_DIR`.
 
-**These harnesses do not run as published.** They read the author's local
-simulation output (`~/Documents/tigris-photchem-gow17-multi-ion/...`,
-`~/Documents/photchem-postproc/...`) and code checkouts
-(`~/Projects/tigris-gow17`, `athena-pp-pdr1d`, `athenak-chem`) by absolute path.
-The paths record where each input lived when the number was made; the outputs
-themselves are not in the repository. Before submission the harnesses will read
-these locations from environment variables (e.g. `TIGRIS_DIR`, `PHOTCHEM_RUNS`)
-and the reduced data each figure plots will be added, so that the figures can be
-remade without the raw runs.
+The harnesses find code checkouts and simulation output through the environment
+variables below; none has a default, and a harness that needs an unset one stops
+with a message naming it. The simulation output is not in the repository. The
+figure scripts under `figures/` that plot simulation output also read a reduced
+copy of the arrays they plot (`reduced*.txt` beside the script), so they remake
+the figures without the raw runs.
+
+## Environment variables
+
+| variable | points to |
+| --- | --- |
+| `TIGRIS_DIR` | a Tigris checkout, branch `rayt-photchem-updates` (headers, `inputs/tables`, `tst/regression/data`, `vis/python`) |
+| `PHOTCHEM_RUNS` | the directory holding the Tigris runs: `T3_onezone`, `T6_multi_ion`, `M5_hii_dtype_ions`, `M6_rad_snr`, `T7_cost` |
+| `PHOTCHEM_POSTPROC_RUNS` | the directory holding the post-processing runs (`be_net` of F15) |
+| `ATHENAPP_PDR_DIR` | an Athena++ checkout with `tst/regression/data/chem_pdr_static.vtk` (`pdr_slab/`) |
+| `ATHENAK_DIR` | an AthenaK checkout with the chemistry module (`onezone/`) |
+| `PYATHENA_DIR` | a pyathena checkout, for its `data/` directory (`ions/`) |
+| `TIGRIS_DATA_DIR` | a checkout of jeonggyukim/tigris-data (dust models in `pdr_sphere/athinput.cloud_postproc_dust`) |
+| `CLOUDY_EXE`, `CLOUDY_DATA_DIR` | the Cloudy 25.00 executable and its data directory (`cloudy_stromgren/run_cloudy.sh`) |
+| `XUVTOP` | the CHIANTI 11 database (`ions/ion_cooling/build_ion_cooling.py`) |
+
+Python reads them through `paths.py`, C++ through `paths.hpp`, and the shell
+scripts as `${TIGRIS_DIR:?...}`. Athena++ does not expand variables in an input
+file, so the `athinput.*` files here write `${TIGRIS_DIR}` where a table path
+goes; expand them before a run, e.g.
+`envsubst '$TIGRIS_DIR $TIGRIS_DATA_DIR' < athinput.X > athinput.local`.
+
+## Running a harness
+
+    pip install ".[reproduce]"          # from the repository root
+    export TIGRIS_DIR=/path/to/tigris PHOTCHEM_RUNS=/path/to/runs   # as the harness needs
+    python reproduce/figures/F12_hii_dtype/plot.py
+
+Scripts are run in place, from any directory. A figure script with a `reduced*.txt`
+reads it and needs no variable; `--from-runs` makes it read the raw runs and
+rewrite the reduced file. The figures go to `figures/` at the repository root.
 
 | directory | serves | what |
 | --- | --- | --- |
@@ -61,6 +88,6 @@ OUT.png "5 bands:RUNDIR"` draws the radial profiles and prints the H+-zone avera
 
 Every script, harness or input that produced a number or a figure, including
 debug harnesses, is copied here when it is made and committed. The working
-folder (`~/Documents/tigris-photchem-gow17-multi-ion/`) holds runs and
+folder (`$PHOTCHEM_RUNS`) holds runs and
 scratch; this repository is the record. `ncr_physics/` holds the checks of the
 NCR physics ported into GOW17 (hot gas, LyC path, equilibrium solver, limiter).

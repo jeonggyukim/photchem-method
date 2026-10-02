@@ -5,22 +5,25 @@ X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes
 ../../../figures/F09_cloudy_sphere.{pdf,png}.
 
 Inputs: run64_b7 of ../F10_band_count/run_series.sh; Cloudy radial_profiles.txt of
-reproduce/cloudy_stromgren and its thermal_with_N_ots."""
+reproduce/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
+reduced.txt when it exists; `python plot.py --from-runs` reads run64_b7 ($PHOTCHEM_RUNS)
+and rewrites it."""
 import glob
 import os
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F09_cloudy_sphere')
-TIGRIS = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/'
-                            'F10_bands/run64_b7')
+REDUCED = os.path.join(HERE, 'reduced.txt')
 CLOUDY = [('default', os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'), '-'),
           ('diffuse OTS', os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
                                        'radial_profiles.txt'), '--')]
@@ -65,8 +68,16 @@ def radius_half(r, xhp):
     return np.interp(0.5, [xhp[i], xhp[i - 1]], [r[i], r[i - 1]])
 
 
-r, tg = tigris_profile(TIGRIS)
-cl = [(lab, np.loadtxt(fn), ls) for lab, fn, ls in CLOUDY]
+if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
+    athena_read = paths.athena_read()
+    r, tg = tigris_profile(paths.runs('T6_multi_ion', 'F10_bands', 'run64_b7'))
+    reduced.save(REDUCED, 'F09: density-weighted radial profiles of the Tigris run '
+                 'T6_multi_ion/F10_bands/run64_b7\nr [pc], T [K], ne [cm^-3], ions as '
+                 'fractions of the element', dict(r=r, **tg))
+else:
+    tg = reduced.load(REDUCED)
+    r = tg.pop('r')
+cl =[(lab, np.loadtxt(fn), ls) for lab, fn, ls in CLOUDY]
 PANELS = [('T [K]', ['T'], 'lin'), (r'$n_e$ [cm$^{-3}$]', ['ne'], 'lin'),
           ('H, He', ['H+', 'He+'], 'log'), ('O', ['O+', 'O++', 'O_high'], 'log'),
           ('S', ['S+', 'S++', 'S_high'], 'log'), ('N', ['N+', 'N++'], 'log')]

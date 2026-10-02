@@ -8,25 +8,30 @@ treatment, and the bottom panel gives their T ratio. Writes
 ../../../figures/F11_interior_temperature.{pdf,png}.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
-of reproduce/cloudy_stromgren (default) and reproduce/cloudy_stromgren/thermal_with_N_ots."""
+of reproduce/cloudy_stromgren (default) and reproduce/cloudy_stromgren/thermal_with_N_ots.
+The Tigris profiles come from reduced<SUFFIX>.txt when it exists;
+`python plot.py [SUFFIX] --from-runs` reads WORKDIR
+($PHOTCHEM_RUNS/T6_multi_ion/recomb_ots) and rewrites it."""
 import glob
 import os
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
+ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
 # optional suffix of the run directories and the figure, e.g. _r20 for the runs with
 # rayt_point/rays_per_cell = 20 and tau_max = 30
-SUFFIX = sys.argv[1] if len(sys.argv) > 1 else ''
+SUFFIX = ARGS[0] if ARGS else ''
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F11_interior_temperature' + SUFFIX)
-WORKDIR = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/'
-                             'recomb_ots')
+REDUCED = os.path.join(HERE, 'reduced%s.txt' % SUFFIX)
 CLOUDY_DEFAULT = os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt')
 CLOUDY_OTS = os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
                           'radial_profiles.txt')
@@ -73,10 +78,22 @@ def radius_half(r, xhp):
     return np.interp(0.5, [xhp[i], xhp[i - 1]], [r[i], r[i - 1]])
 
 
+if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
+    athena_read = paths.athena_read()
+    data = {}
+    for run, *_ in PAIRS:
+        data['r_' + run], data['T_' + run], data['xhp_' + run] = tigris_profile(
+            paths.runs('T6_multi_ion', 'recomb_ots', run + SUFFIX))
+    reduced.save(REDUCED, 'F11: density-weighted radial profiles of the Tigris runs '
+                 'T6_multi_ion/recomb_ots/ots_{true,false}%s\nr [pc], T [K], xhp = x_H+'
+                 % SUFFIX, data)
+else:
+    data = reduced.load(REDUCED)
+
 fig, (a1, a2, a3) = plt.subplots(3, 1, figsize=(7, 9.5), sharex=True,
                                  gridspec_kw={'height_ratios': [2, 1, 1]})
 for run, lab, cfile, clab, col in PAIRS:
-    r, T, xhp = tigris_profile(os.path.join(WORKDIR, run + SUFFIX))
+    r, T, xhp = data['r_' + run], data['T_' + run], data['xhp_' + run]
     c = np.loadtxt(cfile)
     a1.plot(c[:, 0], c[:, 1], color=col, lw=2, alpha=0.6,
             label='%s: $R_s$ = %.3f pc' % (clab, radius_half(c[:, 0], c[:, 3])))

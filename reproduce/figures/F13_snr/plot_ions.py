@@ -4,21 +4,24 @@ tracked stages and X_high (all stages above the top tracked one; CIE summed the 
 Points: n_H-weighted mean over cells in 0.1 dex bins of T (bins with >= 5 cells).
 Writes ../../../figures/F13_snr_ions.{pdf,png}.
 
-Inputs: run_ions/snr.out2.00006 (t = 0.030) and .00009 (t = 0.045) of run_series.sh."""
+Inputs: run_ions/snr.out2.00006 (t = 0.030) and .00009 (t = 0.045) of run_series.sh.
+The binned fractions and the CIE curves come from reduced_ions.txt when it exists;
+`python plot_ions.py --from-runs` reads the run ($PHOTCHEM_RUNS/M6_rad_snr/F13_series)
+and the CHIANTI tables ($TIGRIS_DIR) and rewrites it."""
 import os
 import sys
+from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/jgkim/Projects/tigris-gow17/vis/python')
-import athena_read
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import paths  # noqa: E402
+import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F13_snr_ions')
-RUN = os.path.expanduser('~/Documents/tigris-photchem-gow17-multi-ion/M6_rad_snr/'
-                         'F13_series/run_ions')
-CHIANTI = '/Users/jgkim/Projects/tigris-gow17/inputs/tables/chianti_v11/ioneq_%s.txt'
+REDUCED = os.path.join(HERE, 'reduced_ions.txt')
 NAMES = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+',
          'C_high', 'Si_high', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++', 'N_high']
 CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1, 'Si+': 1,
@@ -57,17 +60,38 @@ def binned(fn):
     return mid, out, d['Time']
 
 
-snaps = [os.path.join(RUN, 'snr.out2.%05d.athdf' % i) for i in (6, 9)]
-fig, axs = plt.subplots(2, 5, figsize=(20, 8), sharex=True, sharey=True)
-for row, fn in enumerate(snaps):
-    mid, out, t = binned(fn)
-    for ax, (el, _, tracked, _, labels) in zip(axs[row], ELEMENTS):
-        tab = np.loadtxt(CHIANTI % el)
+if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
+    athena_read = paths.athena_read()
+    run = paths.runs('M6_rad_snr', 'F13_series', 'run_ions')
+    data = {}
+    for row, i in enumerate((6, 9)):
+        data['mid'], out, data['t_%d' % row] = binned(
+            os.path.join(run, 'snr.out2.%05d.athdf' % i))
+        for el in out:
+            data['prof_%s_%d' % (el, row)] = out[el]
+    for el, _, tracked, _, labels in ELEMENTS:
+        tab = np.loadtxt(paths.tigris('inputs/tables/chianti_v11', 'ioneq_%s.txt' % el))
         top = len(tracked)
+        data['cie_logT_' + el] = tab[:, 0]
+        data['cie_' + el] = [tab[:, 1 + q] if q <= top else tab[:, 1 + q:].sum(1)
+                             for q in range(len(labels))]
+    reduced.save(REDUCED, 'F13b: n_H-weighted stage fractions in log T bins (mid) of '
+                 'M6_rad_snr/F13_series/run_ions\nsnr.out2.00006 (row 0) and .00009 '
+                 '(row 1), one row per stage, and the CHIANTI v11 CIE\nfractions '
+                 '(cie_logT, cie) of inputs/tables/chianti_v11/ioneq_<el>.txt; t [code]',
+                 data)
+else:
+    data = reduced.load(REDUCED)
+
+fig, axs = plt.subplots(2, 5, figsize=(20, 8), sharex=True, sharey=True)
+for row in range(2):
+    mid, t = data['mid'], float(data['t_%d' % row])
+    for ax, (el, _, tracked, _, labels) in zip(axs[row], ELEMENTS):
         for q, lab in enumerate(labels):
-            cie = tab[:, 1 + q] if q <= top else tab[:, 1 + q:].sum(1)
-            ax.plot(tab[:, 0], cie, color='C%d' % q, lw=1.2, alpha=0.5)
-            ax.plot(mid, out[el][q], color='C%d' % q, marker='o', ms=3, lw=0.8, label=lab)
+            ax.plot(data['cie_logT_' + el], data['cie_' + el][q], color='C%d' % q, lw=1.2,
+                    alpha=0.5)
+            ax.plot(mid, data['prof_%s_%d' % (el, row)][q], color='C%d' % q, marker='o', ms=3,
+                    lw=0.8, label=lab)
         ax.set(xlim=(4, 7.5), ylim=(1e-3, 1.5), yscale='log',
                title='%s, t = %.3f code (%s shell formation)'
                % (el, t, 'before' if t < 0.0385 else 'after'))

@@ -42,7 +42,8 @@ python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
 `pip install ".[slides]"` adds python-pptx for `make_cr_slides.py`, and
 `pip install ".[reproduce]"` adds what the `reproduce/` harnesses read (pandas and
 pyathena; some also need `athena_read.py` from the Athena++ or Tigris
-`vis/python` directory).
+`vis/python` directory). `reproduce/README.md` lists the environment variables
+that tell the harnesses where the codes and runs are.
 
 The output, `rad_cr_chem_coupling_paper_mhd_crleft_crB.png` and `.pdf`, goes to
 `figures/` (created if absent). The options:
