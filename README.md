@@ -24,15 +24,25 @@ that directory holds only what the manuscript includes.
 
 `scripts/rad_cr_chem_coupling.py` draws how radiation transfer, cosmic-ray
 transport, photochemistry and gas dynamics exchange quantities in TIGRESS++. It
-needs only Python 3 with numpy and matplotlib (no LaTeX), and the three modules
-beside it: `adaptive_rays_3d.py` (point-source ray trees), `diffuse_rays_3d.py`
-(diffuse-field rays) and `clumpy_cloud.py` (the cloud both ray panels cross).
+needs Python 3.10 or later with numpy, matplotlib and healpy (no LaTeX), and the
+three modules beside it: `adaptive_rays_3d.py` (point-source ray trees, on
+HEALPix directions), `diffuse_rays_3d.py` (diffuse-field rays) and
+`clumpy_cloud.py` (the cloud both ray panels cross). `pyproject.toml` declares
+these; the scripts are run in place, not imported as a package.
 
 ```
 git clone https://github.com/jeonggyukim/photchem-method.git
-cd photchem-method/scripts
+cd photchem-method
+python -m venv .venv && source .venv/bin/activate   # or any environment
+pip install .
+cd scripts
 python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B
 ```
+
+`pip install ".[slides]"` adds python-pptx for `make_cr_slides.py`, and
+`pip install ".[reproduce]"` adds what the `reproduce/` harnesses read (pandas and
+pyathena; some also need `athena_read.py` from the Athena++ or Tigris
+`vis/python` directory).
 
 The output, `rad_cr_chem_coupling_3d2_paper_mhd_crleft_crB.png` and `.pdf`, goes to
 `figures/` (created if absent). The options:

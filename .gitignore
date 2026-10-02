@@ -21,3 +21,8 @@ data/
 *.diffuse
 *.npz
 *.vtk
+
+# Python environments and build products from pip install .
+.venv/
+*.egg-info/
+build/

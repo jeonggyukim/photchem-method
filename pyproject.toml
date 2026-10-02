@@ -1,0 +1,33 @@
+# The scripts are run in place (python scripts/<name>.py), not installed as a
+# package; this file declares what they need, so that
+#     pip install .            the figure scripts (numpy, matplotlib, healpy)
+#     pip install ".[slides]"  plus python-pptx for make_cr_slides.py
+#     pip install ".[reproduce]"  plus what the reproduce/ harnesses read
+# set up an environment. Several harnesses also read Athena++/Tigris output with
+# athena_read.py from the code's vis/python directory, which is not on PyPI.
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photchem-method"
+version = "0.1"
+description = "Figures and reproduce harnesses for the photochemistry method paper, and the TIGRESS++ coupling schematic"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "healpy",
+]
+
+[project.optional-dependencies]
+slides = ["python-pptx"]
+reproduce = [
+    "pandas",
+    "pyathena @ git+https://github.com/jeonggyukim/pyathena.git",
+]
+
+[tool.setuptools]
+packages = []
