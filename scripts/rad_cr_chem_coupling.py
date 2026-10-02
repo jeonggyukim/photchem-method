@@ -1,11 +1,9 @@
 """Schematic of how radiation, cosmic rays and the photochemistry of the gas couple.
 
-    python rad_cr_chem_coupling.py [3d2|3d|2d] [talk|paper] [--mhd] [--cr-left]
-                                   [--crpic=A|B]
+    python rad_cr_chem_coupling.py [talk|paper] [--mhd] [--cr-left] [--crpic=A|B]
 
-The first argument picks the drawing of the ray tracers: both in 3D (3d2, default),
-point sources in 3D only (3d), or flat (2d). The second picks the labels: symbols in
-large type for slides (talk, default), or symbols with a few words each for a paper.
+The argument picks the labels: symbols in large type for slides (talk, default), or
+symbols with a few words each for a paper.
 
 --mhd adds a gas-dynamics box for a coupled simulation, with the forces and heating
 the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray boxes.
@@ -13,10 +11,10 @@ the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray
 by the waves it drives; B, the self-confinement loop as a diagram; omitted, a cosmic
 ray gyrating along B.
 
-Writes rad_cr_chem_coupling[_3d2|_3d]_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and
-.pdf to ../figures.
-The 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside this
-script.
+Writes rad_cr_chem_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and .pdf to
+../figures.
+The two 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside
+this script.
 """
 import os
 import sys
@@ -25,7 +23,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, Ellipse, FancyArrowPatch, FancyBboxPatch, Rectangle
+from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
 
 from adaptive_rays_3d import draw_ray_tree
 from clumpy_cloud import Cloud
@@ -45,9 +43,9 @@ def make_cloud(size):
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 _ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
-MODE = _ARGS[0] if len(_ARGS) > 0 else '3d2'
-STYLE = _ARGS[1] if len(_ARGS) > 1 else 'talk'
-FLAT = MODE == '2d'
+STYLE = _ARGS[0] if len(_ARGS) > 0 else 'talk'
+if STYLE not in ('talk', 'paper'):
+    sys.exit("rad_cr_chem_coupling.py: the style is 'talk' or 'paper', not %r" % STYLE)
 PAPER = STYLE == 'paper'
 # --mhd: a coupled simulation rather than post-processing; a gas-dynamics box between
 # the others takes the radiation force, the cosmic-ray force and heating, and the
@@ -59,8 +57,7 @@ CRL = '--cr-left' in sys.argv
 # gyrating along B; A, a cosmic ray scattered by the waves it drives; B, the
 # self-confinement loop as a diagram.
 CRPIC = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--crpic=')), '')
-NAME = ('rad_cr_chem_coupling' + {'2d': '', '3d': '_3d', '3d2': '_3d2'}[MODE]
-        + '_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else '')
+NAME = ('rad_cr_chem_coupling_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else '')
         + ('_cr' + CRPIC if CRPIC else ''))
 
 # Labels per style: (text, font size).
@@ -130,38 +127,6 @@ def box(ax, x0, y0, x1, y1, color, title):
 def arrow(ax, p, q, color):
     ax.add_patch(FancyArrowPatch(p, q, arrowstyle='-|>,head_length=8,head_width=4.5',
                                  color=color, lw=2.0, shrinkA=0, shrinkB=0))
-
-
-def draw_point_source(ax, x, y):
-    """A star whose photon packets split in two as they spread."""
-    rng_split, rng_end = 0.42, 0.78
-    for a in np.deg2rad(np.arange(0, 360, 45) + 22.5):
-        xs, ys = x + rng_split*np.cos(a), y + rng_split*np.sin(a)
-        ax.plot([x, xs], [y, ys], color=COL_RAD, lw=1.3, zorder=2)
-        for da in (-0.2, 0.2):
-            ax.plot([xs, x + rng_end*np.cos(a + da)], [ys, y + rng_end*np.sin(a + da)],
-                    color=COL_RAD, lw=0.9, alpha=0.8, zorder=2)
-        ax.plot(xs, ys, 'o', ms=2.5, color=COL_RAD, zorder=3)
-    ax.plot(x, y, marker='*', ms=24, color='#FFD23F', mec='#C77800', mew=1.0, zorder=4)
-
-
-def draw_diffuse(ax, x, y, w, h):
-    """Parallel rays in three fixed directions crossing a cloud."""
-    clip = Rectangle((x - w/2, y - h/2), w, h, fc='none', ec='0.6', lw=0.8, zorder=1)
-    ax.add_patch(clip)
-    ax.add_patch(Ellipse((x + 0.05, y - 0.03), 0.8*w, 0.55*h, angle=20, fc='0.72',
-                         ec='none', alpha=0.8, zorder=1))
-    ax.add_patch(Ellipse((x - 0.12, y + 0.05), 0.42*w, 0.3*h, angle=-15, fc='0.55',
-                         ec='none', alpha=0.8, zorder=1))
-    for ang, col in ((0.0, COL_RAD), (60.0, '#CC79A7'), (120.0, '#56B4E9')):
-        a = np.deg2rad(ang)
-        d = np.array([np.cos(a), np.sin(a)])
-        nrm = np.array([-d[1], d[0]])
-        for s in np.linspace(-1.0, 1.0, 7):
-            p = np.array([x, y]) + s*0.75*max(w, h)*nrm
-            line, = ax.plot([p[0] - 2*d[0], p[0] + 2*d[0]], [p[1] - 2*d[1], p[1] + 2*d[1]],
-                            color=col, lw=0.8, alpha=0.9, zorder=2)
-            line.set_clip_path(clip)
 
 
 def draw_cosmic_ray(ax, x0, x1, y):
@@ -379,28 +344,21 @@ def main():
 
     # radiation transfer
     box(ax, 0.25 + orad, 4.4, 5.5 + orad, top, COL_RAD, 'Radiation Transfer')
-    if FLAT:
-        draw_point_source(ax, 1.55 + orad, 6.9)
-    else:
-        fig.canvas.draw()
-        to_fig = ax.transData + fig.transFigure.inverted()
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3 + orad, 5.95), (2.85 + orad, 8.6)])
-        inset = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
-        inset.set_facecolor('none')
-        draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.3, sources=POINT_SOURCES,
-                      cloud=make_cloud(16.0), kappa=0.25)
+    fig.canvas.draw()
+    to_fig = ax.transData + fig.transFigure.inverted()
+    (fx0, fy0), (fx1, fy1) = to_fig.transform([(0.3 + orad, 5.95), (2.85 + orad, 8.6)])
+    inset = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
+    inset.set_facecolor('none')
+    draw_ray_tree(inset, lw=0.5, zoom=1.05, ms=0.3, sources=POINT_SOURCES,
+                  cloud=make_cloud(16.0), kappa=0.25)
     s, fs = LABELS['point']
     ax.text(1.55 + orad, 5.95, s, ha='center', va='top', fontsize=fs, color=TXT,
             linespacing=1.25)
-    if MODE == '3d2':
-        (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95 + orad, 5.95),
-                                                   (5.45 + orad, 8.6)])
-        inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
-        inset2.set_facecolor('none')
-        draw_diffuse_rays(inset2, lw=0.45, zoom=1.05, nbundle=4, spacing=1.6,
-                          cloud=make_cloud(8.0))
-    else:
-        draw_diffuse(ax, 4.28 + orad, 6.9, 1.5, 1.25)
+    (fx0, fy0), (fx1, fy1) = to_fig.transform([(2.95 + orad, 5.95), (5.45 + orad, 8.6)])
+    inset2 = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0], projection='3d')
+    inset2.set_facecolor('none')
+    draw_diffuse_rays(inset2, lw=0.45, zoom=1.05, nbundle=4, spacing=1.6,
+                      cloud=make_cloud(8.0))
     s, fs = LABELS['diffuse']
     ax.text(4.28 + orad, 5.95, s, ha='center', va='top', fontsize=fs, color=TXT,
             linespacing=1.25)

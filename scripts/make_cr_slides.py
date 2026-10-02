@@ -8,10 +8,10 @@ Writes ~/Dropbox/Research-Presentation/2026-10-Pisa-Salt-of-SF/cr-coupling.pptx 
 an output path is given.  Figures are read from ../figures (git-ignored); make them
 first with rad_cr_chem_coupling.py beside this script:
 
-    python rad_cr_chem_coupling.py 3d2 talk --mhd --cr-left
-    python rad_cr_chem_coupling.py 3d2 talk --mhd --cr-left --crpic=A
-    python rad_cr_chem_coupling.py 3d2 talk --mhd --cr-left --crpic=B
-    python rad_cr_chem_coupling.py 3d2 paper
+    python rad_cr_chem_coupling.py talk --mhd --cr-left
+    python rad_cr_chem_coupling.py talk --mhd --cr-left --crpic=A
+    python rad_cr_chem_coupling.py talk --mhd --cr-left --crpic=B
+    python rad_cr_chem_coupling.py paper
 """
 import os
 import sys
@@ -250,7 +250,7 @@ or the gas dynamics, which is why TIGRESS++ couples them, as on the next slide.
 # 1. the coupled system ---------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 title(s, 'Radiation, cosmic rays, photochemistry and gas dynamics, coupled')
-figure(s, 'rad_cr_chem_coupling_3d2_talk_mhd_crleft.png')
+figure(s, 'rad_cr_chem_coupling_talk_mhd_crleft.png')
 notes(s, """
 Each box is a part of the physics, with arrows for what it hands the others.
 
@@ -336,7 +336,7 @@ also on |dv/dr| through CO trapping).
 # 2. resonant scattering ----------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 title(s, 'Self-confinement: CRs scatter off the waves they drive')
-figure(s, 'rad_cr_chem_coupling_3d2_talk_mhd_crleft_crA.png')
+figure(s, 'rad_cr_chem_coupling_talk_mhd_crleft_crA.png')
 notes(s, """
 The cartoon: a CR streams along B and meets two Alfvén-wave packets. The first is long
 and matches the CR's step per gyration before scattering; the CR's pitch angle changes
@@ -378,7 +378,7 @@ and the resonant band (the √π/16 in A22 Eq. 16 comes from those integrals).
 # 3. the self-confinement loop -----------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 title(s, 'Self-confinement loop: growth, scattering, damping')
-figure(s, 'rad_cr_chem_coupling_3d2_talk_mhd_crleft_crB.png')
+figure(s, 'rad_cr_chem_coupling_talk_mhd_crleft_crB.png')
 notes(s, """
 1. ∇P_c, the free energy. CRs are injected by supernovae, clustered near the midplane,
 and lost in dense gas (Λ_coll) and at the boundaries, so P_c cannot be uniform. CRs
@@ -473,11 +473,11 @@ spectrum steepen on its own.
 # 5. the paper version -------------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 title(s, 'Backup: post-processing version (paper figure)')
-figure(s, 'rad_cr_chem_coupling_3d2_paper.png')
+figure(s, 'rad_cr_chem_coupling_paper.png')
 notes(s, """
 The post-processing version: no gas dynamics box; radiation transfer, cosmic-ray
 transport and photochemistry iterate on a fixed MHD snapshot. Labels name the processes
-on each arrow. Made with rad_cr_chem_coupling.py 3d2 paper.
+on each arrow. Made with rad_cr_chem_coupling.py paper.
 """)
 
 prs.save(OUT)

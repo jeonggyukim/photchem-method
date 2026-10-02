@@ -36,7 +36,7 @@ cd photchem-method
 python -m venv .venv && source .venv/bin/activate   # or any environment
 pip install .
 cd scripts
-python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B
+python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
 ```
 
 `pip install ".[slides]"` adds python-pptx for `make_cr_slides.py`, and
@@ -44,12 +44,11 @@ python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B
 pyathena; some also need `athena_read.py` from the Athena++ or Tigris
 `vis/python` directory).
 
-The output, `rad_cr_chem_coupling_3d2_paper_mhd_crleft_crB.png` and `.pdf`, goes to
+The output, `rad_cr_chem_coupling_paper_mhd_crleft_crB.png` and `.pdf`, goes to
 `figures/` (created if absent). The options:
 
 | option | effect |
 | --- | --- |
-| `3d2` / `3d` / `2d` | both ray panels in 3D / point sources only in 3D / flat |
 | `paper` / `talk` | symbols with a few words each / symbols in large type for slides |
 | `--mhd` | adds the gas-dynamics box of a coupled simulation |
 | `--cr-left` | cosmic-ray box on the left, radiation on the right |
@@ -58,8 +57,8 @@ The output, `rad_cr_chem_coupling_3d2_paper_mhd_crleft_crB.png` and `.pdf`, goes
 The two variants used most:
 
 ```
-python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B   # paper style
-python rad_cr_chem_coupling.py 3d2 talk  --mhd --cr-left --crpic=B   # slides
+python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B   # paper style
+python rad_cr_chem_coupling.py talk  --mhd --cr-left --crpic=B   # slides
 ```
 
 Labels, colours and box positions are set near the top of the script (`LABELS`,
