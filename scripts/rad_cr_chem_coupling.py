@@ -57,8 +57,8 @@ CRL = '--cr-left' in sys.argv
 # gyrating along B; A, a cosmic ray scattered by the waves it drives; B, the
 # self-confinement loop as a diagram.
 CRPIC = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--crpic=')), '')
-NAME = ('rad_cr_chem_coupling_' + STYLE + ('_mhd' if SIM else '') + ('_crleft' if CRL else '')
-        + ('_cr' + CRPIC if CRPIC else ''))
+NAME = ('rad_cr_chem_coupling_' + STYLE + ('_mhd' if SIM else '')
+        + ('_crleft' if CRL else '') + ('_cr' + CRPIC if CRPIC else ''))
 
 # Labels per style: (text, font size).
 LABELS = {
