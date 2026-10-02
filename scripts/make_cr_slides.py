@@ -4,8 +4,8 @@ explanations are in the presenter notes.
 
     python make_cr_slides.py [output.pptx]
 
-Writes ~/Dropbox/Research-Presentation/2026-10-Pisa-Salt-of-SF/cr-coupling.pptx unless
-an output path is given.  Figures are read from ../figures (git-ignored); make them
+Writes ../figures/cr-coupling.pptx unless an output path is given.  Figures are read
+from ../figures (git-ignored); make them
 first with rad_cr_chem_coupling.py beside this script:
 
     python rad_cr_chem_coupling.py talk --mhd --cr-left
@@ -25,8 +25,7 @@ from pptx.util import Emu, Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', 'figures')
-OUT = (sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser(
-    '~/Dropbox/Research-Presentation/2026-10-Pisa-Salt-of-SF/cr-coupling.pptx'))
+OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(FIG, 'cr-coupling.pptx')
 
 NAVY = RGBColor(0x1F, 0x3A, 0x5F)
 GREY = RGBColor(0x40, 0x40, 0x40)

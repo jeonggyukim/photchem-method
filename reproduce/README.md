@@ -11,9 +11,17 @@ The C++ harnesses include Tigris headers directly and build with
 
 after `configure.py -gow17 [...]` has written `defs.hpp`. Bit-identity checks
 need `-ffp-contract=off`. Python scripts use the `pyathena` conda env and read
-Tigris output with `vis/python/athena_read.py`. Paths inside the scripts are
-absolute and point at the author's checkout; that is to be replaced by
-arguments before the repository is shared.
+Tigris output with `vis/python/athena_read.py`.
+
+**These harnesses do not run as published.** They read the author's local
+simulation output (`~/Documents/tigris-photchem-gow17-multi-ion/...`,
+`~/Documents/photchem-postproc/...`) and code checkouts
+(`~/Projects/tigris-gow17`, `athena-pp-pdr1d`, `athenak-chem`) by absolute path.
+The paths record where each input lived when the number was made; the outputs
+themselves are not in the repository. Before submission the harnesses will read
+these locations from environment variables (e.g. `TIGRIS_DIR`, `PHOTCHEM_RUNS`)
+and the reduced data each figure plots will be added, so that the figures can be
+remade without the raw runs.
 
 | directory | serves | what |
 | --- | --- | --- |

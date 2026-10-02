@@ -2,15 +2,14 @@
 HEALPix base ray splits into four child rays whenever the solid angle it carries would
 cover more than 1/f of a cell's face, A(l) r^2 > dx^2/f with A(l) = 4 pi/(12 4^l).
 
-    python adaptive_rays_3d.py
+    python adaptive_rays_3d.py [outdir]
 
-Writes adaptive_rays_3d.png and .pdf to
-~/Dropbox/Research/Rayt-Method/figures/photchem-postproc, with a legend-free
-adaptive_rays_3d_panel for Figure 1 of the method paper, and copies them to
-~/Documents/photchem-postproc.  draw_ray_tree() is also used by rad_cr_chem_coupling.py.
+Writes adaptive_rays_3d.png and .pdf, with a legend-free adaptive_rays_3d_panel for
+Figure 1 of the method paper, to outdir (default ../figures).  draw_ray_tree() is
+also used by rad_cr_chem_coupling.py.
 """
 import os
-import shutil
+import sys
 
 import healpy as hp
 import numpy as np
@@ -20,8 +19,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
-OUT = os.path.expanduser('~/Dropbox/Research/Rayt-Method/figures/photchem-postproc')
-COPY = os.path.expanduser('~/Documents/photchem-postproc')
+FIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 
 
 def ray_tree(ncell=16, f=1.0, src=(5.0, 6.0, 5.0), narrow=1, aim=(0.8, 0.5, 0.35)):
@@ -161,7 +159,7 @@ def draw_ray_forest(ax, ncell, f, lw, grid, cmap, zoom, ms, narrow, sources, clo
     return col
 
 
-def main():
+def main(out):
     fig = plt.figure(figsize=(5.2, 5.0))
     ax = fig.add_subplot(projection='3d')
     col = draw_ray_tree(ax)
@@ -172,22 +170,19 @@ def main():
             lev, n, '' if n == 1 else 's'))
     ax.legend(loc='upper left', fontsize=8, frameon=False)
     fig.tight_layout(pad=0.1)
-    os.makedirs(OUT, exist_ok=True)
-    os.makedirs(COPY, exist_ok=True)
+    os.makedirs(out, exist_ok=True)
     for ext in ('png', 'pdf'):
-        path = os.path.join(OUT, 'adaptive_rays_3d.' + ext)
+        path = os.path.join(out, 'adaptive_rays_3d.' + ext)
         fig.savefig(path, dpi=200)
-        shutil.copy(path, COPY)
-        print('wrote', path)
+        print('wrote', os.path.normpath(path))
     # Figure 1 of the method paper shrinks this to a 34 mm panel, where the
     # legend would be 2 pt type.
     ax.get_legend().remove()
     for ext in ('png', 'pdf'):
-        path = os.path.join(OUT, 'adaptive_rays_3d_panel.' + ext)
+        path = os.path.join(out, 'adaptive_rays_3d_panel.' + ext)
         fig.savefig(path, dpi=200, bbox_inches='tight', pad_inches=0.02)
-        shutil.copy(path, COPY)
-        print('wrote', path)
+        print('wrote', os.path.normpath(path))
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else FIG)

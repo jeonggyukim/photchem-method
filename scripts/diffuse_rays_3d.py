@@ -3,15 +3,13 @@ set, a bundle of parallel rays crosses the grid and a cloud in it; each ray fade
 the optical depth it has crossed.  The solver launches one ray per face cell through
 every entry face; the bundle is a sample of those.
 
-    python diffuse_rays_3d.py
+    python diffuse_rays_3d.py [outdir]
 
-Writes diffuse_rays_3d.png and .pdf to
-~/Dropbox/Research/Rayt-Method/figures/photchem-postproc and copies them to
-~/Documents/photchem-postproc.  draw_diffuse_rays() is also used by
-rad_cr_chem_coupling.py.
+Writes diffuse_rays_3d.png and .pdf to outdir (default ../figures).
+draw_diffuse_rays() is also used by rad_cr_chem_coupling.py.
 """
 import os
-import shutil
+import sys
 
 import healpy as hp
 import numpy as np
@@ -21,8 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgba
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
-OUT = os.path.expanduser('~/Dropbox/Research/Rayt-Method/figures/photchem-postproc')
-COPY = os.path.expanduser('~/Documents/photchem-postproc')
+FIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 
 COLORS = ('#E69F00', '#CC79A7', '#56B4E9')
 
@@ -103,19 +100,17 @@ def draw_diffuse_rays(ax, n=8, nbundle=3, pixels=(0, 5, 11), lw=0.7, kappa=0.55,
     ax.set_axis_off()
 
 
-def main():
+def main(out):
     fig = plt.figure(figsize=(5.2, 5.0))
     ax = fig.add_subplot(projection='3d')
     draw_diffuse_rays(ax, nbundle=4, pixels=(0, 11), lw=1.5)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-    os.makedirs(OUT, exist_ok=True)
-    os.makedirs(COPY, exist_ok=True)
+    os.makedirs(out, exist_ok=True)
     for ext in ('png', 'pdf'):
-        path = os.path.join(OUT, 'diffuse_rays_3d.' + ext)
+        path = os.path.join(out, 'diffuse_rays_3d.' + ext)
         fig.savefig(path, dpi=200)
-        shutil.copy(path, COPY)
-        print('wrote', path)
+        print('wrote', os.path.normpath(path))
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else FIG)
