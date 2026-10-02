@@ -19,3 +19,38 @@ leave the raw output in the parent directory.
 
 Copy a figure into the Overleaf `figures/` once it is going into the paper, so
 that directory holds only what the manuscript includes.
+
+## The TIGRESS++ coupling schematic
+
+`scripts/rad_cr_chem_coupling.py` draws how radiation transfer, cosmic-ray
+transport, photochemistry and gas dynamics exchange quantities in TIGRESS++. It
+needs only Python 3 with numpy and matplotlib (no LaTeX), and the three modules
+beside it: `adaptive_rays_3d.py` (point-source ray trees), `diffuse_rays_3d.py`
+(diffuse-field rays) and `clumpy_cloud.py` (the cloud both ray panels cross).
+
+```
+git clone https://github.com/jeonggyukim/photchem-method.git
+cd photchem-method/scripts
+python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B
+```
+
+The output, `rad_cr_chem_coupling_3d2_paper_mhd_crleft_crB.png` and `.pdf`, goes to
+`figures/` (created if absent). The options:
+
+| option | effect |
+| --- | --- |
+| `3d2` / `3d` / `2d` | both ray panels in 3D / point sources only in 3D / flat |
+| `paper` / `talk` | symbols with a few words each / symbols in large type for slides |
+| `--mhd` | adds the gas-dynamics box of a coupled simulation |
+| `--cr-left` | cosmic-ray box on the left, radiation on the right |
+| `--crpic=A` / `--crpic=B` | cosmic-ray picture: resonant scattering / the self-confinement loop |
+
+The two variants used most:
+
+```
+python rad_cr_chem_coupling.py 3d2 paper --mhd --cr-left --crpic=B   # paper style
+python rad_cr_chem_coupling.py 3d2 talk  --mhd --cr-left --crpic=B   # slides
+```
+
+Labels, colours and box positions are set near the top of the script (`LABELS`,
+`POINT_SOURCES`, `make_cloud`).

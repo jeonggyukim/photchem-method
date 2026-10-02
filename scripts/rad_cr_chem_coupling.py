@@ -1,6 +1,7 @@
 """Schematic of how radiation, cosmic rays and the photochemistry of the gas couple.
 
     python rad_cr_chem_coupling.py [3d2|3d|2d] [talk|paper] [--mhd] [--cr-left]
+                                   [--crpic=A|B]
 
 The first argument picks the drawing of the ray tracers: both in 3D (3d2, default),
 point sources in 3D only (3d), or flat (2d). The second picks the labels: symbols in
@@ -8,9 +9,12 @@ large type for slides (talk, default), or symbols with a few words each for a pa
 
 --mhd adds a gas-dynamics box for a coupled simulation, with the forces and heating
 the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray boxes.
+--crpic picks the picture at the top of the cosmic-ray box: A, a cosmic ray scattered
+by the waves it drives; B, the self-confinement loop as a diagram; omitted, a cosmic
+ray gyrating along B.
 
-Writes rad_cr_chem_coupling[_3d2|_3d]_{talk,paper}[_mhd][_crleft] .png and .pdf to
-../figures.
+Writes rad_cr_chem_coupling[_3d2|_3d]_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and
+.pdf to ../figures.
 The 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside this
 script.
 """
