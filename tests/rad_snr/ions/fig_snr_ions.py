@@ -6,13 +6,11 @@ reference values marked.
 usage: python fig_snr_ions.py OUT.png
 """
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read()
 
 HERE = paths.runs('M6_rad_snr', '')

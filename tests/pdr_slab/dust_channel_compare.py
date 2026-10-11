@@ -1,10 +1,8 @@
 """Species and T of two Tigris GOW17 slab runs against Athena++ chem_pdr_static.vtk,
 as Tigris/Athena++ ratios at a few columns."""
 import glob, sys
-from pathlib import Path
 import numpy as np
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths
 athena_read = paths.athena_read('ATHENAPP_PDR_DIR')
 names = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+']
 ch = {'He+', 'C+', 'HCO+', 'H+', 'H3+', 'H2+', 'O+', 'Si+'}

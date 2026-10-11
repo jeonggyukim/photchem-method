@@ -18,16 +18,14 @@ import glob
 import os
 import re
 import sys
-from pathlib import Path
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LogNorm  # noqa: E402
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
-import reduced  # noqa: E402
+from photchem_method import paths  # noqa: E402
+from photchem_method import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')

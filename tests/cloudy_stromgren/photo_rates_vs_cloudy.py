@@ -1,9 +1,7 @@
 """Photoionization rate per ion in the Tigris static sphere (5 bands) against
 Cloudy's total ionization rate per ion (save ionization rates), at fixed radii."""
 import sys, re, glob, numpy as np
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths
 athena_read = paths.athena_read()
 run, cdir = sys.argv[1], sys.argv[2]
 txt = open(run + '/athinput.runtime').read()

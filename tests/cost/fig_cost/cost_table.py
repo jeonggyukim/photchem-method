@@ -6,10 +6,7 @@ rad_snr runs write HDF5 every 0.005 code, the classic and NCR ones none). Writes
 cost_table.txt. The runs are read under $PHOTCHEM_RUNS."""
 import glob
 import os
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
+from photchem_method import paths
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = paths.env('PHOTCHEM_RUNS')

@@ -1,6 +1,6 @@
 """Locations of the codes and runs the harnesses read, from environment variables.
 
-A harness puts reproduce/ on sys.path and imports this module. A variable is read
+A harness imports it as `from photchem_method import paths`. A variable is read
 only when a harness asks for it, so each harness needs only the ones it uses.
 """
 import importlib

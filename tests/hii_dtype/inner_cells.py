@@ -1,8 +1,6 @@
 import glob, sys
-from pathlib import Path
 import numpy as np
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths
 athena_read = paths.athena_read()
 athena_read.check_nan_flag = False
 run, idx = sys.argv[1], sys.argv[2]

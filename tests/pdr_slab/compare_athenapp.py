@@ -2,13 +2,11 @@
 six-ray with one lit ray, n_H = 100 cm^-3, chi = 1 at the face): species and
 temperature against column."""
 import glob, sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read('ATHENAPP_PDR_DIR')
 run, out = sys.argv[1], sys.argv[2]
 pc, nh0, kB, e_unit = 3.0856776e18, 100.0, 1.380649e-16, 1.6738234e-24*1e10

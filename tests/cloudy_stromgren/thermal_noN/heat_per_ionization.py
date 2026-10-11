@@ -2,9 +2,7 @@
 Tigris (band-rate-weighted dhnu from the local band fields), per radius.
 usage: python heat_per_ionization.py CLOUDY_DIR TIGRIS_RUNDIR"""
 import sys, re, glob, numpy as np
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
+from photchem_method import paths
 athena_read = paths.athena_read()
 C, run = sys.argv[1].rstrip('/') + '/', sys.argv[2]
 eV, pc, Rin = 1.602176634e-12, 3.0857e18, 10**16.5

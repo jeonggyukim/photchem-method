@@ -6,15 +6,12 @@
    coolants.
 """
 import os
-import sys
 import warnings
-from pathlib import Path
 
 import numpy as np
 
 from lambda_table import LambdaTable
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
+from photchem_method import paths
 
 warnings.filterwarnings('ignore')
 HERE = os.path.dirname(os.path.abspath(__file__))

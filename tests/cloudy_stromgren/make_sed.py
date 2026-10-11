@@ -2,11 +2,8 @@
 Cloudy 'table SED' file (energy in Ryd, F_nu in arbitrary units), and check
 that photon-number ratios above 24.59 eV and 35.12 eV to those above 13.6 eV
 are preserved."""
-import sys
-from pathlib import Path
 import numpy as np
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths
 
 SRC = paths.tigris("inputs/tables/sed/sb99_Z014_GenevaV00_2Myr.txt")
 OUT = "sb99_Z014_GenevaV00_2Myr.sed"

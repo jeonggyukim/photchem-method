@@ -27,9 +27,10 @@ needed.
 
 ## Installation
 
-The scripts run in place from `schematics/` and `tests/`; nothing is installed as a package.
-`pyproject.toml` declares the dependencies, so installing the repository
-installs only those.
+The scripts run in place from `schematics/` and `tests/`. Installing the
+repository installs their dependencies and `photchem_method`, a small package
+of helpers (`paths`, `reduced`) that the `tests/` scripts import. Install it
+editable (`-e`), so it points at this checkout.
 
 ```sh
 git clone https://github.com/jeonggyukim/photchem-method.git
@@ -43,22 +44,23 @@ recommended; swap `conda` for `mamba` if you have it)
 ```sh
 conda create -n photchem-method -c conda-forge python=3.12 numpy matplotlib healpy
 conda activate photchem-method
+pip install -e . --no-deps    # conda already installed the dependencies
 ```
 
 **Option 2 — [uv](https://docs.astral.sh/uv/) (no conda)**
 ```sh
 uv venv --python 3.12
 source .venv/bin/activate
-uv pip install .
+uv pip install -e .
 ```
 
-Plain `python -m venv .venv` followed by `pip install .` works the same way.
+Plain `python -m venv .venv` followed by `pip install -e .` works the same way.
 
 Two extras add what the other scripts read:
 
 ```sh
-pip install ".[slides]"      # python-pptx, for make_cr_slides.py
-pip install ".[tests]"       # pandas and pyathena, for the tests/ harnesses
+pip install -e ".[slides]"   # python-pptx, for make_cr_slides.py
+pip install -e ".[tests]"    # pandas and pyathena, for the tests/ harnesses
 ```
 
 Some harnesses also need `athena_read.py` from the Athena++ or Tigris
@@ -68,6 +70,7 @@ environment variables that tell them where the codes and runs are.
 Sanity check any option with:
 ```sh
 python schematics/rad_cr_chem_coupling.py --help
+python -c "import photchem_method; print(photchem_method.__file__)"
 ```
 
 ### Uninstall

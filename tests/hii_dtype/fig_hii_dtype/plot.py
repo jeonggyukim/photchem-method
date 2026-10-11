@@ -12,15 +12,13 @@ reads the run ($PHOTCHEM_RUNS/M5_hii_dtype_ions/F12_run/run) and the references
 import glob
 import os
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
-import reduced  # noqa: E402
+from photchem_method import paths  # noqa: E402
+from photchem_method import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'hii_dtype')

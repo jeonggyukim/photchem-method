@@ -15,13 +15,11 @@ import glob
 import os
 import subprocess
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read()
 
 # ISM units: rho = n_H [cm^-3], pressure unit mu_H cm^-3 (km/s)^2, time unit pc/(km/s)

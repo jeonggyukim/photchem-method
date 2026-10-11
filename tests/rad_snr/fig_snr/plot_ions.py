@@ -10,14 +10,12 @@ The binned fractions and the CIE curves come from reduced_ions.txt when it exist
 and the CHIANTI tables ($TIGRIS_DIR) and rewrites it."""
 import os
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
-import reduced  # noqa: E402
+from photchem_method import paths  # noqa: E402
+from photchem_method import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'snr_ions')

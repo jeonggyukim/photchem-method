@@ -1,13 +1,10 @@
 """Test B1 figure: Tigris GOW17 one-zone end state vs Athena++ (reference values in
 AthenaK test_GOW17_uniform_gpu.py) and AthenaK kokkos_BDF (last record of
 gow17_time_series.npz). Input: b1_uniform.txt from b1_uniform.cpp."""
-import sys
-from pathlib import Path
 import numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 names = ["He+","OHx","CHx","CO","C+","HCO+","H2","H+","H3+","H2+","O+","Si+"]
 ref = dict(eint=28.234391212463375, **dict(zip(names, [4.4769834062208247e-07,
     1.4335562809719704e-05, 6.079905467970548e-09, 0.00013345545448828489,

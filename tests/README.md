@@ -35,7 +35,7 @@ runs.
 | `CLOUDY_EXE`, `CLOUDY_DATA_DIR` | the Cloudy 25.00 executable and its data directory (`cloudy_stromgren/run_cloudy.sh`) |
 | `XUVTOP` | the CHIANTI 11 database (`ions/ion_cooling/build_ion_cooling.py`, which also needs ChiantiPy 0.16; `pip install ChiantiPy`) |
 
-Python reads them through `paths.py`, C++ through `paths.hpp`, and the shell
+Python reads them through `photchem_method/paths.py`, C++ through `paths.hpp`, and the shell
 scripts as `${TIGRIS_DIR:?...}`. Athena++ does not expand variables in an input
 file, so the `athinput.*` files here write `${TIGRIS_DIR}` where a table path
 goes; expand them before a run, e.g.
@@ -43,7 +43,7 @@ goes; expand them before a run, e.g.
 
 ## Running a harness
 
-    pip install ".[tests]"              # from the repository root
+    pip install -e ".[tests]"           # from the repository root
     export TIGRIS_DIR=/path/to/tigris PHOTCHEM_RUNS=/path/to/runs   # as the harness needs
     python tests/hii_dtype/fig_hii_dtype/plot.py
 

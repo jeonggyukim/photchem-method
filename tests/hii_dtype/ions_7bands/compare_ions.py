@@ -8,13 +8,11 @@ last snapshot.
 """
 import glob
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read()
 
 rundir, out = sys.argv[1], sys.argv[2]

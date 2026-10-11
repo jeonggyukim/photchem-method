@@ -1,13 +1,11 @@
 """Shell radius of hii_dtype with GOW17 against the stored NCR reference and the
 Spitzer / Hosokawa-Inutsuka curves, as tst/.../rayt_point/hii_dtype.py draws them."""
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read()
 
 hst, out = sys.argv[1], sys.argv[2]

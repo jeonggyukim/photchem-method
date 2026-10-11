@@ -15,13 +15,11 @@ follow gow17_core.hpp: He+ OHx CHx CO C+ HCO+ H2 H+ H3+ H2+ O+ Si+.
 import glob
 import re
 import sys
-from pathlib import Path
 
 import numpy as np
 
 run, out = sys.argv[1], sys.argv[2]
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 sys.path.insert(0, sys.argv[3] if len(sys.argv) > 3 else
                 paths.tigris('vis', 'python'))
 import athena_read  # noqa: E402

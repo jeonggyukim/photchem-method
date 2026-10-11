@@ -12,13 +12,11 @@ import glob
 import os
 import re
 import sys
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import paths  # noqa: E402
+from photchem_method import paths  # noqa: E402
 athena_read = paths.athena_read()
 
 CLOUDY = (os.environ.get('CLOUDY_PROFILES')
