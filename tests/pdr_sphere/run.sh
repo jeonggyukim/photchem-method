@@ -1,14 +1,14 @@
 #!/bin/zsh
 # A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
-# every side by one Draine field through the diffuse solver, post-processed to
+# every side by one Draine field through the diffuse ray tracer, post-processed to
 # convergence with the NCR and the GOW17 photochemistry.  The input is
 # athinput.cloud_postproc here, a copy of inputs/photchem/athinput.cloud_postproc
 # (tigris branch gow17).  GOW17 is built with -shld_co, so CO is shielded along the
 # rays.  Each run takes about a minute on eight cores.
 #
 #   ./run.sh <tigris checkout> [ncr|gow17]
-# Runs go to ../../../data/pdr_sphere/<mode>; reduce.py then writes the mid-plane
-# slices the figure script reads.
+# Runs go to ../../../data/pdr_sphere/<mode>; reduce.py then writes the slices
+# through the cloud centre that the figure script reads.
 source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 set -e
 HERE=${0:A:h}

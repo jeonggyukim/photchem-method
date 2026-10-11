@@ -52,7 +52,7 @@ int main() {
     *cool = n2.CoolingTerm(n2.y, g, *T);
   };
   // (a) successive adaptive substeps from the stuck state: one call of dt = 1e-3
-  // code time takes 3 substeps; trace 8 such calls
+  // code time takes 3 substeps; follow 8 such calls
   Real ya[13]; for (int n = 0; n < 13; ++n) ya[n] = y[n];
   std::printf("(a) trace, calls of dt = 1e-3 code time:\n");
   for (int c = 0; c < 8; ++c) {

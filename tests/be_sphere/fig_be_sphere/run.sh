@@ -1,6 +1,6 @@
 #!/bin/bash
-# F15: a Bonnor-Ebert sphere (1000 H cm^-3 at the centre, 2 pc, xi_max 8.4) in 0.05 H cm^-3
-# gas, lit by an isotropic 1-Draine FUV field through the diffuse solver (48 HEALPix
+# A Bonnor-Ebert sphere (1000 H cm^-3 at the centre, 2 pc, xi_max 8.4) in 0.05 H cm^-3
+# gas, lit by an isotropic 1-Draine FUV field through the diffuse ray tracer (48 HEALPix
 # directions), post-processed to convergence with NCR and with GOW17 + ions (O3,S3,N3).
 # Same input (inputs/photchem/athinput.cloud_postproc), same bands (LyC off, LW, PE);
 # only <photchem>/mode and the build differ.

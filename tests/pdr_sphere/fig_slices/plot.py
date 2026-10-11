@@ -1,4 +1,4 @@
-"""The post-processed sphere: slices through its middle and profiles along x1.
+"""The post-processed sphere: slices through its centre and profiles along x1.
 
     python plot.py [npz ...]
 
@@ -6,7 +6,7 @@ Reads the reduced slices through the centre that ../reduce.py writes (default: t
 NCR and GOW17 ones in ../../../../data/pdr_sphere, beside this repository) and writes
 ../../../figures/pdr_sphere_<mode>.{pdf,png}.
 A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
-every side by one Draine field through the diffuse solver.
+every side by one Draine field through the diffuse ray tracer.
 """
 import ast
 import os

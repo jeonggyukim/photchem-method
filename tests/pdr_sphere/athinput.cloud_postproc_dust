@@ -5,7 +5,7 @@ configure = -ncr -shld_ci -shld_cr --prob=photchem_postproc
 
 # A uniform sphere of 1000 H per cm^3, 2 pc in radius, in thin warm gas, lit from
 # every side by one interstellar radiation field of Draine (1978).  The
-# diffuse solver carries the field in from the faces of the box, and it and the NCR
+# diffuse ray tracer carries the field in from the faces of the box, and it and the NCR
 # photochemistry are repeated in turn until the abundances stop changing.  The result
 # is a cloud with an atomic envelope, a molecular interior, and carbon as C+, C and CO
 # in nested shells.  About 230 iterations and 10 minutes on eight cores.
@@ -56,7 +56,7 @@ niteration      = 1000     # the most iterations to take; 1000*dt = 10 code = 9.
                            # a few H2 formation times at n_H ~ 1e3
 dt              = 1.0e-2   # step handed to the chemistry each iteration [code time,
                            # pc/(km/s) = 0.98 Myr]: short enough that the fronts move
-                           # less than a cell between ray traces and the solver needs
+                           # less than a cell between ray traces and the ODE solver needs
                            # few substeps per cell
 threshold_abund_mean = 3.0e-3  # relative change of x_HI, x_H2 and x_e, floored at
                                # abund_floor: its volume-weighted mean over the cells
@@ -123,7 +123,7 @@ iso_phi_lyc  = 0.0      # ionizing part of it, one-sided photon flux [cm^-2 s^-1
 
 <rayt_point>
 rayt_point  = false     # true, with <problem>/source_file, puts point sources in the box
-rotate_rays = fixed     # a new ray orientation each trace would set a floor under the
+rotate_rays = fixed     # a new ray orientation each ray trace would set a floor under the
                         # convergence test
 
 <rayt_diffuse>
@@ -203,7 +203,7 @@ z_gas          = 1.0
 z_dust         = 1.0
 per_channel_dust = true    # each photo-rate scaled by its own GOW17 dust factor; false
                            # leaves the traced field's single LW attenuation, as NCR
-                           # (rayt_point/pdr_sphere sets false to test the tracer alone)
+                           # (rayt_point/pdr_sphere sets false to test the ray tracer alone)
 coolftn_file   = tigress_coolftn_ncr.txt
 sed_average    = input
 hnu[0]         = 18.0

@@ -1,4 +1,4 @@
-"""F13: radiative SNR in a uniform n_H = 1 medium with five thermal treatments: classic
+"""Radiative SNR in a uniform n_H = 1 medium with five thermal treatments: classic
 cooling, NCR, GOW17 core, GOW17 + O3,S3,N3, and the same without the returned grain C, O, Si.
 Hot-gas mass, radial momentum and total cooling rate (-dE_tot/dt; periodic box, one SN at
 t = 0) against time; shell formation (maximum of M_hot) marked. Writes

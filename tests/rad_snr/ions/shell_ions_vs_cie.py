@@ -3,7 +3,8 @@ cell temperature, mass-weighted in bins of log T, for one snapshot.
 
 usage: python shell_ions_vs_cie.py SNAPSHOT.athdf [OUT.png]
 The top tracked stage is compared with CHIANTI's stages at and above it summed,
-since the network has no ion above it (the CIE pool return is not wired).
+since this chemical network has no species above it. This build does not return
+higher ions from the CIE table.
 """
 import sys
 import numpy as np

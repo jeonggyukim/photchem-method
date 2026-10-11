@@ -1,4 +1,4 @@
-"""F14: cost per cycle, split by task, for the thermal/chemical modes on hii_dtype (64^3,
+"""Cost per cycle, split by task, for the thermal/chemical modes on hii_dtype (64^3,
 4 ranks, to t = 1 code, no HDF5) and rad_snr (64^3, 8 ranks, to t = 0.05 code), from
 cost_table.txt; cycles and total per-cycle cost x cycles written above each bar.
 Writes ../../../figures/cost.{pdf,png}."""

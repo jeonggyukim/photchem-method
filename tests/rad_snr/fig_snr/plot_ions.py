@@ -1,4 +1,4 @@
-"""F13b: ion fractions against temperature in the radiative SNR with GOW17 + O3,S3,N3,
+"""Ion fractions against temperature in the radiative SNR with GOW17 + O3,S3,N3,
 before and after shell formation, against CHIANTI v11 CIE at the same T. Per element, the
 tracked stages and X_high (all stages above the top tracked one; CIE summed the same way).
 Points: n_H-weighted mean over cells in 0.1 dex bins of T (bins with >= 5 cells).

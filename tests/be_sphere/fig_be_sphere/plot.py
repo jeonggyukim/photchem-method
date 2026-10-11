@@ -1,5 +1,5 @@
-"""F15: slices and profiles of the Bonnor-Ebert sphere in an isotropic FUV field, one
-figure per network (NCR, GOW17 + ions), same layout as
+"""Slices and profiles of the Bonnor-Ebert sphere in an isotropic FUV field, one
+figure per chemical network (NCR, GOW17 + ions), same layout as
 ai-notes/docs-code/tigris-rayt/scripts/postproc_background_slices.py.
 
     python plot.py [--from-runs] [RUNS]    (default RUNS: $PHOTCHEM_POSTPROC_RUNS/be_net)
@@ -185,7 +185,7 @@ def figure(net, label):
         ax = axes[0, c]
         q = func(p, u)
         if not np.any(q):
-            # a quantity this network does not compute (T_dust under GOW17)
+            # a quantity this chemical network does not compute (T_dust under GOW17)
             ax.text(0.5, 0.5, 'not computed\nby %s' % label.split()[0], ha='center',
                     va='center', transform=ax.transAxes, fontsize=10, color='0.4')
             ax.set_xticks([]); ax.set_yticks([]); ax.set_title(lab, fontsize=10)

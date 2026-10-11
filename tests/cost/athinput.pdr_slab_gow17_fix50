@@ -7,9 +7,9 @@ configure = -gow17 -shld_ci -shld_co -shld_cr --prob=photchem_postproc
 
 # A uniform slab lit through its inner x1 face by a far-ultraviolet beam, with the
 # radiation field, the abundances and the temperature brought into agreement by
-# repeating the diffuse solver and the NCR photochemistry in turn.  The mesh is one
+# repeating the diffuse ray tracer and the photochemistry in turn.  The mesh is one
 # dimensional in all but name: 4096 cells of 0.01 pc along the beam, the cell size
-# of the paper's model at this density, and two across, which is the least a
+# of the Kim et al. (2023) model at this density, and two across, which is the least a
 # MeshBlock can hold with two ghost cells.  The slab ends at a column of
 # 1.26e22 cm^-2, A_V = 6.8.
 #
@@ -104,7 +104,7 @@ gamma      = 1.666666666667
 nH0          = 100.0    # [H cm^-3]
 density_file =          # empty: uniform at nH0
 temp0        = 100.0    # [K], before anything is solved
-equil_init   = false    # start atomic, so the first trace sees no H2 column
+equil_init   = false    # start atomic, so the first ray trace sees no H2 column
 nsource      = 0        # no point sources; the beam is the only light
 source_file  =
 beam_chi0    = 1.0      # field at the lit face, in units of Draine (1978)
@@ -156,7 +156,7 @@ cool_hyd_cie_flag = false
 cool_dust_flag = false
 h2_diss_bg_flag = false
 kgr_H2_flag = false           # grain H2 formation at 3e-17 cm^3 s^-1 whatever the temperature,
-kgr_H2      = 3.0e-17         # as in every test of section 7
+kgr_H2      = 3.0e-17         # as in every test of Kim et al. (2023) section 7
 nsub_max = 50
 cfl_cool_sub = 0.1
 temp_hot0 = 20000.0
@@ -166,7 +166,7 @@ z_dust = 1.0
 chi0 = 0.0                    # no background field: the beam is the only far-ultraviolet light
 xi_cr0 = 2e-16
 shld_xi_cr_flag = false       # the cosmic-ray rate does not fall with column. true makes it
-                              # fall as 1/N past shld_column_hyd_cr0, as in figure 10; with
+                              # fall as 1/N past shld_column_hyd_cr0, as in Kim et al. (2023) figure 10; with
                               # -shld_cr N is the column the traced photoelectric field implies
 shld_len0 = 0.0
 shld_n_hyd0 = 1e2
@@ -175,7 +175,7 @@ shld_column_hyd_cr0 = 9.35e20
 coolftn_file = tigress_coolftn_ncr.txt
 
 # Cross sections and photon energies in the (LyC, LW, PE) bands, per H at Z_dust = 1;
-# the dust values are those of the Athena-TIGRESS run behind figure 10
+# the dust values are those of the Athena-TIGRESS run behind Kim et al. (2023) figure 10
 hnu[0]         = 18.0
 sigma_d[0]     = 1.0e-21
 sigma_pi_HI[0] = 3.1e-18

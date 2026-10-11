@@ -1,5 +1,5 @@
 #!/bin/zsh
-# F13 SNR series: classic cooling, NCR, GOW17 core, GOW17 + O3,S3,N3 with and without
+# Radiative SNR series: classic cooling, NCR, GOW17 core, GOW17 + O3,S3,N3 with and without
 # the returned grain C, O, Si in the hot-gas cooling. 64^3, 8 ranks, tlim 0.05, nghost 4
 # as tst/regression/scripts/tests/feedback/rad_snr.py.
 # usage: run_series.sh WORKDIR   (WORKDIR holds athinput.snr_gow17 and src_noreturn, a copy

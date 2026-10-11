@@ -1,5 +1,5 @@
 // Hot-gas electrons: E set for temperature T with NCR's x_e = x_H+ + xe_He(T) +
-// xe_metal(T); the network must read back that T and that x_e (fully ionized H,
+// xe_metal(T); the GOW17 chemical network must read back that T and that x_e (fully ionized H,
 // He+ and the tracked metal ions at zero, so the table supplies all of theirs).
 #include <cmath>
 #include <cstdio>

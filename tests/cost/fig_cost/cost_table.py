@@ -1,4 +1,5 @@
-"""F14 data: per-cycle cost from the loop_time files of the rad_snr runs of F13 and the hii_dtype timing series (run_hii_cost.sh).
+"""Per-cycle cost from the loop_time files of the rad_snr series
+(../../rad_snr/fig_snr/run_series.sh) and the hii_dtype timing series (run_hii_cost.sh).
 Each loop_time row holds the seconds rank 0 spent over the last ncycle_out cycles, per
 task list. Columns, per cycle: All, Photchem, hydro (TimeIntegratorTaskList), OpSplit,
 RaytPoint, and other = All minus the listed tasks, which is mostly output (the GOW17

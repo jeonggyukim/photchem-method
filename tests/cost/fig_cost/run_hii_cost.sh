@@ -1,5 +1,5 @@
 #!/bin/zsh
-# F14 timing: hii_dtype to t = 1 code with Simple, NCR, GOW17 core and GOW17 + O3,S3,N3,
+# Timing series: hii_dtype to t = 1 code with Simple, NCR, GOW17 core and GOW17 + O3,S3,N3,
 # the regression test's arguments (tst/.../rayt_point/hii_dtype.py), no HDF5, 4 ranks,
 # one run at a time. GOW17 core uses the same seven bands as GOW17 + ions.
 # usage: run_hii_cost.sh WORKDIR
