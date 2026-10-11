@@ -1,3 +1,5 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_POSTPROC_RUNS}/be_net/ncr (no run.log: run before tests/env.sh recorded runs; code revision unknown)
 # F15: plane through the middle of the run be_net/ncr (last dump), p_ = prim, u_ = uov;
 # ndir = diffuse directions, iterations to convergence (-1: not converged)
 @ x 64

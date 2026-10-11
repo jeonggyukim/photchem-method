@@ -1,3 +1,6 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/T3_onezone/F06_ncr (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: file ${TIGRIS_DIR}/tst/regression/data/ref_photchem_solutions/noshld_zg0.0_zd0.0_chi0.0_xi0.00.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
 # F06: NCR in Tigris (T3_onezone/F06_ncr) and the NCR python reference
 # (tst/regression/data/ref_photchem_solutions/noshld_zg0.0_zd0.0_chi0.0_xi0.00.txt)
 # n_H [cm^-3], P/k [K cm^-3]

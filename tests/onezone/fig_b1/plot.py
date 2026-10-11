@@ -45,7 +45,10 @@ if "--from-runs" in sys.argv or not os.path.exists(REDUCED):
                  "(fiducial_data of AthenaK " + CHEM + "test_GOW17_uniform_gpu.py), "
                  "AthenaK kokkos_BDF (last record of " + CHEM + "data/"
                  "gow17_time_series.npz) and Tigris (T3_onezone/b1_uniform.txt)",
-                 {"athenapp": athenapp_reference(), "bdf": bdf, "tigris": tig})
+                 {"athenapp": athenapp_reference(), "bdf": bdf, "tigris": tig},
+                 sources=[paths.runs("T3_onezone", "b1_uniform.txt"),
+                          paths.athenak(CHEM + "test_GOW17_uniform_gpu.py"),
+                          paths.athenak(CHEM + "data/gow17_time_series.npz")])
 data = reduced.load(REDUCED)
 ref = dict(zip(keys, data["athenapp"]))
 bdf = dict(zip(keys, data["bdf"]))

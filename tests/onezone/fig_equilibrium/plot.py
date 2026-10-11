@@ -35,15 +35,16 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
     u = athena_read.athinput(os.path.join(ncr_run, 'athinput.runtime'))['units']
     p_cgs = u['mass_cgs']/u['time_cgs']**2/u['length_cgs']
     nh = d['rho']*u['mass_cgs']/u['length_cgs']**3/u['mean_mass_per_hydrogen']
-    r = np.genfromtxt(paths.tigris('tst/regression/data/ref_photchem_solutions',
-                                   'noshld_zg0.0_zd0.0_chi0.0_xi0.00.txt'), names=True)
+    ref_file = paths.tigris('tst/regression/data/ref_photchem_solutions',
+                            'noshld_zg0.0_zd0.0_chi0.0_xi0.00.txt')
+    r = np.genfromtxt(ref_file, names=True)
     data = {'ncr_nH': nh, 'ncr_pok': d['press']*p_cgs/KB, 'ncr_xe': d['rEL'],
             'ncr_xH2': d['rH2'], 'ref_nH': r['nH'], 'ref_pok': r['pok'], 'ref_xe': r['xe'],
             'ref_xH2': r['xH2']}
     reduced.save(REDUCED, 'F06: NCR in Tigris (T3_onezone/F06_ncr) and the NCR python '
                  'reference\n(tst/regression/data/ref_photchem_solutions/'
                  'noshld_zg0.0_zd0.0_chi0.0_xi0.00.txt)\nn_H [cm^-3], P/k [K cm^-3]',
-                 data)
+                 data, sources=[ncr_run, ref_file])
 else:
     data = reduced.load(REDUCED)
 ncr = {k: data['ncr_' + k] for k in ('nH', 'pok', 'xe', 'xH2')}

@@ -1,12 +1,10 @@
 #!/bin/zsh
 # F06 NCR reference: tst/regression/scripts/tests/photchem/equil.py, iprob = 0 (density
 # sweep), z_gas = z_dust = 1, interp_mode = 1. usage: run_ncr.sh WORKDIR
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
-(cd $T && python3 configure.py -ncr --prob=photchem_equil \
-   --include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw >/dev/null \
-   && make clean >/dev/null && make -j8 >$W/build.out 2>&1) || { echo "build failed"; exit 1; }
-/bin/cp -f $T/bin/athena $W/athena
+tigris_build "$W" -ncr --prob=photchem_equil || { echo "build failed"; exit 1; }
 /bin/cp -f $T/inputs/tables/tigress_coolftn_ncr.txt $W/
 args=(job/problem_id=equil_ncr output1/file_type=tab output1/variable=prim,uov time/ops_task=true
       hydro/active=fixed problem/iprob=0 photchem/mode=ncr photchem/bookkeeping=true
@@ -23,5 +21,5 @@ args=(job/problem_id=equil_ncr output1/file_type=tab output1/variable=prim,uov t
       'photchem_ncr/hnu[2]=9.0' 'photchem_ncr/sigma_d[2]=1e-21'
       'photchem_ncr/sigma_pi_HI[2]=0.0' 'photchem_ncr/sigma_pi_H2[2]=0.0'
       photchem_ncr/coolftn_file=tigress_coolftn_ncr.txt photchem_ncr/interp_mode=1)
-(cd $W && ./athena -i $T/inputs/photchem/athinput.photchem_equil "${args[@]}" >run.out 2>&1)
+run_logged "$W" "$W" ./athena -i $T/inputs/photchem/athinput.photchem_equil "${args[@]}"
 echo "run exit=$?"

@@ -160,7 +160,7 @@ def reduce_run(net, path):
         fmts['p_rHI'] = fmts['p_rEL'] = '%.17g'
     reduced.save(path, 'F15: plane through the middle of the run be_net/%s (last dump), '
                  'p_ = prim, u_ = uov;\nndir = diffuse directions, iterations to '
-                 'convergence (-1: not converged)' % net, data, fmts)
+                 'convergence (-1: not converged)' % net, data, fmts, sources=[run_dir])
     return True
 
 

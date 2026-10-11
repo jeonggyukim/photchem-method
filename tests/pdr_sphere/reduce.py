@@ -8,11 +8,13 @@ Write out.npz to ../data/pdr_sphere/pdr_sphere_<mode>.npz, outside the repositor
 
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
 keeps the plane x3 = 0 through the centre of the sphere: n_H, x_e, x_H, x_H2, the
-carbon fractions, T, T_d (NaN where the mode does not solve it), the fields and xi_cr, plus the iteration count from run.log.
+carbon fractions, T, T_d (NaN where the mode does not solve it), the fields and xi_cr, plus the iteration count from the run's
+stdout: run.out, or run.log for a run made before run.sh went through tests/env.sh.
 The GOW17 output names its first scalar rHI although it holds He+; its species
 follow gow17_core.hpp: He+ OHx CHx CO C+ HCO+ H2 H+ H3+ H2+ O+ Si+.
 """
 import glob
+import os
 import re
 import sys
 
@@ -35,7 +37,8 @@ if gow17:
     x_h = 1.0 - 2.0*p['r6'] - p['r7'] - 2.0*p['r8'] - 1.5*p['r9']
 else:
     x_e, x_h2, x_h = p['rEL'], p['rH2'], p['rHI']
-text = open(run + '/run.log').read()
+stdout = run + '/run.out'
+text = open(stdout if os.path.exists(stdout) else run + '/run.log').read()
 
 
 def runtime(key, default=None):

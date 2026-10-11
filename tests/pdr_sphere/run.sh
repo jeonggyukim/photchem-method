@@ -9,22 +9,21 @@
 #   ./run.sh <tigris checkout> [ncr|gow17]
 # Runs go to ../../../data/pdr_sphere/<mode>; reduce.py then writes the mid-plane
 # slices the figure script reads.
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 set -e
 HERE=${0:A:h}
 SRC=${1:?tigris checkout}
+export TIGRIS_DIR=$SRC
 DATA=${HERE:h:h:h}/data/pdr_sphere
-export OMPI_CXX=clang++
 INC=$(mpicxx --showme:incdirs | tr ' ' '\n' | head -1)
 common=(-mpi -shld_ci -shld_cr -hdf5 -h5double --prob=photchem_postproc
-        --hdf5_path=/opt/homebrew/opt/hdf5-mpi --include=$INC
-        --include=/opt/homebrew/opt/boost/include --cflag=-std=c++17)
+        --include=$INC --cflag=-std=c++17)
 for mode in ${2:-ncr gow17}; do
   if [[ $mode == gow17 ]]; then flags=(-gow17 -shld_co); args=(photchem/mode=gow17)
   else flags=(-ncr); args=(); fi
-  (cd $SRC && python3 configure.py $common $flags > /dev/null && make clean > /dev/null \
-     && make -j8 > /dev/null)
   run=$DATA/$mode; rm -rf $run; mkdir -p $run
-  /bin/cp -f $SRC/bin/athena $SRC/inputs/tables/tigress_coolftn_ncr.txt $run/
-  (cd $run && mpirun -np 8 ./athena -i $HERE/athinput.cloud_postproc $args > run.log 2>&1)
-  grep -h "converged after\|did not converge" $run/run.log
+  tigris_build $run $common $flags
+  /bin/cp -f $SRC/inputs/tables/tigress_coolftn_ncr.txt $run/
+  run_logged $run $run mpi_launch 8 ./athena -i $HERE/athinput.cloud_postproc $args
+  grep -h "converged after\|did not converge" $run/run.out
 done

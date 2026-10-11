@@ -5,23 +5,18 @@
 # Same input (inputs/photchem/athinput.cloud_postproc), same bands (LyC off, LW, PE);
 # only <photchem>/mode and the build differ.
 #   bash run.sh [build|run|all]   (default all)
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 set -e
 TIGRIS=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 RUNS=${RUNS:-${PHOTCHEM_POSTPROC_RUNS:?set PHOTCHEM_POSTPROC_RUNS to the post-processing runs directory}/be_net}
 INP=$TIGRIS/inputs/photchem/athinput.cloud_postproc
-export OMPI_CXX=/opt/homebrew/bin/g++-16
 MPIINC=$(mpicxx --showme:incdirs | tr ' ' '\n' | head -1)
-common=(--prob=photchem_postproc -mpi -hdf5 --hdf5_path=/opt/homebrew/opt/hdf5-mpi
-        --include=$MPIINC -shld_ci -shld_cr)
+common=(--prob=photchem_postproc -mpi -hdf5 --include=$MPIINC -shld_ci -shld_cr)
 mkdir -p "$RUNS"
 
 build() {
   local name=$1; shift
-  (cd "$TIGRIS" && python3 configure.py "${common[@]}" "$@" > "$RUNS/configure_$name.log" \
-     && make clean > /dev/null && make -j8 > "$RUNS/build_$name.log" 2>&1)
-  mkdir -p "$RUNS/$name"
-  /bin/cp -f "$TIGRIS/bin/athena" "$RUNS/$name/athena"
-  (cd "$TIGRIS" && git rev-parse --short HEAD && git status --short src) > "$RUNS/$name/tree.txt"
+  tigris_build "$RUNS/$name" "${common[@]}" "$@"
 }
 
 run() {
@@ -37,8 +32,8 @@ run() {
       print "ion_cooling_dir = " c}' \
       "$INP" > athinput.cloud_postproc
   fi
-  { time mpirun -np 8 ./athena -i athinput.cloud_postproc photchem/mode=$mode "$@" \
-      > run.out 2> run.err ; } 2> time.txt
+  run_logged "$RUNS/$name" "$RUNS/$name" mpi_launch 8 ./athena -i athinput.cloud_postproc \
+    photchem/mode=$mode "$@"
 }
 
 what=${1:-all}

@@ -1,3 +1,7 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: file ${PHOTCHEM_RUNS}/T3_onezone/b1_uniform.txt (not a git checkout)
+# provenance: file ${ATHENAK_DIR}/tst/test_suite/chemistry/test_GOW17_uniform_gpu.py (branch=semi-implicit commit=446ad343f0aa60121dc0b4dd0ed2bdd06d9935b3 tree=clean)
+# provenance: file ${ATHENAK_DIR}/tst/test_suite/chemistry/data/gow17_time_series.npz (branch=semi-implicit commit=446ad343f0aa60121dc0b4dd0ed2bdd06d9935b3 tree=clean)
 # B1 end state, e_int then He+ OHx CHx CO C+ HCO+ H2 H+ H3+ H2+ O+ Si+: Athena++ (fiducial_data of AthenaK tst/test_suite/chemistry/test_GOW17_uniform_gpu.py), AthenaK kokkos_BDF (last record of tst/test_suite/chemistry/data/gow17_time_series.npz) and Tigris (T3_onezone/b1_uniform.txt)
 @ athenapp 13
 28.234391212463375

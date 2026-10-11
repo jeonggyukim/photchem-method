@@ -8,9 +8,10 @@
 // usage: equilibrium [T0] > out.txt
 // Output per row: n_H [cm^-3], T [K], P/k [K cm^-3], t_end [code], x_e, then every
 // species per H.
-// Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
-//   -I/opt/homebrew/opt/hdf5-mpi/include equilibrium.cpp
+// Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then, with
+// tests/machine.sh sourced (mpicxx calls its OMPI_CXX; $HDF5 is the --hdf5_path prefix
+// of its TIGRIS_LIB_FLAGS),
+//   mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src -I$HDF5/include equilibrium.cpp
 //   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o equilibrium
 #include <cmath>
 #include <cstdio>
