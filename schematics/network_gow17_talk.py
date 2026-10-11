@@ -34,6 +34,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import patheffects  # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 import network_gow17 as fn  # noqa: E402
 
@@ -374,10 +375,10 @@ def main():
     for name, make in [("network_gow17_talk_all", fig_all),
                        ("network_gow17_talk_ncr", fig_ncr)]:
         fig = make()
-        for ext in ("pdf", "png"):
+        for ext in figure_formats():
             fig.savefig(outdir / f"{name}.{ext}", dpi=200)
         plt.close(fig)
-        print("wrote", outdir / name, "{pdf,png}")
+        print("wrote", outdir / name, "{%s}" % ",".join(figure_formats()))
 
 
 if __name__ == "__main__":

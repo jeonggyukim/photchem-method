@@ -2,7 +2,7 @@
 of H, He, O, S and N from the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands, 64^3)
 against Cloudy 25 with its default diffuse field (solid) and `diffuse OTS` (dashed). Tigris
 X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes
-../../../figures/cloudy_sphere.{pdf,png}.
+../../../figures/cloudy_sphere.png.
 
 Inputs: run64_b7 of tests/bands/fig_band_count/run_series.sh; Cloudy radial_profiles.txt of
 tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
@@ -17,10 +17,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cloudy_sphere')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
 CLOUDY = [('default', os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'), '-'),
           ('diffuse OTS', os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
@@ -111,7 +113,7 @@ fig.suptitle(r'Static H II region, $Q = 10^{49}$ s$^{-1}$, $n_{\rm H} = 100$ cm$
              r'SB99 2 Myr. $R_s$: Tigris %.3f pc, Cloudy %.3f pc (default), %.3f pc (OTS)'
              % tuple(rs), fontsize=11)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 # ionization-weighted means inside 2.5 pc, Tigris vs Cloudy default
 m = r < 2.5

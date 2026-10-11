@@ -26,6 +26,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import patheffects  # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "mathtext.fontset": "dejavusans",
                      "pdf.fonttype": 42})
@@ -710,11 +711,11 @@ def main():
                        ("network_gow17_2panel", fig_2panel),
                        ("network_gow17_1panel_colour", lambda: fig_full("highlight"))]:
         fig = make()
-        for ext in ("pdf", "png"):
+        for ext in figure_formats():
             fig.savefig(outdir / f"{name}.{ext}", dpi=300)
         plt.close(fig)
         made.append(outdir / f"{name}.png")
-        print("wrote", outdir / name, "{pdf,png}")
+        print("wrote", outdir / name, "{%s}" % ",".join(figure_formats()))
     contact_sheet(made, outdir / "network_gow17_versions.png")
     print("wrote", outdir / "network_gow17_versions.png")
 

@@ -4,8 +4,8 @@
 
 The athena_read directory defaults to $TIGRIS_DIR/vis/python.
 
-fig_slices/plot.py reads out.npz from ../../../data/pdr_sphere/pdr_sphere_<mode>.npz,
-beside the repository.
+fig_slices/plot.py reads out.npz from $PHOTCHEM_DATA_DIR/pdr_sphere/pdr_sphere_<mode>.npz,
+outside the repository.
 
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
 keeps the plane x3 = 0 through the centre of the sphere: n_H, x_e, x_H, x_H2, the

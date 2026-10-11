@@ -2,7 +2,7 @@
 before and after shell formation, against CHIANTI v11 CIE at the same T. Per element, the
 tracked stages and X_high (all stages above the top tracked one; CIE summed the same way).
 Points: n_H-weighted mean over cells in 0.1 dex bins of T (bins with >= 5 cells).
-Writes ../../../figures/snr_ions.{pdf,png}.
+Writes ../../../figures/snr_ions.png.
 
 Inputs: run_ions/snr.out2.00006 (t = 0.030) and .00009 (t = 0.045) of run_series.sh.
 The binned fractions and the CIE curves come from reduced_ions.txt when it exists;
@@ -16,9 +16,11 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'snr_ions')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced_ions.txt')
 NAMES = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+',
          'C_high', 'Si_high', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++', 'N_high']
@@ -106,6 +108,6 @@ fig.suptitle('Radiative SNR, GOW17 + O3,S3,N3: points, $n_{\\rm H}$-weighted mea
              'bins; lines, CHIANTI v11 CIE (stages above the top tracked one summed)',
              fontsize=12)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

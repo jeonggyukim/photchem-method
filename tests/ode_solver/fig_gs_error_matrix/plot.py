@@ -1,5 +1,5 @@
 """Block Gauss-Seidel error matrix of one substep, case C (CO formation).
-../jacobian_dump.txt -> ../../../figures/gs_error_matrix.{pdf,png}.
+../jacobian_dump.txt -> ../../../figures/gs_error_matrix.png.
 A = I - hJ with J the species Jacobian at frozen coefficients; the species are put in
 update order and split into groups; G = -(D_B + L_B)^{-1} U_B for Gauss-Seidel and
 G = -D_B^{-1}(L_B + U_B) for Jacobi. Panels show the relative-error form
@@ -13,9 +13,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+os.makedirs(FIG, exist_ok=True)
 path = os.path.join(HERE, '..', 'jacobian_dump.txt')
 with open(path) as f:
     names = f.readline().split(':')[1].split()
@@ -104,7 +106,7 @@ ax.legend(fontsize=9)
 fig.suptitle(r'Lag error of one substep, CO formation ($n_{\rm H} = 10^3\,{\rm cm^{-3}}$, '
              rf'cosmic rays only), {N} substeps; matrices at t = {t_myr[k_show]:.2f} Myr',
              fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(os.path.join(FIG, 'gs_error_matrix.' + ext), dpi=200)
 for s, (title, _, _) in enumerate(schemes):
     print(f'{title}: rho at t={t_myr[k_show]:.2f} Myr {rho[s, k_show]:.3g}; max over t '

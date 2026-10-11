@@ -2,7 +2,7 @@
 z = 1: P/k, T, x_e and x_H2 against n_H. GOW17 + O3,S3,N3 (one-zone harness,
 equilibrium.cpp), NCR in Tigris (photchem_equil, run_ncr.sh) and the NCR python reference
 of the regression test (Kim J.-G. et al. 2023). Writes
-../../../figures/equilibrium.{pdf,png}.
+../../../figures/equilibrium.png.
 
 The NCR curves come from reduced.txt when it exists; `python plot.py --from-runs` reads
 the NCR run ($PHOTCHEM_RUNS) and the reference ($TIGRIS_DIR) and rewrites it."""
@@ -14,9 +14,11 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'equilibrium')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
 KB = 1.380649e-16
 
@@ -71,7 +73,7 @@ for ax in axs:
     ax.grid(alpha=0.25, which='both')
 fig.suptitle(r'Equilibrium in an unshielded field, $\chi = 1$, $\xi_{\rm CR} = 2\times10^{-16}$ '
              r's$^{-1}$, $Z = 1$', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 for key in ['T', 'pok', 'xe']:
     for n0 in [0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:

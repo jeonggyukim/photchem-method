@@ -47,11 +47,12 @@ A script runs from any directory. Each figure has a `fig_<name>/` folder inside 
 test. The folder holds `plot.py`. For a figure from simulation output it also holds
 a reduced copy of the plotted arrays (`reduced*.txt`). The script reads the reduced
 file and needs no environment variable. With `--from-runs` it reads the raw runs and
-rewrites the reduced file. Figures go to `figures/` at the repository root.
+rewrites the reduced file. Figures go to `figures/` at the repository root. A script
+writes a PNG only. Set `PHOTCHEM_FIGURE_FORMATS=png,pdf` to also write a PDF.
 
 The raw simulation output is not in the repository.
-`tests/pdr_sphere/fig_slices/plot.py` reads its reduced slices from a `data/`
-directory beside the repository.
+`tests/pdr_sphere/fig_slices/plot.py` reads its reduced slices from
+`$PHOTCHEM_DATA_DIR/pdr_sphere`, outside the repository.
 
 `pip install -e ".[tests]"` adds pandas and pyathena. Only
 `ions/pyathena_rate_check/compare_rates.py` needs them.
@@ -68,6 +69,7 @@ variable stops with a message naming it.
 | `TIGRIS_DIR` | a Tigris checkout, branch `rayt-photchem-updates` (headers, `inputs/tables`, `tst/regression/data`, `vis/python`) |
 | `PHOTCHEM_RUNS` | the directory of the Tigris runs: `T3_onezone`, `T6_multi_ion`, `M5_hii_dtype_ions`, `M6_rad_snr`, `T7_cost` |
 | `PHOTCHEM_POSTPROC_RUNS` | the directory of the post-processing runs: `be_net` (`be_sphere/`) |
+| `PHOTCHEM_DATA_DIR` | the directory holding the large reduced arrays that are not tracked: `pdr_sphere/` (`pdr_sphere/run.sh`, `pdr_sphere/fig_slices/`) |
 | `ATHENAPP_PDR_DIR` | an Athena++ checkout with `tst/regression/data/chem_pdr_static.vtk` (`pdr_slab/`) |
 | `ATHENAK_DIR` | an AthenaK checkout with the chemistry module (`onezone/`) |
 | `PYATHENA_DIR` | a pyathena checkout, for its `data/` directory (`ions/`) |
@@ -151,7 +153,7 @@ clone with `git config core.hooksPath .githooks`.
 5. **A figure reads its reduced file by default.** `--from-runs` reads the runs and
    rewrites it. `reduced.save` requires the list of runs and files the arrays came
    from. It writes them, with their commits, as `# provenance:` lines at the top of
-   the file.
+   the file. A figure script creates its output directory before it saves.
 6. **Results of other codes are read, not copied.** A reference value from Athena++,
    AthenaK, Cloudy or CHIANTI is read from that code's checkout or output at
    `--from-runs` time and named in the provenance lines. It is never typed into a

@@ -36,7 +36,7 @@ jobs:
       - name: Install
         run: pip install -e ".[slides]"
       - name: Test-problem figures from their reduced files
-        # fig_slices reads ../data/pdr_sphere, outside the repository by design.
+        # fig_slices reads $PHOTCHEM_DATA_DIR/pdr_sphere, outside the repository by design.
         run: |
           set -e
           for f in $(git ls-files 'tests/*/fig_*/plot*.py' | grep -v '^tests/pdr_sphere/fig_slices/'); do

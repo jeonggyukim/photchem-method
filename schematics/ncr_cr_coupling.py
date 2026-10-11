@@ -11,7 +11,7 @@ the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray
 by the waves it drives; B, the self-confinement loop as a diagram; omitted, a cosmic
 ray gyrating along B.
 
-Writes ncr_cr_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and .pdf to
+Writes ncr_cr_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB].png to
 ../figures.
 The two 3D ray panels come from rays_adaptive.py and rays_diffuse.py beside
 this script.
@@ -24,6 +24,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
+from photchem_method.paths import figure_formats  # noqa: E402
 
 from rays_adaptive import draw_ray_tree
 from _clumpy_cloud import Cloud
@@ -521,7 +522,7 @@ def main():
                 color=COL_CHEM, linespacing=1.15)
 
     os.makedirs(OUT, exist_ok=True)
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.normpath(os.path.join(OUT, NAME + '.' + ext))
         fig.savefig(path, dpi=200)
         print('wrote', path)

@@ -7,14 +7,14 @@
 # rays.  Each run takes about a minute on eight cores.
 #
 #   ./run.sh <tigris checkout> [ncr|gow17]
-# Runs go to ../../../data/pdr_sphere/<mode>; reduce.py then writes the slices
+# Runs go to $PHOTCHEM_DATA_DIR/pdr_sphere/<mode>; reduce.py then writes the slices
 # through the cloud centre that the figure script reads.
 source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 set -e
 HERE=${0:A:h}
 SRC=${1:?tigris checkout}
 export TIGRIS_DIR=$SRC
-DATA=${HERE:h:h:h}/data/pdr_sphere
+DATA=${PHOTCHEM_DATA_DIR:?the directory holding the large reduced arrays}/pdr_sphere
 INC=$(mpicxx --showme:incdirs | tr ' ' '\n' | head -1)
 common=(-mpi -shld_ci -shld_cr -hdf5 -h5double --prob=photchem_postproc
         --include=$INC --cflag=-std=c++17)

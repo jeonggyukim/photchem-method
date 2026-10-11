@@ -3,15 +3,17 @@ C, Si, O, S, N from the GOW17 chemical network with --photchem_ions=O3,S3,N3 (da
 from every stage integrated along the same T(t), n_e(t), x_H(t) with the same rates (solid; stages
 above the top tracked one summed). The last panel shows the full ladder's O4+..O7+ and the
 temperature history. Reads isochoric_n1.txt and fullladder_n1.txt; writes
-../../../figures/isochoric.{pdf,png}."""
+../../../figures/isochoric.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'isochoric')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 tg = np.loadtxt(os.path.join(HERE, 'isochoric_n1.txt'))
 fl = np.loadtxt(os.path.join(HERE, 'fullladder_n1.txt'))
 T = tg[:, 1]
@@ -52,6 +54,6 @@ fig.suptitle(r'Isochoric cooling from CIE at $10^7$ K, $n_{\rm H} = 1$ cm$^{-3}$
              'ions, thick every stage along the same T(t) (stages above the top summed)',
              fontsize=11)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

@@ -479,5 +479,6 @@ transport and photochemistry iterate on a fixed MHD snapshot. Labels name the pr
 on each arrow. Made with ncr_cr_coupling.py paper.
 """)
 
+os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
 prs.save(OUT)
 print('wrote', OUT)

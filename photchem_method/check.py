@@ -6,7 +6,9 @@ Exits 1 and lists each violation as path:line: rule: text. The pre-commit hook i
 .githooks/ runs it, so a commit that breaks a rule is refused. The rules, on tracked
 files: no figure number in a path or output name; a figure script in tests/ sits in a
 fig_<name>/ folder, which holds a plot script and, if that script reads --from-runs, a
-reduced file with provenance lines; no machine path outside tests/machines/; no
+reduced file with provenance lines; a figure script (schematics/*.py not starting
+with _, tests/*/fig_*/plot*.py) that saves a file also creates the output directory
+with os.makedirs or mkdir; no machine path outside tests/machines/; no
 sys.path import; every environment variable is listed in paths.VARIABLES; a shell
 script that configures a build sources tests/env.sh; every shell script passes
 bash -n, or zsh -n when its shebang names zsh.
@@ -32,6 +34,10 @@ ENV_USE = re.compile(r"""paths\.env\(['"]([A-Z_]+)['"]\)|\$\{([A-Z_]+):\?|"""
 ENV_NAME = re.compile(r'_(DIR|RUNS|EXE)$|^XUVTOP$')
 BUILD = re.compile(r'configure\.py|cmake ')
 PROVENANCE = '# provenance:'
+FIGURE_SCRIPT = re.compile(r'^schematics/[^_/][^/]*\.py$|'
+                           r'^tests/[^/]+/fig_[^/]+/plot[^/]*\.py$')
+SAVES = re.compile(r'savefig\(|\.save\(')
+MAKES_DIR = re.compile(r'os\.makedirs\(|\.mkdir\(')
 
 
 def tracked():
@@ -80,6 +86,9 @@ def check(files):
             problem = shell_syntax(path, text)
             if problem:
                 bad(path, 0, 'shell-syntax', problem)
+        if FIGURE_SCRIPT.search(path) and any(SAVES.search(t) for t in text) \
+                and not any(MAKES_DIR.search(t) for t in text):
+            bad(path, 0, 'figure-script-without-makedirs', path)
         for n, line in enumerate(text, 1):
             if not path.startswith(MACHINES) and path != 'photchem_method/check.py' \
                     and MACHINE_PATH.search(line):

@@ -8,7 +8,7 @@ transport module.
 
 --no-cr-icon draws H2 without the cosmic ray that ionizes it (ncr_coupling_nocricon).
 
-Writes ncr_coupling.png and .pdf to ../figures. Drawing helpers (boxes, arrows,
+Writes ncr_coupling.png to ../figures. Drawing helpers (boxes, arrows,
 molecules, the adaptive ray tree) come from ncr_cr_coupling.py beside this script.
 """
 import argparse
@@ -18,6 +18,7 @@ import sys
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 _parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -141,7 +142,7 @@ def main():
                 fontsize=24, color=col)
 
     os.makedirs(OUT, exist_ok=True)
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.normpath(os.path.join(
             OUT, 'ncr_coupling' + ('' if CR_ICON else '_nocricon') + '.' + ext))
         fig.savefig(path, dpi=200)

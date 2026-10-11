@@ -1,14 +1,16 @@
 """Lambda(T) of GOW17 + multi-ion at CIE (lambda_curve.cpp output at n_H = 1), components,
 against NCR's hot-gas table and a CHIANTI all-element solar total. n_H = 0.01 differs from
 n_H = 1 by at most 0.9% (at 1e4 K), so one density is shown. Reads lambda_curve_n1.txt
-beside this script; writes ../../../figures/lambda_cie.{pdf,png}."""
+beside this script; writes ../../../figures/lambda_cie.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'lambda_cie')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 a = np.loadtxt(os.path.join(HERE, 'lambda_curve_n1.txt'))
 lT = a[:, 0]; T = 10**lT
 fig, (ax, axr) = plt.subplots(2, 1, figsize=(8, 8.5), sharex=True,
@@ -33,6 +35,6 @@ axr.set(ylim=(0.5, 1.3), xlabel='T [K]', ylabel='ratio')
 axr.legend(fontsize=8)
 axr.grid(alpha=0.25, which='both')
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

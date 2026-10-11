@@ -3,7 +3,7 @@ two star clusters split as they spread through a clumpy cloud.
 
     python rays_adaptive_talk.py
 
-Writes rays_adaptive_talk.png and .pdf to ../figures. Uses draw_ray_tree from
+Writes rays_adaptive_talk.png to ../figures. Uses draw_ray_tree from
 rays_adaptive.py and the same sources and cloud as ncr_cr_coupling.py.
 """
 import os
@@ -14,6 +14,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.transforms import Bbox
+from photchem_method.paths import figure_formats  # noqa: E402
 
 sys.argv = sys.argv[:1]   # ncr_cr_coupling reads its style from argv at import
 from ncr_cr_coupling import POINT_SOURCES, make_cloud  # noqa: E402
@@ -44,7 +45,7 @@ def main():
     x0, x1 = (xs.min() - pad)/fig.dpi, (xs.max() + pad)/fig.dpi
     y0, y1 = (h - ys.max() - pad)/fig.dpi, (h - ys.min() + pad)/fig.dpi
     box = Bbox([[max(x0, 0), max(y0, 0)], [min(x1, w/fig.dpi), min(y1, h/fig.dpi)]])
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.normpath(os.path.join(OUT, 'rays_adaptive_talk.' + ext))
         fig.savefig(path, dpi=dpi, bbox_inches=box)
         print('wrote', path)

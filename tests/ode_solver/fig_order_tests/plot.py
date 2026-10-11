@@ -1,15 +1,17 @@
 """Figures for the Gauss-Seidel order tests, one zone, GOW17 core: error against the
 number of equal substeps, measured against the default semi-implicit solver at 200000 substeps.
-  ../h2_order_check.txt -> ../../../figures/h2_order_check.{pdf,png}: H2 last (default) vs first
-  ../h_block_check.txt  -> ../../../figures/h_block_check.{pdf,png}: default vs H+/H2 2x2 block"""
+  ../h2_order_check.txt -> ../../../figures/h2_order_check.png: H2 last (default) vs first
+  ../h_block_check.txt  -> ../../../figures/h_block_check.png: default vs H+/H2 2x2 block"""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+os.makedirs(FIG, exist_ok=True)
 CASE_TITLE = [r'A: ionization of atomic gas, $n_{\rm H} = 100$, 978 yr',
               r'B: recombination, $n_{\rm H} = 100$, 978 yr',
               r'C: CO formation, $n_{\rm H} = 10^3$, 2.9 Myr',
@@ -42,7 +44,7 @@ for c in range(4):
 axs[0, 0].legend(fontsize=9)
 fig.suptitle('Where H$_2$ sits in the Gauss-Seidel update: error against 200000 substeps '
              '(green band: 1-10%)', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(os.path.join(FIG, 'h2_order_check.' + ext), dpi=300)
 
 # H+/H2 block: columns case N, then per variant |dT/T| |dH+| |dH2| |dCO|
@@ -62,6 +64,6 @@ for c in range(5):
 axs[0, 0].legend(fontsize=9)
 fig.suptitle('H$^+$ and H$_2$ solved together or in sequence: error against 200000 '
              'substeps (green band: 1-10%)', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(os.path.join(FIG, 'h_block_check.' + ext), dpi=300)
 print('wrote', os.path.join(FIG, 'h2_order_check.png'), os.path.join(FIG, 'h_block_check.png'))

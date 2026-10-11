@@ -1,15 +1,17 @@
 """Cost per cycle, split by task, for the thermal/chemical modes on hii_dtype (64^3,
 4 ranks, to t = 1 code, no HDF5) and rad_snr (64^3, 8 ranks, to t = 0.05 code), from
 cost_table.txt; cycles and total per-cycle cost x cycles written above each bar.
-Writes ../../../figures/cost.{pdf,png}."""
+Writes ../../../figures/cost.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cost')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 rows = [ln.split() for ln in open(os.path.join(HERE, 'cost_table.txt'))
         if not ln.startswith('#')]
 PARTS = [('photochemistry', 4, 'C0'), ('hydro', 5, 'C7'), ('operator split', 6, 'C2'),
@@ -33,6 +35,6 @@ for ax, prob, title in [(axs[0], 'hii_dtype', 'hii_dtype, 4 ranks, to t = 1 code
     ax.grid(alpha=0.25, axis='y')
 axs[0].legend(fontsize=8, loc='upper left')
 fig.suptitle(r'Cost per cycle by task, $64^3$', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

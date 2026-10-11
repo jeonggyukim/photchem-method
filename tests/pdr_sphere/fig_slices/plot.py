@@ -3,8 +3,8 @@
     python plot.py [npz ...]
 
 Reads the reduced slices through the centre that ../reduce.py writes (default: the
-NCR and GOW17 ones in ../../../../data/pdr_sphere, beside this repository) and writes
-../../../figures/pdr_sphere_<mode>.{pdf,png}.
+NCR and GOW17 ones in $PHOTCHEM_DATA_DIR/pdr_sphere, outside this repository) and
+writes ../../../figures/pdr_sphere_<mode>.png (and .pdf with PHOTCHEM_FIGURE_FORMATS).
 A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
 every side by one Draine field through the diffuse ray tracer.
 """
@@ -17,9 +17,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LogNorm, Normalize  # noqa: E402
+from photchem_method import paths  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-REDUCED = os.path.join(HERE, '..', '..', '..', '..', 'data', 'pdr_sphere')
 FIGDIR = os.path.join(HERE, '..', '..', '..', 'figures')
 XC_TOT = 1.6e-4       # total gas-phase carbon per H
 XI_CR0 = 2.0e-16      # unattenuated cosmic-ray ionization rate [s^-1]
@@ -143,7 +144,7 @@ def plot(path):
             ax.legend(fontsize=8, loc='lower center', framealpha=0.8)
     fig.suptitle(suptitle_text(d, mode, nh0, radius), fontsize=12, linespacing=1.5)
     os.makedirs(FIGDIR, exist_ok=True)
-    for ext_ in ('pdf', 'png'):
+    for ext_ in figure_formats():
         out = os.path.join(FIGDIR, '%s.%s' % (tag, ext_))
         fig.savefig(out, dpi=150)
     plt.close(fig)
@@ -151,8 +152,8 @@ def plot(path):
 
 
 if __name__ == '__main__':
-    paths = sys.argv[1:] or [os.path.join(REDUCED, 'pdr_sphere_%s.npz' % m)
-                             for m in ('ncr', 'gow17')]
-    for p in paths:
+    npz = sys.argv[1:] or [os.path.join(paths.env('PHOTCHEM_DATA_DIR'), 'pdr_sphere',
+                                        'pdr_sphere_%s.npz' % m) for m in ('ncr', 'gow17')]
+    for p in npz:
         if os.path.exists(p):
             plot(p)

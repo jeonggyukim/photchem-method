@@ -2,7 +2,7 @@
 cooling, NCR, GOW17 core, GOW17 + O3,S3,N3, and the same without the returned grain C, O, Si.
 Hot-gas mass, radial momentum and total cooling rate (-dE_tot/dt; periodic box, one SN at
 t = 0) against time; shell formation (maximum of M_hot) marked. Writes
-../../../figures/snr.{pdf,png}.
+../../../figures/snr.png.
 
 Inputs: run_series.sh output in WORKDIR (run_<name>/snr.hst, athinput.runtime, time.out).
 The histories and wall times come from reduced.txt when it exists;
@@ -16,9 +16,11 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'snr')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
 RUNS = [('classic', 'classic cooling', 'C7', ':'),
         ('ncr', 'NCR', 'k', '-'),
@@ -86,6 +88,6 @@ fig.suptitle(r'Radiative SNR, $10^{51}$ erg in $n_{\rm H} = 1$ cm$^{-3}$, $64^3$
              'shell formation (thin vertical lines) at the maximum of $M_{\\rm hot}$',
              fontsize=11)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

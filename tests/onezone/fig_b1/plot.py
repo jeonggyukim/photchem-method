@@ -2,7 +2,7 @@
 state (e_int and the 12 species) from the Athena++ end state (fiducial_data of AthenaK's
 test_GOW17_uniform_gpu.py), for the Tigris semi-implicit solver (b1_uniform.txt from
 ../b1_uniform.cpp) and AthenaK kokkos_BDF (last record of gow17_time_series.npz).
-Writes ../../../figures/b1_uniform.{pdf,png}.
+Writes ../../../figures/b1_uniform.png.
 
 The three end states come from reduced.txt when it exists; `python plot.py --from-runs`
 reads b1_uniform.txt ($PHOTCHEM_RUNS/T3_onezone) and the AthenaK test and time series
@@ -16,6 +16,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "..", "..", "figures", "b1_uniform")
@@ -72,8 +73,8 @@ ax.set_title("GOW17 one zone, n$_H$ = 109.21 cm$^{-3}$, t = 9.8 Gyr: "
              "end state vs Athena++ (AthenaK test reference)")
 ax.legend(loc="upper left", frameon=False)
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
-for ext in ("pdf", "png"):
+for ext in figure_formats():
     fig.savefig(OUT + "." + ext, dpi=150)
-print("wrote", os.path.normpath(OUT) + ".{pdf,png}")
+print("wrote", os.path.normpath(OUT) + ".{%s}" % ",".join(figure_formats()))
 for k in keys:
     print(f"{k:5s} BDF {100*(bdf[k]/ref[k]-1):+7.2f}%  Tigris {100*(tig[k]/ref[k]-1):+7.2f}%")

@@ -3,7 +3,7 @@ against time for Simple (T fixed at 8000 K) and NCR (stored regression reference
 GOW17 + O3,S3,N3 (this run), with the Spitzer (1978) and Hosokawa & Inutsuka (2006)
 solutions at 8000 K; mass-weighted T of the ionized gas (x_H+ > 0.9) against time; radial
 profiles at t = 1 code. Bottom: z = 0 slices of n_H at four times, one colour range.
-Writes ../../../figures/hii_dtype.{pdf,png}.
+Writes ../../../figures/hii_dtype.png.
 
 Inputs: run_f12.sh output in WORKDIR/run; tigris-gow17 tst/regression/data/ref_rayt_solutions.
 The plotted arrays come from reduced.txt when it exists; `python plot.py --from-runs`
@@ -19,9 +19,11 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'hii_dtype')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
 NAMES = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+',
          'C_high', 'Si_high', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++', 'N_high']
@@ -171,6 +173,6 @@ for j in range(len(TSLICE)):
 fig.colorbar(im, ax=fig.axes[-4:], shrink=0.9, label=r'$n_{\rm H}$ [cm$^{-3}$] (cyan: $x_{\rm H^+} = 0.5$)')
 fig.suptitle(r'D-type H II region, $Q = 10^{49}$ s$^{-1}$, $n_{\rm H} = 100$ cm$^{-3}$, '
              r'$64^3$ (0.56 pc cells)', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

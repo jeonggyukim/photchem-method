@@ -1,15 +1,17 @@
 """Collisional-equilibrium stage fractions of C, Si, O, S, N from the GOW17 chemical network
 with --photchem_ions=O3,S3,N3 (fixed T, no radiation, steady state) against CHIANTI v11,
 and the metal electrons per H. Reads cie_fractions.txt; writes
-../../../figures/cie_fractions.{pdf,png}."""
+../../../figures/cie_fractions.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cie_fractions')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 d = np.loadtxt(os.path.join(HERE, 'cie_fractions.txt'))
 T = 10**d[:, 0]
 # element, spectroscopic labels of neutral .. top tracked, then the higher ions
@@ -46,6 +48,6 @@ for ax in (axs[0], axs[3]):
 fig.suptitle('Fixed T, no radiation, steady state: thick lines CHIANTI v11 CIE (stages above '
              'the top tracked one summed), dashed GOW17 + ions', fontsize=11)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

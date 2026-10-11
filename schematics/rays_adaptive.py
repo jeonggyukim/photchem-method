@@ -4,7 +4,7 @@ cover more than 1/f of a cell's face, A(l) r^2 > dx^2/f with A(l) = 4 pi/(12 4^l
 
     python rays_adaptive.py [outdir]
 
-Writes rays_adaptive.png and .pdf, and a copy without the legend,
+Writes rays_adaptive.png, and a copy without the legend,
 rays_adaptive_panel, to outdir (default ../figures).  draw_ray_tree() is also used
 by ncr_cr_coupling.py.
 """
@@ -16,6 +16,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
@@ -171,13 +172,13 @@ def main(out):
     ax.legend(loc='upper left', fontsize=8, frameon=False)
     fig.tight_layout(pad=0.1)
     os.makedirs(out, exist_ok=True)
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.join(out, 'rays_adaptive.' + ext)
         fig.savefig(path, dpi=200)
         print('wrote', os.path.normpath(path))
     # At a 34 mm panel width the legend would be 2 pt type.
     ax.get_legend().remove()
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.join(out, 'rays_adaptive_panel.' + ext)
         fig.savefig(path, dpi=200, bbox_inches='tight', pad_inches=0.02)
         print('wrote', os.path.normpath(path))

@@ -5,7 +5,7 @@ ai-notes/docs-code/tigris-rayt/scripts/postproc_background_slices.py.
     python plot.py [--from-runs] [RUNS]    (default RUNS: $PHOTCHEM_POSTPROC_RUNS/be_net)
 
 RUNS/ncr and RUNS/gow17 hold the tab slices out3 (prim) and out4 (uov) of run.sh.
-Writes ../../../figures/be_sphere_{ncr,gow17}.{pdf,png}. The planes come from
+Writes ../../../figures/be_sphere_{ncr,gow17}.png. The planes come from
 reduced_{ncr,gow17}.txt when they exist; --from-runs or a RUNS argument reads the runs
 and rewrites them.
 
@@ -26,9 +26,11 @@ import numpy as np  # noqa: E402
 from matplotlib.colors import LogNorm  # noqa: E402
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+os.makedirs(FIG, exist_ok=True)
 ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
 FROM_RUNS = '--from-runs' in sys.argv or bool(ARGS)
 P_KEYS = ('rho', 'rHI', 'rH2', 'rEL')
@@ -245,7 +247,7 @@ def figure(net, label):
                  'solver (HEALPix, %d directions), %s'
                  % (CLOUD, DUST[net], int(data['ndir']), ended), fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.965))
-    for ext_ in ('pdf', 'png'):
+    for ext_ in figure_formats():
         fig.savefig(os.path.join(FIG, 'be_sphere_%s.%s' % (net, ext_)), dpi=150)
     plt.close(fig)
     print('wrote', os.path.join(FIG, 'be_sphere_%s.png' % net))

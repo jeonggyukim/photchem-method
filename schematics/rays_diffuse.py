@@ -5,7 +5,7 @@ cell through every entry face; the bundle is a sample of those.
 
     python rays_diffuse.py [outdir]
 
-Writes rays_diffuse.png and .pdf to outdir (default ../figures).
+Writes rays_diffuse.png to outdir (default ../figures).
 draw_diffuse_rays() is also used by ncr_cr_coupling.py.
 """
 import os
@@ -17,6 +17,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgba
+from photchem_method.paths import figure_formats  # noqa: E402
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
 FIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
@@ -106,7 +107,7 @@ def main(out):
     draw_diffuse_rays(ax, nbundle=4, pixels=(0, 11), lw=1.5)
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     os.makedirs(out, exist_ok=True)
-    for ext in ('png', 'pdf'):
+    for ext in figure_formats():
         path = os.path.join(out, 'rays_diffuse.' + ext)
         fig.savefig(path, dpi=200)
         print('wrote', os.path.normpath(path))

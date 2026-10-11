@@ -1,7 +1,7 @@
 """How many point-source bands the static H II region needs. T(r) and x(H+)(r) of
 the Tigris post-processed sphere (GOW17 + O3,S3,N3, 64^3) with 3, 5, 6 and 7 bands against
 Cloudy 25 (default and `diffuse OTS`); R_s (x_H+ = 0.5) and wall time per run in the
-legend. Writes ../../../figures/band_count.{pdf,png}.
+legend. Writes ../../../figures/band_count.png.
 
 Inputs: run_series.sh output in WORKDIR (run64_b3 .. run64_b7, each with time.out);
 Cloudy radial_profiles.txt of tests/cloudy_stromgren and its thermal_with_N_ots.
@@ -17,10 +17,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'band_count')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
 CLOUDY = {'Cloudy 25, default': os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'),
           'Cloudy 25, diffuse OTS': os.path.join(REPRO, 'cloudy_stromgren',
@@ -100,6 +102,6 @@ a2.set(ylabel=r'$x_{\rm H^+}$', ylim=(1e-3, 1.5), xlabel='r [pc]', xlim=(0, 3.5)
 for a in (a1, a2):
     a.grid(alpha=0.25)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

@@ -1,8 +1,8 @@
 """The block Gauss-Seidel schematic on the GOW17 chemical network, molecular gas.
 ../jacobian_dump.txt (CO-formation test at 2.93 Myr, 64 substeps), read through
 ../fig_gs_error_matrix/plot.py ->
-../../../figures/block_gs_gow17.{pdf,png} (sensitivity) and
-../../../figures/block_gs_gow17_lag.{pdf,png} (lag carried).
+../../../figures/block_gs_gow17.png (sensitivity) and
+../../../figures/block_gs_gow17_lag.png (lag carried).
 
 A = I - hJ in update order.  Each off-diagonal dot is the coupling of species i to
 species j, sized by |A_ij| x_j / (A_ii x_i): the fractional change of the new x_i per
@@ -24,9 +24,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+os.makedirs(FIG, exist_ok=True)
 with contextlib.redirect_stdout(io.StringIO()):
     g = runpy.run_path(os.path.join(HERE, '..', 'fig_gs_error_matrix', 'plot.py'))
 J, X, perm, ORDER, LABEL, t_myr = g['J'], g['X'], g['perm'], g['ORDER'], g['LABEL'], g['t_myr']
@@ -128,7 +130,7 @@ def make(M, cut, lo, hi, name, what, note, kk):
                  r'(CO formation, $n_{\rm H} = 10^3\,{\rm cm^{-3}}$, no FUV, $t$ = %.2f Myr, '
                  '%d substeps)\nrow: species being updated;  column: species it reads;  '
                  'dot size: %s\n%s' % (t_myr[kk], N, what, note), fontsize=10)
-    for ext in ('pdf', 'png'):
+    for ext in figure_formats():
         fig.savefig(os.path.join(FIG, name + '.' + ext), dpi=200, bbox_inches='tight')
     plt.close(fig)
     print('wrote', os.path.join(FIG, name + '.png'))

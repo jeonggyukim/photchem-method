@@ -2,15 +2,17 @@
 GOW17 core, from solver_sweep.txt (solver_sweep.cpp). Columns: A ionization, B
 recombination (n_H 100, 978 yr), C CO formation (n_H 1e3, cosmic rays only, 2.9 Myr); rows:
 |dT/T| and |dx/x| (x = x_H+ for A and B, x_CO for C) against the default with 200000
-substeps. Writes ../../../figures/substeps.{pdf,png}."""
+substeps. Writes ../../../figures/substeps.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'substeps')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 d = np.loadtxt(os.path.join(HERE, 'solver_sweep.txt'))
 VARIANTS = [('Gauss-Seidel + CO/HCO$^+$ block (default)', 'k', '-', 'o'),
             ('Gauss-Seidel, no block', 'C1', '--', 's'),
@@ -39,6 +41,6 @@ for c in range(3):
 axs[0, 0].legend(fontsize=8, loc='lower left')
 fig.suptitle('Semi-implicit solver, one zone, GOW17 core: error against 200000 substeps '
              '(grey: first order; green band: 1-10% budget)', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

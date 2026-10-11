@@ -50,7 +50,7 @@ python tests/<problem>/fig_<name>/plot.py
 ```
 
 The comment at the top of each script lists its options, the files it writes and
-any extra packages it needs.
+any extra packages it needs. Set PHOTCHEM_FIGURE_FORMATS=png,pdf to also write PDF.
 
 ## Rerunning the tests
 

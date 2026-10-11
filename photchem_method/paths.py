@@ -20,6 +20,8 @@ VARIABLES = {
     'CLOUDY_EXE': 'the cloudy.exe of Cloudy 25.00',
     'CLOUDY_DATA_DIR': 'the data directory of Cloudy 25.00',
     'XUVTOP': 'the CHIANTI 11 database (read through ChiantiPy 0.16)',
+    'PHOTCHEM_DATA_DIR': 'the directory holding the large reduced arrays that are not '
+                         'tracked (pdr_sphere/)',
 }
 
 
@@ -29,6 +31,12 @@ def env(name):
     if not value:
         raise RuntimeError('set %s to %s' % (name, VARIABLES[name]))
     return os.path.expanduser(value)
+
+
+def figure_formats():
+    """The extensions a figure script writes: PHOTCHEM_FIGURE_FORMATS, or png."""
+    value = os.environ.get('PHOTCHEM_FIGURE_FORMATS', 'png')
+    return tuple(e.strip().lstrip('.') for e in value.split(',') if e.strip()) or ('png',)
 
 
 def tigris(*parts):

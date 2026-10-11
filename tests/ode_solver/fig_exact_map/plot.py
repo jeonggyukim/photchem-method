@@ -1,15 +1,17 @@
 """Exponential map against backward Euler, one zone, GOW17 core, from ../exact_map_check.txt:
 |dT/T| (top) and |dy/y| (bottom) against the number of equal substeps for the three test
 cases, with backward Euler (default), exact_map, exact_block and both. Reference: the default
-with 200000 substeps. Writes ../../../figures/exact_map_check.{pdf,png}."""
+with 200000 substeps. Writes ../../../figures/exact_map_check.png."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'exact_map_check')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 d = np.loadtxt(os.path.join(HERE, '..', 'exact_map_check.txt'))
 # Gauss-Seidel: C_i, D_i take the species earlier in the order at n+1 and the rest at n,
 # y~ = (y_{<i}^{n+1}, y_{>=i}^n); T and the ghost species stay at t^n
@@ -55,6 +57,6 @@ fig.legend(*axs[0, 0].get_legend_handles_labels(), loc='outside lower center', n
            r'$\mathbf{s} = (a, f)$', title_fontsize=10)
 fig.suptitle('Exponential map vs backward Euler (Gauss-Seidel + CO/HCO$^+$ block), one zone, '
              'GOW17 core: error against 200000 substeps (green band: 1-10%)', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)

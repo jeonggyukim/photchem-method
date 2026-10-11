@@ -1,5 +1,5 @@
 """Energy-species coupling within a substep, case C (CO formation).
-../energy_coupling.txt -> ../../../figures/energy_coupling.{pdf,png}: T and x_CO against time for
+../energy_coupling.txt -> ../../../figures/energy_coupling.png: T and x_CO against time for
 the default (energy and species both read the start-of-substep state), refresh_rates (species
 read rates at the updated T) and n_iter = 2, at 16, 32 and 64 equal substeps, against the
 reference (default, 200000 substeps)."""
@@ -8,9 +8,11 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+os.makedirs(FIG, exist_ok=True)
 d = np.loadtxt(os.path.join(HERE, '..', 'energy_coupling.txt'))
 mode, N, t, T, xco = d[:, 0], d[:, 1], d[:, 3], d[:, 4], d[:, 6]
 ref = (N == 0)
@@ -36,6 +38,6 @@ for c, n in enumerate(cols):
 axs[0, 0].legend(fontsize=8, loc='upper right')
 fig.suptitle(r'CO formation, $n_{\rm H} = 10^3\,{\rm cm^{-3}}$, cosmic rays only: '
              'coupling of the energy and species updates within a substep', fontsize=12)
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(os.path.join(FIG, 'energy_coupling.' + ext), dpi=200)
 print('wrote', os.path.join(FIG, 'energy_coupling.png'))

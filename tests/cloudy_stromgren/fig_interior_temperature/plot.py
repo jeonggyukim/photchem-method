@@ -5,7 +5,7 @@ case B, He on-the-spot split) and carried by the diffuse ray tracer (false: H an
 case A recombination cooling), against Cloudy 25 with `diffuse OTS` and with its default
 transfer of the diffuse field; each Tigris run is paired with the Cloudy run of the same
 treatment, and the bottom panel gives their T ratio. Writes
-../../../figures/interior_temperature<SUFFIX>.{pdf,png}.
+../../../figures/interior_temperature<SUFFIX>.png.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
 of tests/cloudy_stromgren (default) and tests/cloudy_stromgren/thermal_with_N_ots.
@@ -21,6 +21,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
@@ -29,6 +30,7 @@ ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
 # rayt_point/rays_per_cell = 20 and tau_max = 30
 SUFFIX = ARGS[0] if ARGS else ''
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'interior_temperature' + SUFFIX)
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced%s.txt' % SUFFIX)
 CLOUDY_DEFAULT = os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt')
 CLOUDY_OTS = os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
@@ -118,6 +120,6 @@ a3.legend(fontsize=7.5, loc='lower left')
 for a in (a1, a2, a3):
     a.grid(alpha=0.25)
 fig.tight_layout()
-for ext in ('pdf', 'png'):
+for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 print(OUT)
