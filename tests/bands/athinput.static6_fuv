@@ -117,7 +117,7 @@ sigma_d[0]     = 0.0       # Mean dust extinction cross section [cm^2/H]
 sigma_pi_HI[0] = 3.0e-18   # Mean photoionization cross section [cm^2/H]
 hnu[1]         = 9.0       # SED-averaged energy of photons [eV]
 sigma_d[1]     = 1e-21     # Mean dust extinction cross section [cm^2/H]
-sigma_pi_HI[1] = 0.0       # SED-averaged energy of photons [eV]
+sigma_pi_HI[1] = 0.0       # Mean photoionization cross section [cm^2/H]
 
 <photchem_ncr>
 sed_average    = input     # input: read hnu/sigma_d/sigma_pi below

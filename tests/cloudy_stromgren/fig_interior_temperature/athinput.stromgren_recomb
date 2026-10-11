@@ -1,20 +1,17 @@
 <comment>
-problem   = a cloud in an isotropic far-ultraviolet field, by post-processing
-reference = Kim, J.-G. et al. (2023) for the chemistry; Bonnor (1956), Ebert (1955) for the cloud
-configure = -ncr -shld_ci -shld_cr --prob=photchem_postproc
+problem   = a static Stromgren sphere, by post-processing
+reference = Cloudy 25.00 runs of tests/cloudy_stromgren (hii.in, thermal_with_N_ots)
+configure = -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 --ngroup_rayt_diffuse=11 --prob=photchem_postproc -hdf5
 
-# A Bonnor-Ebert sphere of 1000 H per cm^3 at the centre, 2 pc in radius, in thin warm
-# gas, lit from every side by one interstellar radiation field of Draine (1978).  The
-# diffuse ray tracer carries the field in from the faces of the box, and it and the NCR
-# photochemistry are repeated in turn until the abundances stop changing.  The result
-# is a cloud with an atomic envelope, a molecular interior, and carbon as C+, C and CO
-# in nested shells.  About 230 iterations and 10 minutes on eight cores.
+# One point source of 1e49 ionizing photons per second at the centre of a uniform
+# box of 100 H per cm^3, 12 pc on a side, with the Starburst99 spectrum at 2 Myr.
+# The gas is held fixed. The point-source ray tracer and the GOW17 chemical network
+# with the O, S and N ions are repeated in turn until the abundances stop changing.
+# No dust, no cosmic rays and no far-ultraviolet background.
 #
-# To make it your own: <problem>/iprob = 1 is a uniform sphere, iprob = 0 with
-# density_file reads a density cube; iso_chi0 is the strength of the field;
-# <rayt_diffuse>/angle_order sets the number of directions, 12 angle_order^2.
-# The cooling table named by coolftn_file is inputs/tables/tigress_coolftn_ncr.txt;
-# copy it beside the run.
+# <photchem_gow17>/recombination_ots sets where the recombination photons go: true
+# absorbs them on the spot (H case B); false sends them through the diffuse ray tracer
+# (H and He case A). run_recomb.sh runs both.
 
 <job>
 problem_id = cloud
@@ -92,8 +89,8 @@ nx3        = 32
 gamma      = 1.666666666667
 
 <problem>
-iprob = 0
-                        # of nH_amb; 2: a Bonnor-Ebert sphere of central density nH0 in it
+iprob = 0               # 0: uniform gas at nH0; 1: a sphere of nH0 in gas of nH_amb;
+                        # 2: a Bonnor-Ebert sphere of central density nH0 in it
 nH0 = 100.0
 nH_amb       = 0.05     # [H cm^-3]; thin enough to be transparent
 r_sphere     = 2.0      # [pc], iprob = 1 only
