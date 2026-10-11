@@ -32,7 +32,7 @@ the figures without the raw runs.
 | `PYATHENA_DIR` | a pyathena checkout, for its `data/` directory (`ions/`) |
 | `TIGRIS_DATA_DIR` | a checkout of jeonggyukim/tigris-data (dust models in `pdr_sphere/athinput.cloud_postproc_dust`) |
 | `CLOUDY_EXE`, `CLOUDY_DATA_DIR` | the Cloudy 25.00 executable and its data directory (`cloudy_stromgren/run_cloudy.sh`) |
-| `XUVTOP` | the CHIANTI 11 database (`ions/ion_cooling/build_ion_cooling.py`) |
+| `XUVTOP` | the CHIANTI 11 database (`ions/ion_cooling/build_ion_cooling.py`, which also needs ChiantiPy 0.16; `pip install ChiantiPy`) |
 
 Python reads them through `paths.py`, C++ through `paths.hpp`, and the shell
 scripts as `${TIGRIS_DIR:?...}`. Athena++ does not expand variables in an input
