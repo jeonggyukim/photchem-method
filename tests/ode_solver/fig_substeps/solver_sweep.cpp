@@ -1,6 +1,6 @@
-// F05: error of the semi-implicit solver against the number of fixed substeps, one zone,
-// GOW17 core network. Variants: default (Gauss-Seidel, CO/HCO+ 2x2 block, backward-Euler
-// H+), Gauss-Seidel without the block, Jacobi (index order, one pass), and the default
+// Error of the semi-implicit solver against the number of fixed substeps, one zone,
+// GOW17 core chemical network. Variants: default (Gauss-Seidel, CO/HCO+ 2x2 block,
+// backward-Euler H+), Gauss-Seidel without the block, Jacobi (index order, one pass), and the default
 // with the Riccati H+ step. Reference: the default with 200000 substeps.
 // Cases: A ionization (xi_H 1e-9 s^-1, 3.45 eV per ionization, n_H 100, from atomic
 // 100 K, t 1e-3 code = 978 yr); B recombination (source off, from x_H+ 0.99 at 8000 K,

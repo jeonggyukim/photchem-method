@@ -1,4 +1,4 @@
-// F04 (E1): isochoric cooling of one cell from CIE at 1e7 K with the GOW17 network and
+// Isochoric cooling of one cell from CIE at 1e7 K with the GOW17 chemical network and
 // --photchem_ions=O3,S3,N3, no radiation, hot-gas cooling as in the SNR runs (CIE
 // hydrogen, returned C, O, Si in the untracked column). Writes t [code], T [K], x_e and
 // every species per H at each output, until T < 1e4 K or t = t_max.
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   s.temperature_min_cooling = 1.0; s.temperature_max_cooling_nm = 1e9;
   s.Leff_CO_max = 3.0e20; s.H2_rovib_cooling = true; s.is_kgrH2_const = true;
   s.velocity_cgs = 1e5; s.length_cgs = 3.0856776e18; s.multi_d = true; s.three_d = true;
-  // the default solver settings of photchem_gow17 (Gauss-Seidel, adaptive limiters)
+  // the default semi-implicit solver settings of photchem_gow17 (Gauss-Seidel, adaptive limiters)
   SemiImplicitSettings si{0.1, 1e-12, 2000, 0, 1.0, 1, true, true, true, true, false,
                           false, true, false, false, true, 3, false, false};
   const Real gamma = 5.0/3.0, time_cgs = 3.0856776e18/1.0e5, edens = 1.6738234e-24*1e10;

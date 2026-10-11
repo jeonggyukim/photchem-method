@@ -1,6 +1,6 @@
 #!/bin/zsh
-# F06 NCR reference: tst/regression/scripts/tests/photchem/equil.py, iprob = 0 (density
-# sweep), z_gas = z_dust = 1, interp_mode = 1. usage: run_ncr.sh WORKDIR
+# NCR reference for equilibrium.cpp: tst/regression/scripts/tests/photchem/equil.py,
+# iprob = 0 (scan in density), z_gas = z_dust = 1, interp_mode = 1. usage: run_ncr.sh WORKDIR
 source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}

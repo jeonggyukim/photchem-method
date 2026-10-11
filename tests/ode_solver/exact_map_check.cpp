@@ -1,6 +1,6 @@
 // Does the exponential map help? Error of the semi-implicit solver against the number of
-// fixed substeps, one zone, GOW17 core network, the cases of F05: A ionization (xi_H
-// 1e-9 s^-1, 3.45 eV per ionization, n_H 100, from atomic 100 K, 978 yr); B recombination
+// fixed substeps, one zone, GOW17 core chemical network, three test cases: A ionization
+// (xi_H 1e-9 s^-1, 3.45 eV per ionization, n_H 100, from atomic 100 K, 978 yr); B recombination
 // (from x_H+ 0.99 at 8000 K, same time); C CO formation (cosmic rays only, n_H 1e3, from
 // atomic H and C+ at 100 K, 2.9 Myr). Variants, all Gauss-Seidel with the CO/HCO+ block:
 // backward Euler (default), exact_map (exponential map for the scalar species),

@@ -1,6 +1,6 @@
 // Gauss-Seidel coupling factor of every pair of integrated species along the reference
-// trajectories of the F05 cases (A ionization, B recombination, C CO formation; setup as
-// fig_substeps/solver_sweep.cpp). At 16 times of each reference run (default
+// trajectories of the three test cases (A ionization, B recombination, C CO formation;
+// setup as fig_substeps/solver_sweep.cpp). At 16 times of each reference run (default
 // update, 12500 substeps per sixteenth of t_end) the rate coefficients and ghost species
 // are frozen, D_s is the destruction rate and K_sr = dC_s/dx_r the rate at which member r
 // forms member s (finite difference of CDRates). For substep h = t_end/N,

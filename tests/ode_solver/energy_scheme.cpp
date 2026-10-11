@@ -1,13 +1,13 @@
-// Coupling of the energy and the species within a substep, F05 cases A ionization,
+// Coupling of the energy and the species within a substep, cases A ionization,
 // B recombination and C CO formation. Variants: default (energy first, both from the
 // start-of-substep state), refresh_rates (species read rates at the updated T),
 // energy_last (energy after the species, Edot from the new abundances),
 // photoheat_counted (LyC photoheating from the end-of-substep neutrals, after the
 // species), energy_last + photoheat_counted. Error against the default at 200000
 // substeps; each variant's own 200000-substep value is printed on the comment line.
-// The energy_last and photoheat_counted options were removed from Tigris after this
-// test (neither beat the default); apply energy_scheme_options.patch to the
-// tigris-gow17 tree (git apply -p1) to rebuild.
+// Tigris has no energy_last or photoheat_counted option, because neither beat the
+// default. To rebuild, apply energy_scheme_options.patch to the tigris-gow17 tree
+// (git apply -p1).
 // Output per row: case N, then per variant |dT/T| |dx/x|, x = x_H+ (A, B) or x_CO (C).
 // Build as fig_substeps/solver_sweep.cpp.
 #include <cmath>

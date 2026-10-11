@@ -1,7 +1,8 @@
-// Is the 200000-substep semi-implicit run a good reference? The F05 cases (A ionization,
-// B recombination, n_H 100, 978 yr; C CO formation, n_H 1e3, cosmic rays only, 2.9 Myr),
-// one zone, GOW17 core, integrated by CVODE BDF (SUNDIALS 7, dense direct solver, CVODE's
-// own difference-quotient Jacobian) on the network's full right-hand side
+// Is the 200000-substep semi-implicit run a good reference? The three test cases of
+// fig_substeps/solver_sweep.cpp (A ionization, B recombination, n_H 100, 978 yr; C CO
+// formation, n_H 1e3, cosmic rays only, 2.9 Myr), one zone, GOW17 core, integrated by
+// CVODE BDF (SUNDIALS 7, dense direct linear solver, CVODE's own difference-quotient
+// Jacobian) on the chemical network's full right-hand side
 // (evaluate_function: species and internal energy), at rtol 1e-8 and 1e-10, against the
 // semi-implicit default (Gauss-Seidel + CO/HCO+ block) with 200000 equal substeps.
 // Output per case: T and x (x_H+ for A and B, x_CO for C) of each, and the relative
@@ -26,7 +27,7 @@ using G = GOW17Network;
 struct Out { Real T, x; };
 constexpr Real GAMMA = 5.0/3.0, TIME_CGS = 3.0856776e18/1.0e5, EDENS = 1.6738234e-24*1e10;
 
-// The network with the case's field and initial state; rad must outlive it.
+// The chemical network with the case's field and initial state; rad must outlive it.
 void Setup(int scenario, G *net) {
   const Real ev = 1.602176634e-12;
   const Real nH = (scenario == 2) ? 1.0e3 : 100.0;

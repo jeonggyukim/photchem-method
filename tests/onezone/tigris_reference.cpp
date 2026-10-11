@@ -1,4 +1,4 @@
-// Same states and calls as athenak_reference.cpp, on the Tigris copy of the network
+// Same states and calls as athenak_reference.cpp, on the Tigris copy of the chemical network
 // (gow17::GOW17Network). The two outputs must agree to round-off.
 #include <cstdio>
 #include <limits>

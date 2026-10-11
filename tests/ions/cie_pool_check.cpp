@@ -1,4 +1,4 @@
-// CIEElement pool sums at the CHIANTI grid points against pyathena's
+// CIEElement::Pool sums over the higher ions at the CHIANTI grid points against pyathena's
 // data/chemistry/cie_high_pool_<El>.txt (build_cie_high_pool.py).
 #include <cmath>
 #include <cstdio>

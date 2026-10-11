@@ -7,8 +7,8 @@ For an order, at each sample k (substep h = t_end/64), two scores in fractional 
         |A_ij| x_j / (A_ii x_i) * delta_j, delta_j the fractional change of x_j in one
         substep (lag carried in one substep).
 An order's score is the worst over the samples.  Local search by moving one unit
-(a species or the CO/HCO+ group) to another position, from the current solver order
-and from random starts."""
+(a species or the CO/HCO+ group) to another position, from the current order of the
+semi-implicit solver and from random starts."""
 import io
 import contextlib
 import os
@@ -24,7 +24,7 @@ N = 64
 h = 3.0/N
 nk = len(t_myr)
 
-# per sample: A, x, delta in the network's own species order
+# per sample: A, x, delta in the chemical network's own species order
 A_k, x_k, d_k = [], [], []
 for k in range(1, nk):
     A_k.append(np.eye(len(names)) - h*J[k])

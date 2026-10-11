@@ -1,9 +1,9 @@
-// F04 reference: every stage of C, N, O, Si, S integrated along the T(t), n_e(t), x_H0(t)
-// and x_H+(t) of an isochoric run (isochoric.cpp output), with the same rate files
-// (Badnell RR+DR, Voronov CI, Kingdon & Ferland CT) the network uses. Each element's
-// ladder takes backward-Euler (tridiagonal) steps, 400 per output interval, from CIE
-// at the run's first temperature. So the comparison isolates the one approximation of
-// the network: the stages above the top tracked one lumped with a CIE split.
+// Reference for isochoric.cpp: every stage of C, N, O, Si, S integrated along the T(t),
+// n_e(t), x_H0(t) and x_H+(t) of an isochoric run (isochoric.cpp output), with the same
+// rate files (Badnell RR+DR, Voronov CI, Kingdon & Ferland CT) as the chemical network.
+// Each element's ladder takes backward-Euler (tridiagonal) steps, 400 per output
+// interval, from CIE at the run's first temperature. The comparison then tests only one
+// approximation of the chemical network: the higher ions are lumped and split by CIE.
 // usage: fullladder isochoric_n1.txt N_H > fullladder_n1.txt
 // Output per row: t, T, then per element (C, Si, O, S, N) the fractions of every stage.
 // Build: mpicxx -std=c++17 -O2

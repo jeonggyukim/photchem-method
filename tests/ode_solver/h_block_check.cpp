@@ -1,7 +1,7 @@
 // Does solving H+ and H2 together (semi_implicit_h_block) help? Error of the
 // semi-implicit solver (Gauss-Seidel + CO/HCO+ block, backward Euler) against the number
-// of fixed substeps, one zone, GOW17 core network, default sweep (H+ at its place, H2
-// last) against the H+/H2 2x2 block. Cases: A ionization of atomic gas, B recombination,
+// of fixed substeps, one zone, GOW17 core chemical network, default order (H+ at its
+// place, H2 last) against the H+/H2 2x2 block. Cases: A ionization of atomic gas, B recombination,
 // C CO formation, D photodissociation of molecular gas (the cases of h2_order_check),
 // and E an ionization front into molecular gas: 2 x_H2 = 1 at n_H 100, chi = 1, LyC
 // photoionization of H (1e-9 s^-1) and H2 (1.5e-9 s^-1), from 100 K, 978 yr.

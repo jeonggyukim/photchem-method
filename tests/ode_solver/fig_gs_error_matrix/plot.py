@@ -1,4 +1,4 @@
-"""Block Gauss-Seidel error matrix of one substep (Appendix E), CO-formation case of F05.
+"""Block Gauss-Seidel error matrix of one substep, case C (CO formation).
 ../jacobian_dump.txt -> ../../../figures/gs_error_matrix.{pdf,png}.
 A = I - hJ with J the species Jacobian at frozen coefficients; the species are put in
 update order and split into groups; G = -(D_B + L_B)^{-1} U_B for Gauss-Seidel and

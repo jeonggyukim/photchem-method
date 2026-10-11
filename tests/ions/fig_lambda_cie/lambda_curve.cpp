@@ -1,9 +1,9 @@
-// Lambda(T) of the GOW17 + multi-ion network at CIE, from the network's own
+// Lambda(T) of the GOW17 + multi-ion chemical network at CIE, from its own
 // CoolingTerm, with its components, against NCR's hot-gas table (Gnat & Ferland 2012,
 // Asplund 2009) and a CHIANTI all-element solar total.
 // Every tracked species and higher-ion total is set to its CHIANTI CIE value at T; H+
-// and He+ from CHIANTI ioneq_H/He; the electrons are the network's own ghost
-// (species charges, the higher ions' mean charge and the hot-gas extra).
+// and He+ from CHIANTI ioneq_H/He; the electrons are the chemical network's own
+// ghost species (species charges, the higher ions' mean charge and the hot-gas extra).
 // Output: one row per T, Lambda_N = cooling per H / n_H [erg cm^3 s^-1]
 // (cooling rate per volume / n_H^2).
 // Build (against a source tree whose defs.hpp has GOW17_ENABLED 1, PHOTCHEM_IONS 1):
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
     auto g = net.SetupNextStep(net.y);
     const Real ne = nH*g.e;
     const Real total = net.CoolingTerm(net.y, g, T)/nH;
-    // components, with the network's formulas
+    // components, with the chemical network's formulas
     const ThermoTable::Slot sl = grid.Locate(T);
     Real lam[G::n_ion_cool];
     ctab.LambdaAll(sl, ne, lam);

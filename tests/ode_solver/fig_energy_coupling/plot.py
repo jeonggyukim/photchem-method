@@ -1,4 +1,4 @@
-"""Energy-species coupling within a substep, CO-formation case of F05.
+"""Energy-species coupling within a substep, case C (CO formation).
 ../energy_coupling.txt -> ../../../figures/energy_coupling.{pdf,png}: T and x_CO against time for
 the default (energy and species both read the start-of-substep state), refresh_rates (species
 read rates at the updated T) and n_iter = 2, at 16, 32 and 64 equal substeps, against the

@@ -1,4 +1,4 @@
-"""F02: collisional-equilibrium stage fractions of C, Si, O, S, N from the GOW17 network
+"""Collisional-equilibrium stage fractions of C, Si, O, S, N from the GOW17 chemical network
 with --photchem_ions=O3,S3,N3 (fixed T, no radiation, steady state) against CHIANTI v11,
 and the metal electrons per H. Reads cie_fractions.txt; writes
 ../../../figures/cie_fractions.{pdf,png}."""

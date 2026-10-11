@@ -1,4 +1,4 @@
-// Trajectory of case C of F05 (CO formation: cosmic rays only, n_H 1e3, from atomic H and
+// Trajectory of case C (CO formation: cosmic rays only, n_H 1e3, from atomic H and
 // C+ at 100 K, 2.9 Myr), default update (Gauss-Seidel + CO/HCO+ block). A run with N
 // equal substeps is N one-substep calls over t_end/N, printing the state after each.
 // The reference (label 0) takes 200000/16 substeps per sixteenth of t_end.

@@ -1,4 +1,4 @@
-// F02: stage fractions of C, Si, O, S, N at fixed T with no radiation, from the GOW17
+// Stage fractions of C, Si, O, S, N at fixed T with no radiation, from the GOW17 chemical
 // network with --photchem_ions=O3,S3,N3 run to steady state, against CHIANTI v11 CIE.
 // Writes one row per log T (4.0 to 7.0, 0.05 dex):
 //   logT, then per element: tigris neutral, tracked stages..., X_high,

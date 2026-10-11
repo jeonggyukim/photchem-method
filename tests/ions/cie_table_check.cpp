@@ -1,7 +1,7 @@
 // CIEPoolTable on the ThermoTable rows: (1) read through Locate at the CHIANTI T, against
 // pyathena's cie_high_pool_<El>.txt; (2) linear-in-logT interpolation error, from the
 // error of 0.1-dex interpolation at the skipped 0.05-dex points (the 0.05-dex error
-// is about a quarter of it); (3) tracked stages at CIE plus the pool reproduce the
+// is about a quarter of it); (3) tracked stages at CIE plus the higher ions reproduce the
 // element's full CIE cooling; (4) return-rate columns at 1e4 K and 1e5 K.
 #include <cmath>
 #include <cstdio>

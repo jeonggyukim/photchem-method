@@ -1,6 +1,6 @@
 // Which Gauss-Seidel update order? Error of the semi-implicit solver (Gauss-Seidel +
 // CO/HCO+ block, backward Euler) against the number of fixed substeps, one zone, GOW17
-// core network, for the orders set by semi_implicit_order:
+// core chemical network, for the orders set by semi_implicit_order:
 //   0 default          He+ Si+ SN H2+ H3+ H+ O+ C+ CHx OHx CO H2 (built-in sequence)
 //   1 default, listed  the same as a list; must agree with 0 to round-off
 //   2 low lag          H2 Si+ H2+ H3+ OHx CO He+ C+ O+ CHx H+   (order_search.py, lag)

@@ -1,5 +1,5 @@
 """Figures for the Gauss-Seidel order tests, one zone, GOW17 core: error against the
-number of equal substeps, measured against the default solver at 200000 substeps.
+number of equal substeps, measured against the default semi-implicit solver at 200000 substeps.
   ../h2_order_check.txt -> ../../../figures/h2_order_check.{pdf,png}: H2 last (default) vs first
   ../h_block_check.txt  -> ../../../figures/h_block_check.{pdf,png}: default vs H+/H2 2x2 block"""
 import os

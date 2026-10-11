@@ -1,5 +1,5 @@
 """Exponential map against backward Euler, one zone, GOW17 core, from ../exact_map_check.txt:
-|dT/T| (top) and |dy/y| (bottom) against the number of equal substeps for the three F05
+|dT/T| (top) and |dy/y| (bottom) against the number of equal substeps for the three test
 cases, with backward Euler (default), exact_map, exact_block and both. Reference: the default
 with 200000 substeps. Writes ../../../figures/exact_map_check.{pdf,png}."""
 import os

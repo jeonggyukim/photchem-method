@@ -1,4 +1,4 @@
-// Energy-species coupling within a substep, case C of F05 (CO formation: cosmic rays
+// Energy-species coupling within a substep, case C (CO formation: cosmic rays
 // only, n_H 1e3, from atomic H and C+ at 100 K, 2.9 Myr), Gauss-Seidel + CO/HCO+ group.
 // Modes: 0 default (energy and species both read the start-of-substep state: Jacobi
 // between them), 1 semi_implicit_refresh_rates (species read rates at the updated T:

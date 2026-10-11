@@ -1,9 +1,9 @@
 // Where should H2 sit in the Gauss-Seidel update? Error of the semi-implicit solver
 // (Gauss-Seidel + CO/HCO+ block, backward Euler) against the number of fixed substeps,
-// one zone, GOW17 core network, with H2 updated last (default) or first
-// (semi_implicit_h2_first). Cases: A ionization, B recombination, C CO formation (the
-// F05 cases), and D photodissociation: fully molecular gas (2 x_H2 = 1) at n_H 100 in
-// an unshielded field chi = 1 from 100 K, 978 yr. Reference: the default at 200000
+// one zone, GOW17 core chemical network, with H2 updated last (default) or first
+// (semi_implicit_h2_first). Cases: A ionization, B recombination, C CO formation (as
+// in fig_substeps/solver_sweep.cpp), and D photodissociation: fully molecular gas
+// (2 x_H2 = 1) at n_H 100 in an unshielded field chi = 1 from 100 K, 978 yr. Reference: the default at 200000
 // substeps. Output per row: case N, then per variant |dT/T| |dy/y| (y = x_H+ for A and
 // B, x_CO for C, x_H2 for D).
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then

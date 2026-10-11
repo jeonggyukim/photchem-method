@@ -2,7 +2,7 @@
 
 Line cooling rate per unit volume by ion q = n_e * n_q * Lambda_q(T, n_e).
 
-Level populations come from ChiantiPy's full-level solver (all levels in the
+Level populations come from ChiantiPy's level-population solver (all levels in the
 CHIANTI .elvlc file) with electron collisions (.scups) and, where CHIANTI has
 them (.psplups), proton collisions at n_p = P2E * n_e (with the rate
 correction in fix_proton_rates).  Recombination and ionization into/out of

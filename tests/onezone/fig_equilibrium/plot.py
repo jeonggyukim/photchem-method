@@ -1,4 +1,4 @@
-"""F06: thermal and chemical equilibrium in an unshielded field chi = 1, xi_cr = 2e-16 s^-1,
+"""Thermal and chemical equilibrium in an unshielded field chi = 1, xi_cr = 2e-16 s^-1,
 z = 1: P/k, T, x_e and x_H2 against n_H. GOW17 + O3,S3,N3 (one-zone harness,
 equilibrium.cpp), NCR in Tigris (photchem_equil, run_ncr.sh) and the NCR python reference
 of the regression test (Kim J.-G. et al. 2023). Writes

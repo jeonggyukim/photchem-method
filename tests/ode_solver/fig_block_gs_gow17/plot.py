@@ -1,4 +1,4 @@
-"""The block Gauss-Seidel schematic on the real GOW17 network, molecular gas.
+"""The block Gauss-Seidel schematic on the GOW17 chemical network, molecular gas.
 ../jacobian_dump.txt (CO-formation test at 2.93 Myr, 64 substeps), read through
 ../fig_gs_error_matrix/plot.py ->
 ../../../figures/block_gs_gow17.{pdf,png} (sensitivity) and
@@ -8,7 +8,7 @@ A = I - hJ in update order.  Each off-diagonal dot is the coupling of species i 
 species j, sized by |A_ij| x_j / (A_ii x_i): the fractional change of the new x_i per
 fractional error in the x_j it reads (unit-free; the entries of one Jacobi iteration's
 fractional error matrix).  Colour: what value of x_j the update of i reads in one
-iteration -- solved together inside a block (black), the new value (green) or the
+iteration: solved together inside a block (black), the new value (green) or the
 start-of-substep value (orange, the lag).  Couplings below 1e-3 are not drawn.
 
 The second figure sizes each dot instead by the error it carries in one substep: the

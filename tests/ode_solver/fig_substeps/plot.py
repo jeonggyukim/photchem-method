@@ -1,4 +1,4 @@
-"""F05: error of the semi-implicit solver against the number of fixed substeps, one zone,
+"""Error of the semi-implicit solver against the number of fixed substeps, one zone,
 GOW17 core, from solver_sweep.txt (solver_sweep.cpp). Columns: A ionization, B
 recombination (n_H 100, 978 yr), C CO formation (n_H 1e3, cosmic rays only, 2.9 Myr); rows:
 |dT/T| and |dx/x| (x = x_H+ for A and B, x_CO for C) against the default with 200000

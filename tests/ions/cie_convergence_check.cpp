@@ -1,8 +1,8 @@
-// M4 check: an isothermal cell with no radiation, O2,S3,N2 ion set, integrated to
+// CIE convergence check: an isothermal cell with no radiation, O2,S3,N2 ion set, integrated to
 // steady state, against the CHIANTI v11 CIE fractions (inputs/tables/chianti_v11/
 // ioneq_<El>.txt). The top tracked stage has no ionization out, so it is compared
 // with CHIANTI's stages at and above it summed. CHIANTI's CIE has no charge
-// transfer; the network does (with the H0 left at that T).
+// transfer; the chemical network has it (with the H0 left at that T).
 // Build: configure tigris-gow17 with -gow17 --gow17_ions=O2,S3,N2 (defs.hpp), then
 //   g++-16 -std=c++17 -O2 -I$TIGRIS_DIR/src cie_convergence_check.cpp
 #include <cmath>

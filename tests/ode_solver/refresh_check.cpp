@@ -1,5 +1,5 @@
 // Does evaluating the rate coefficients at the updated temperature help
-// (semi_implicit_refresh_rates)? The F05 cases A ionization, B recombination and C CO
+// (semi_implicit_refresh_rates)? Cases A ionization, B recombination and C CO
 // formation, default against refresh_rates, error against the default at 200000 substeps.
 // Output per row: case N, then per variant |dT/T| |dx/x|, x = x_H+ (A, B) or x_CO (C).
 // Build as fig_substeps/solver_sweep.cpp.

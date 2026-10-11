@@ -1,4 +1,4 @@
-// F06 (E8): thermal and chemical equilibrium of one cell with the GOW17 network and
+// Thermal and chemical equilibrium of one cell with the GOW17 chemical network and
 // --photchem_ions=O3,S3,N3 against n_H, in an unshielded field chi = 1 (every photo-rate,
 // H2 dissociation and the photoelectric field; S I photoionization 6e-10 s^-1 chi) and
 // xi_cr = 2e-16 s^-1, as the uniform-field branch of PhotochemistryGOW17::SetCellRadiation

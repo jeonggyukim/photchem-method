@@ -50,7 +50,7 @@ int main() {
     const Real up_o1 = (K(G::kO1, IonRateTable::ICI)*ne + K(G::kO1, IonRateTable::ICT_ION)*nH*xhp)*xO1;
     const Real dn_o2 = (K(G::kO2, IonRateTable::IREC)*ne + K(G::kO2, IonRateTable::ICT_REC)*nH*xh)*xO2;
     {
-      // one Gauss-Seidel sweep with a huge step: O++ lands on its C/D
+      // one Gauss-Seidel pass with a huge step: O++ lands on its C/D
       Real yold[NSPEC + 1]; for (int n = 0; n < NSPEC + 1; ++n) yold[n] = net.y(n);
       auto g2 = net.SetupNextStep(net.y);
       net.OrderedGaussSeidelUpdate(net.y, yold, g2, 1e12, true, false, false, true, false, false);

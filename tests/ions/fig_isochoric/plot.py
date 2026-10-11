@@ -1,6 +1,6 @@
-"""F04: isochoric cooling from CIE at 1e7 K, n_H = 1 cm^-3: stage fractions against T for
-C, Si, O, S, N from the GOW17 network with --photchem_ions=O3,S3,N3 (dashed) and from every
-stage integrated along the same T(t), n_e(t), x_H(t) with the same rates (solid; stages
+"""Isochoric cooling from CIE at 1e7 K, n_H = 1 cm^-3: stage fractions against T for
+C, Si, O, S, N from the GOW17 chemical network with --photchem_ions=O3,S3,N3 (dashed) and
+from every stage integrated along the same T(t), n_e(t), x_H(t) with the same rates (solid; stages
 above the top tracked one summed). The last panel shows the full ladder's O4+..O7+ and the
 temperature history. Reads isochoric_n1.txt and fullladder_n1.txt; writes
 ../../../figures/isochoric.{pdf,png}."""
