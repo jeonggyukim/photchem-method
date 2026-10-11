@@ -26,7 +26,10 @@ fi
 # untracked file exists under src/.
 code_revision() {
   local dir=$1 commit branch dirty
-  commit=$(git -C "$dir" rev-parse HEAD) || return 1
+  if ! commit=$(git -C "$dir" rev-parse HEAD 2> /dev/null); then
+    echo "dir=$dir not a git checkout: revision unknown"
+    return 0
+  fi
   branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
   dirty=clean
   [ -n "$(git -C "$dir" status --porcelain --untracked-files=no)" ] && dirty=dirty
