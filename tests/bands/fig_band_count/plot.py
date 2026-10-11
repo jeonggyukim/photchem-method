@@ -69,7 +69,9 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
         data['wall_b%d' % nb] = float(open(os.path.join(run, 'time.out')).read().split()[1])
     reduced.save(REDUCED, 'F10: density-weighted radial profiles of the Tigris runs '
                  'T6_multi_ion/F10_bands/run64_b<n>\nand their wall time\nr [pc], T [K], '
-                 'xhp = x_H+, wall [s]', data)
+                 'xhp = x_H+, wall [s]', data,
+                 sources=[paths.runs('T6_multi_ion', 'F10_bands', 'run64_b%d' % nb)
+                          for nb in NBANDS])
 else:
     data = reduced.load(REDUCED)
 

@@ -84,7 +84,9 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
             paths.runs('T6_multi_ion', 'recomb_ots', run + SUFFIX))
     reduced.save(REDUCED, 'F11: density-weighted radial profiles of the Tigris runs '
                  'T6_multi_ion/recomb_ots/ots_{true,false}%s\nr [pc], T [K], xhp = x_H+'
-                 % SUFFIX, data)
+                 % SUFFIX, data,
+                 sources=[paths.runs('T6_multi_ion', 'recomb_ots', run + SUFFIX)
+                          for run, *_ in PAIRS])
 else:
     data = reduced.load(REDUCED)
 

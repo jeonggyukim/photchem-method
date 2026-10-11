@@ -7,10 +7,10 @@
 #   3. make_profiles.py reduces the save files to radial_profiles.txt and prints
 #      the H+-zone averages and coolant shares.
 set -e
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 cd "${0:A:h}"
-PY=/opt/homebrew/Caskroom/miniforge/base/envs/pyathena/bin/python
 CLOUDY=${CLOUDY_EXE:?set CLOUDY_EXE to the cloudy.exe of Cloudy 25.00}
 export CLOUDY_DATA_PATH=${CLOUDY_DATA_DIR:?set CLOUDY_DATA_DIR to the Cloudy data directory}:$PWD
-$PY make_sed.py
+"$PYTHON" make_sed.py
 $CLOUDY -r hii
-$PY make_profiles.py
+"$PYTHON" make_profiles.py

@@ -1,3 +1,8 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/F10_bands/run64_b3 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/F10_bands/run64_b5 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/F10_bands/run64_b6 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/F10_bands/run64_b7 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
 # F10: density-weighted radial profiles of the Tigris runs T6_multi_ion/F10_bands/run64_b<n>
 # and their wall time
 # r [pc], T [K], xhp = x_H+, wall [s]

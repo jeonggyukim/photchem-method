@@ -3,19 +3,15 @@
 # with <photchem_gow17>/recombination_ots = true and = false (the diffuse tracer on,
 # 11 diffuse groups: 7 point bands and 4 recombination groups).
 # usage: run_recomb.sh WORKDIR   (athinput.stromgren_recomb is copied there)
+#   The build goes to WORKDIR (athena, build.log) and each run to WORKDIR/ots_true and
+#   WORKDIR/ots_false (run.out, run.err, time.out, run.log).
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
-export OMPI_CXX=/opt/homebrew/bin/g++-16
-(cd $T && python3 configure.py -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 \
-   --ngroup_rayt_diffuse=11 --prob=photchem_postproc -hdf5 \
-   --hdf5_path=/opt/homebrew/opt/hdf5-mpi --include=/opt/homebrew/opt/boost/include \
-   --fftw_path=/opt/homebrew/opt/fftw >/dev/null && make clean >/dev/null \
-   && make -j8 >$W/build.out 2>&1) || { echo "build failed"; exit 1; }
-/bin/cp -f $T/bin/athena $W/athena
+tigris_build $W -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 \
+   --ngroup_rayt_diffuse=11 --prob=photchem_postproc -hdf5 || { echo "build failed"; exit 1; }
 sed "s|\${TIGRIS_DIR}|$T|g" ${0:A:h}/athinput.stromgren_recomb > $W/athinput.stromgren_recomb
-mkdir -p $W/ots_true $W/ots_false
-(cd $W/ots_true && /usr/bin/time -p mpirun -np 8 ../athena -i ../athinput.stromgren_recomb \
-   >run.out 2>time.out)
-(cd $W/ots_false && /usr/bin/time -p mpirun -np 8 ../athena -i ../athinput.stromgren_recomb \
-   rayt_diffuse/rayt_diffuse=true photchem_gow17/recombination_ots=false >run.out 2>time.out)
+run_logged $W/ots_true $W mpi_launch 8 ../athena -i ../athinput.stromgren_recomb
+run_logged $W/ots_false $W mpi_launch 8 ../athena -i ../athinput.stromgren_recomb \
+   rayt_diffuse/rayt_diffuse=true photchem_gow17/recombination_ots=false
 grep -h "converged\|did not" $W/ots_true/cloud.postproc.txt $W/ots_false/cloud.postproc.txt

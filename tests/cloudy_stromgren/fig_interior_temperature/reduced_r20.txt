@@ -1,3 +1,6 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/recomb_ots/ots_true_r20 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/T6_multi_ion/recomb_ots/ots_false_r20 (no run.log: run before tests/env.sh recorded runs; code revision unknown)
 # F11: density-weighted radial profiles of the Tigris runs T6_multi_ion/recomb_ots/ots_{true,false}_r20
 # r [pc], T [K], xhp = x_H+
 @ r_ots_true 119

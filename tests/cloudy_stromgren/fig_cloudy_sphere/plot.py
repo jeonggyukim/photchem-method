@@ -68,10 +68,11 @@ def radius_half(r, xhp):
 
 if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
     athena_read = paths.athena_read()
-    r, tg = tigris_profile(paths.runs('T6_multi_ion', 'F10_bands', 'run64_b7'))
+    run = paths.runs('T6_multi_ion', 'F10_bands', 'run64_b7')
+    r, tg = tigris_profile(run)
     reduced.save(REDUCED, 'F09: density-weighted radial profiles of the Tigris run '
                  'T6_multi_ion/F10_bands/run64_b7\nr [pc], T [K], ne [cm^-3], ions as '
-                 'fractions of the element', dict(r=r, **tg))
+                 'fractions of the element', dict(r=r, **tg), sources=[run])
 else:
     tg = reduced.load(REDUCED)
     r = tg.pop('r')
