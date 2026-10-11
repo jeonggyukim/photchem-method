@@ -1,7 +1,7 @@
-#ifndef REPRODUCE_PATHS_HPP_
-#define REPRODUCE_PATHS_HPP_
+#ifndef TESTS_PATHS_HPP_
+#define TESTS_PATHS_HPP_
 // Locations the C++ harnesses read, from the environment variables listed in
-// reproduce/README.md. Each returns the directory with a trailing '/'.
+// tests/README.md. Each returns the directory with a trailing '/'.
 
 #include <cstdlib>
 #include <iostream>
@@ -24,4 +24,4 @@ inline std::string PyathenaDir() {
   return EnvDir("PYATHENA_DIR", "a pyathena checkout (it reads data/chemistry/)");
 }
 
-#endif  // REPRODUCE_PATHS_HPP_
+#endif  // TESTS_PATHS_HPP_

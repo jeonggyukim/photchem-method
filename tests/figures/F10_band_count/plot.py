@@ -4,7 +4,7 @@ Cloudy 25 (default and `diffuse OTS`); R_s (x_H+ = 0.5) and wall time per run in
 legend. Writes ../../../figures/F10_band_count.{pdf,png}.
 
 Inputs: run_series.sh output in WORKDIR (run64_b3 .. run64_b7, each with time.out);
-Cloudy radial_profiles.txt of reproduce/cloudy_stromgren and its thermal_with_N_ots.
+Cloudy radial_profiles.txt of tests/cloudy_stromgren and its thermal_with_N_ots.
 The Tigris profiles and wall times come from reduced.txt when it exists;
 `python plot.py --from-runs` reads WORKDIR ($PHOTCHEM_RUNS/T6_multi_ion/F10_bands) and
 rewrites it."""

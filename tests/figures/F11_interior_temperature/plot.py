@@ -8,7 +8,7 @@ treatment, and the bottom panel gives their T ratio. Writes
 ../../../figures/F11_interior_temperature.{pdf,png}.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
-of reproduce/cloudy_stromgren (default) and reproduce/cloudy_stromgren/thermal_with_N_ots.
+of tests/cloudy_stromgren (default) and tests/cloudy_stromgren/thermal_with_N_ots.
 The Tigris profiles come from reduced<SUFFIX>.txt when it exists;
 `python plot.py [SUFFIX] --from-runs` reads WORKDIR
 ($PHOTCHEM_RUNS/T6_multi_ion/recomb_ots) and rewrites it."""

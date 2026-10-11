@@ -10,7 +10,7 @@ directory, which Dropbox backs up without committing anything.
 | directory | holds |
 | --- | --- |
 | `scripts/` | one script per figure, named for the figure it makes |
-| `reproduce/` | the inputs and harnesses that regenerate each quoted number |
+| `tests/` | the test problems: inputs and harnesses that regenerate each quoted number |
 | `figures/` | the output, tracked once a figure is near final |
 
 A script has to run from something a reader can get, so where a figure comes
@@ -58,11 +58,11 @@ Two extras add what the other scripts read:
 
 ```sh
 pip install ".[slides]"      # python-pptx, for make_cr_slides.py
-pip install ".[reproduce]"   # pandas and pyathena, for the reproduce/ harnesses
+pip install ".[tests]"       # pandas and pyathena, for the tests/ harnesses
 ```
 
 Some harnesses also need `athena_read.py` from the Athena++ or Tigris
-`vis/python` directory, which is not on PyPI. `reproduce/README.md` lists the
+`vis/python` directory, which is not on PyPI. `tests/README.md` lists the
 environment variables that tell them where the codes and runs are.
 
 Sanity check any option with:
@@ -86,7 +86,7 @@ cd scripts
 python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
 ```
 
-The paper figures F02–F14 are made by `reproduce/figures/F*/plot.py`.
+The paper figures F02–F15 are made by `tests/figures/F*/plot.py`.
 
 matplotlib 3.10 and 3.11 place text slightly differently, so a figure is
 reproduced pixel for pixel only with the same matplotlib version.

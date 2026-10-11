@@ -1,7 +1,7 @@
-# reproduce
+# tests
 
-Inputs, harnesses and scripts that regenerate each number and figure the paper
-quotes, grouped by the section they serve. Code revision: Tigris branch `rayt-photchem-updates` (was `gow17`)
+The paper's test problems: inputs, harnesses and scripts that regenerate each
+number and figure the paper quotes, grouped by the section they serve. Code revision: Tigris branch `rayt-photchem-updates` (was `gow17`)
 at the commit named in each subdirectory's entry below.
 
 The C++ harnesses include Tigris headers directly and build with
@@ -42,9 +42,9 @@ goes; expand them before a run, e.g.
 
 ## Running a harness
 
-    pip install ".[reproduce]"          # from the repository root
+    pip install ".[tests]"              # from the repository root
     export TIGRIS_DIR=/path/to/tigris PHOTCHEM_RUNS=/path/to/runs   # as the harness needs
-    python reproduce/figures/F12_hii_dtype/plot.py
+    python tests/figures/F12_hii_dtype/plot.py
 
 Scripts are run in place, from any directory. A figure script with a `reduced*.txt`
 reads it and needs no variable; `--from-runs` makes it read the raw runs and

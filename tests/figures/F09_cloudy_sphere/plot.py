@@ -5,7 +5,7 @@ X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes
 ../../../figures/F09_cloudy_sphere.{pdf,png}.
 
 Inputs: run64_b7 of ../F10_band_count/run_series.sh; Cloudy radial_profiles.txt of
-reproduce/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
+tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
 reduced.txt when it exists; `python plot.py --from-runs` reads run64_b7 ($PHOTCHEM_RUNS)
 and rewrites it."""
 import glob
