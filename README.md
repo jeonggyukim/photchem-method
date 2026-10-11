@@ -79,23 +79,8 @@ deactivate && rm -rf .venv                                # Option 2
 
 ## Making the figures
 
-Run each script from `scripts/`. Each figure is written as a `.png` and a
-`.pdf` of the same name to `figures/`. `rad_cr_chem_coupling.py`,
-`ncr_coupling.py`, `fig_network.py` and `fig_network_talk.py` take `--help`.
-
-| script | output in `figures/` |
-| --- | --- |
-| `rad_cr_chem_coupling.py [talk\|paper] [--mhd] [--cr-left] [--crpic=A\|B]` | `rad_cr_chem_coupling_<style>[_mhd][_crleft][_crA\|_crB]` |
-| `ncr_coupling.py [--no-cr-icon]` | `ncr_coupling`, or `ncr_coupling_nocricon` |
-| `art_schematic_talk.py` | `art_schematic_talk` |
-| `fig_network.py [--outdir DIR]` | `fig_network_core`, `_tigris_greycore`, `_2panel`, `_1panel_colour`, and the contact sheet `fig_network_versions.png` |
-| `fig_network_talk.py [--outdir DIR]` | `fig_network_talk_all`, `fig_network_talk_ncr` |
-| `adaptive_rays_3d.py [outdir]` | `adaptive_rays_3d`, `adaptive_rays_3d_panel` |
-| `diffuse_rays_3d.py [outdir]` | `diffuse_rays_3d` |
-| `make_cr_slides.py [output.pptx]` | `cr-coupling.pptx`, from the `rad_cr_chem_coupling` figures |
-| `pdr_sphere_slices.py [npz ...]` | `pdr_sphere_<mode>`, from reduced arrays in `../data/pdr_sphere`, beside the repository |
-
-For example:
+Run each script from `scripts/`; the output goes to `figures/`. The docstring at the top of each script gives its usage,
+options and output names. For example:
 ```sh
 cd scripts
 python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
