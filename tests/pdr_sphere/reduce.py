@@ -1,4 +1,4 @@
-"""Mid-plane slices of the post-processed sphere, for scripts/pdr_sphere_slices.py.
+"""Mid-plane slices of the post-processed sphere, for fig_slices/plot.py.
 
     python reduce.py <run_dir> <out.npz> [athena_read directory]
 

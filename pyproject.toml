@@ -1,4 +1,4 @@
-# The scripts are run in place (python scripts/<name>.py), not installed as a
+# The scripts are run in place (python schematics/<name>.py), not installed as a
 # package; this file declares what they need, so that
 #     pip install .            the figure scripts (numpy, matplotlib, healpy)
 #     pip install ".[slides]"  plus python-pptx for make_cr_slides.py

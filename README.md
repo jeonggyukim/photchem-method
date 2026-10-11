@@ -9,7 +9,7 @@ directory, which Dropbox backs up without committing anything.
 
 | directory | holds |
 | --- | --- |
-| `scripts/` | one script per figure, named for the figure it makes |
+| `schematics/` | figures drawn from code alone: coupling diagrams, ray-tracing panels, the network |
 | `tests/` | the test problems: inputs and harnesses that regenerate each quoted number |
 | `figures/` | the output, tracked once a figure is near final |
 
@@ -27,7 +27,7 @@ needed.
 
 ## Installation
 
-The scripts run in place from `scripts/`; nothing is installed as a package.
+The scripts run in place from `schematics/` and `tests/`; nothing is installed as a package.
 `pyproject.toml` declares the dependencies, so installing the repository
 installs only those.
 
@@ -67,7 +67,7 @@ environment variables that tell them where the codes and runs are.
 
 Sanity check any option with:
 ```sh
-python scripts/rad_cr_chem_coupling.py --help
+python schematics/rad_cr_chem_coupling.py --help
 ```
 
 ### Uninstall
@@ -79,10 +79,10 @@ deactivate && rm -rf .venv                                # Option 2
 
 ## Making the figures
 
-Run each script from `scripts/`; the output goes to `figures/`. The docstring at the top of each script gives its usage,
+Run each script from `schematics/`; the output goes to `figures/`. The docstring at the top of each script gives its usage,
 options and output names. For example:
 ```sh
-cd scripts
+cd schematics
 python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
 ```
 
