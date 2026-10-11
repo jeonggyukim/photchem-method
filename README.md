@@ -37,20 +37,20 @@ source .venv/bin/activate
 uv pip install -e .
 ```
 
-A few scripts need more packages. `pip install -e ".[slides]"` adds python-pptx
-for `schematics/make_cr_slides.py`, and `pip install -e ".[tests]"` adds pandas
-and pyathena for the scripts under `tests/` that need them.
+A few scripts need more packages. `pip install -e ".[slides]"` adds python-pptx,
+and `pip install -e ".[tests]"` adds pandas and pyathena.
 
 ## Making a figure
 
 Run a script from anywhere. It writes its figure to `figures/`.
 
 ```sh
-python schematics/rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
-python tests/hii_dtype/fig_hii_dtype/plot.py
+python schematics/<script>.py
+python tests/<problem>/fig_<name>/plot.py
 ```
 
-The comment at the top of each script lists its options and the files it writes.
+The comment at the top of each script lists its options, the files it writes and
+any extra packages it needs.
 
 ## Rerunning the tests
 
