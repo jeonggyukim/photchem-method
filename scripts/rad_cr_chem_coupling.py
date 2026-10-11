@@ -16,8 +16,8 @@ Writes rad_cr_chem_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and .pdf
 The two 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside
 this script.
 """
+import argparse
 import os
-import sys
 
 import numpy as np
 import matplotlib
@@ -42,21 +42,28 @@ def make_cloud(size):
     return Cloud(size, (0.55*size, 0.55*size, 0.5*size), 0.27*size)
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
-_ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
-STYLE = _ARGS[0] if len(_ARGS) > 0 else 'talk'
-if STYLE not in ('talk', 'paper'):
-    sys.exit("rad_cr_chem_coupling.py: the style is 'talk' or 'paper', not %r" % STYLE)
+_parser = argparse.ArgumentParser(
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+    allow_abbrev=False)
+_parser.add_argument('style', nargs='?', default='talk', choices=('talk', 'paper'),
+                     help='label style (default: talk)')
+_parser.add_argument('--mhd', action='store_true',
+                     help='add the gas-dynamics box of a coupled simulation')
+_parser.add_argument('--cr-left', action='store_true',
+                     help='cosmic-ray box upper left, radiation box upper right')
+_parser.add_argument('--crpic', choices=('A', 'B'), default='',
+                     help='picture in the cosmic-ray box: A, a cosmic ray scattered '
+                          'by the waves it drives; B, the self-confinement loop '
+                          '(default: a cosmic ray gyrating along B)')
+_args = _parser.parse_args()
+STYLE = _args.style
 PAPER = STYLE == 'paper'
 # --mhd: a coupled simulation rather than post-processing; a gas-dynamics box between
 # the others takes the radiation force, the cosmic-ray force and heating, and the
 # net heating of the gas, and supplies rho, v, B to all three.
-SIM = '--mhd' in sys.argv
-# --cr-left: cosmic-ray transport in the upper left and radiation in the upper right.
-CRL = '--cr-left' in sys.argv
-# --crpic=A|B: the picture at the top of the cosmic-ray box. Default, a cosmic ray
-# gyrating along B; A, a cosmic ray scattered by the waves it drives; B, the
-# self-confinement loop as a diagram.
-CRPIC = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--crpic=')), '')
+SIM = _args.mhd
+CRL = _args.cr_left
+CRPIC = _args.crpic
 NAME = ('rad_cr_chem_coupling_' + STYLE + ('_mhd' if SIM else '')
         + ('_crleft' if CRL else '') + ('_cr' + CRPIC if CRPIC else ''))
 
@@ -66,7 +73,8 @@ LABELS = {
         'point': ('point sources', 15),
         'diffuse': ('diffuse field', 15),
         'rad_to_chem': (r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
-                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 19),
+                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\tilde{\mathcal{E}}_{\rm C}$, '
+                        r'$\cdots$', 19),
         'chem_to_rad': (r'$\chi_\nu$, $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 19),
         'cr_to_chem': (r'$\xi_{\rm cr}\propto e_{\rm c}$, $\Gamma_{\rm cr}$, '
                        r'$\Gamma_{\rm st}$', 19),
@@ -87,7 +95,8 @@ LABELS = {
         'diffuse': ('diffuse field: parallel rays,\nexternal background, scattering', 10.5),
         'rad_to_chem': ('photoionization,\nphotodissociation,\nphotoelectric heating\n'
                         r'$\mathcal{E}_{\rm LyC}$, $\mathcal{E}_{\rm FUV}$, '
-                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\cdots$', 14.5),
+                        r'$\tilde{\mathcal{E}}_{\rm H_2}$, $\tilde{\mathcal{E}}_{\rm C}$, '
+                        r'$\cdots$', 14.5),
         'chem_to_rad': ('opacity ' r'$\chi_\nu$ (dust, HI, H$_2$)' '\n'
                         r'shielding columns $N_{\rm H_2}$, $N_{\rm C}$, $N_{\rm CO}$', 14.5),
         'cr_to_chem': ('ionization, heating\n'
@@ -286,11 +295,19 @@ def electron(ax, x, y, k=1.0):
     ax.text(x + 0.39*k, y + 0.25*k, r'e$^-$', fontsize=9*k, va='center', color=TXT)
 
 
-def draw_molecules(ax, x, y, k=1.0):
+def draw_molecules(ax, x, y, k=1.0, cr=True):
     """Top row: a Lyman-continuum photon ionizing H, and a far-ultraviolet photon
-    ejecting a photoelectron from a grain.  Bottom row: H2, C+ and CO.  k scales
-    the drawing about (x, y)."""
+    ejecting a photoelectron from a grain.  Bottom row: H2 (with cr, a cosmic ray
+    ionizing it, an electron leaving), C+ and CO.  k scales the drawing about (x, y)."""
     yt, yb = y + 0.2*k, y - 0.33*k
+    if cr:
+        # the cosmic ray passes through H2 and survives: H2 + CR -> H2+ + e- + CR
+        ax.plot([x - 0.5*k, x + 0.55*k], [yb + 0.07*k, yb - 0.04*k], color=COL_CR,
+                lw=1.8*k, zorder=1)
+        atom(ax, x + 0.63*k, yb - 0.05*k, 0.085, COL_CR, k=k)
+        ax.text(x + 0.63*k, yb - 0.05*k, 'CR', ha='center', va='center',
+                fontsize=6*k, color='white', fontweight='bold', zorder=4)
+        electron(ax, x + 0.24*k, yb, k)
     photon(ax, x, yt, 'LyC', '#8E44AD', k)
     atom(ax, x, yt, 0.13, 'white', r'H$^+$', '0.2', k)
     electron(ax, x, yt, k)
@@ -301,10 +318,17 @@ def draw_molecules(ax, x, y, k=1.0):
     ax.plot([x - 0.04*k, x + 0.24*k], [yb, yb], color='0.25', lw=2.5*k, zorder=2)
     atom(ax, x - 0.04*k, yb, 0.13, 'white', 'H', '0.2', k)
     atom(ax, x + 0.24*k, yb, 0.13, 'white', 'H', '0.2', k)
-    atom(ax, x + 0.75*k, yb, 0.15, '0.3', r'C$^+$', k=k)
-    ax.plot([x + 1.18*k, x + 1.42*k], [yb, yb], color='0.25', lw=2.5*k, zorder=2)
-    atom(ax, x + 1.18*k, yb, 0.14, '0.3', 'C', k=k)
-    atom(ax, x + 1.42*k, yb, 0.14, '#D55E00', 'O', k=k)
+    if cr:
+        ax.text(x + 0.1*k, yb + 0.17*k, '+', ha='center', va='center',
+                fontsize=10*k, color=TXT, fontweight='bold')
+    # with the cosmic ray, C+ and CO move right to clear the electron leaving H2,
+    # as in ncr_coupling.py
+    xc = 1.1 if cr else 0.75
+    xo = 1.5 if cr else 1.18
+    atom(ax, x + xc*k, yb, 0.15, '0.3', r'C$^+$', k=k)
+    ax.plot([x + xo*k, x + (xo + 0.24)*k], [yb, yb], color='0.25', lw=2.5*k, zorder=2)
+    atom(ax, x + xo*k, yb, 0.14, '0.3', 'C', k=k)
+    atom(ax, x + (xo + 0.24)*k, yb, 0.14, '#D55E00', 'O', k=k)
 
 
 def main():
