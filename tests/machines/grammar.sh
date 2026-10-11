@@ -21,6 +21,9 @@ unset _opts
 export CXX=g++
 export OMPI_CXX=$CXX
 TIGRIS_LIB_FLAGS=(--fftw_path="${FFTW_DIR}")
+# Compute nodes have no system cmake; a private static CMake 3.31 is used.
+CMAKE=$HOME/libs/cmake/bin/cmake
+ATHENAK_CMAKE_FLAGS=(-D CMAKE_CXX_COMPILER="$CXX" -D Athena_ENABLE_MPI=ON)
 SUNDIALS_DIR=
 PYTHON=$HOME/miniconda3/envs/pyathena/bin/python
 # The login node allows at most 4 make jobs; inside a job use the allocated cores.

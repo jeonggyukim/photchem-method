@@ -5,7 +5,15 @@
 # output; photchem_method.provenance reads them when a figure script rewrites its
 # reduced file, so every reduced file names the code commit it came from.
 
-PHOTCHEM_ROOT=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
+# The repository root, from this file's own location (bash and zsh name a sourced
+# file differently).
+if [ -n "${BASH_VERSION:-}" ]; then
+  _env_sh=${BASH_SOURCE[0]}
+else
+  eval '_env_sh=${(%):-%x}'
+fi
+PHOTCHEM_ROOT=$(cd "$(dirname "$_env_sh")/.." && pwd)
+unset _env_sh
 if [ ! -f "$PHOTCHEM_ROOT/tests/machine.sh" ]; then
   echo "tests/machine.sh is missing. Copy the preset for this machine, e.g." \
        "cp tests/machines/grammar.sh tests/machine.sh, and edit it if needed" >&2
@@ -49,6 +57,26 @@ write_build_log() {
       git -C "$dir" ls-files --others --exclude-standard -- src \
         | sed 's/^/untracked: /' >> "$out/build.log" ;;
   esac
+  # Submodules (AthenaK's kokkos) are part of the source that was built.
+  if [ -f "$dir/.gitmodules" ]; then
+    git -C "$dir" submodule status | sed 's/^/submodule: /' >> "$out/build.log"
+  fi
+}
+
+# athenak_build OUTDIR CMAKE_FLAGS...: configure $ATHENAK_DIR out of tree in
+# OUTDIR/build with CMAKE_FLAGS plus ATHENAK_CMAKE_FLAGS of machine.sh, build it, copy
+# the binary to OUTDIR/athena and write OUTDIR/build.log. The checkout is not touched.
+athenak_build() {
+  local out=$1
+  shift
+  local K=${ATHENAK_DIR:?set ATHENAK_DIR to an AthenaK checkout with the chemistry module}
+  mkdir -p "$out"
+  ("$CMAKE" -S "$K" -B "$out/build" -D CMAKE_BUILD_TYPE=Release \
+       "${ATHENAK_CMAKE_FLAGS[@]}" "$@" > "$out/configure.out" 2>&1 \
+     && "$CMAKE" --build "$out/build" -j "$MAKE_JOBS" > "$out/build.out" 2>&1) \
+    || { echo "build failed; see $out/configure.out and $out/build.out" >&2; return 1; }
+  /bin/cp -f "$out/build/src/athena" "$out/athena"
+  write_build_log "$out" "$K" cmake "${ATHENAK_CMAKE_FLAGS[@]}" "$@"
 }
 
 # tigris_build OUTDIR CONFIGURE_ARGS...: configure and build $TIGRIS_DIR with

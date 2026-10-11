@@ -4,6 +4,8 @@
 # Every preset defines the same names:
 #   CXX, OMPI_CXX     C++ compiler for the harnesses and the one mpicxx calls
 #   TIGRIS_LIB_FLAGS  library flags appended to every Tigris configure.py
+#   CMAKE             the cmake that configures AthenaK
+#   ATHENAK_CMAKE_FLAGS  device and compiler flags appended to every AthenaK cmake
 #   SUNDIALS_DIR      SUNDIALS prefix (ode_solver/bdf_reference_check.cpp only)
 #   PYTHON            the Python that has this repository installed
 #   MAKE_JOBS         parallel make jobs
@@ -17,6 +19,10 @@ export OMPI_CXX=$CXX
 TIGRIS_LIB_FLAGS=(--hdf5_path=/opt/homebrew/opt/hdf5-mpi
                   --include=/opt/homebrew/opt/boost/include
                   --fftw_path=/opt/homebrew/opt/fftw)
+CMAKE=cmake
+# AthenaK on the CPU, serial Kokkos backend, with the same GCC (its objects are
+# libstdc++; clang would link libc++).
+ATHENAK_CMAKE_FLAGS=(-D CMAKE_CXX_COMPILER="$CXX")
 SUNDIALS_DIR=/opt/homebrew/opt/sundials
 PYTHON=/opt/homebrew/Caskroom/miniforge/base/envs/pyathena/bin/python
 MAKE_JOBS=8

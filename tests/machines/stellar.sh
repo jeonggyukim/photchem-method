@@ -12,6 +12,8 @@ module purge
 # Tigris is configured with --cxx=icpx; the harnesses use the same compiler.
 export CXX=icpx
 TIGRIS_LIB_FLAGS=(--cxx=icpx --lib_path="${HDF5DIR}/lib64" --include="${HDF5DIR}/include")
+CMAKE=cmake
+ATHENAK_CMAKE_FLAGS=(-D CMAKE_CXX_COMPILER="$CXX")
 SUNDIALS_DIR=
 PYTHON=python3
 MAKE_JOBS=${SLURM_CPUS_ON_NODE:-8}

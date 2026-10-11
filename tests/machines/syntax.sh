@@ -16,12 +16,15 @@ unset _opts
 export CXX=g++
 export OMPI_CXX=$CXX
 TIGRIS_LIB_FLAGS=(--fftw_path="${FFTW_DIR}")
+# CMake 3.31 must come first on PATH for AthenaK's test suite.
+export PATH=$HOME/libs/cmake/bin:$PATH
+CMAKE=$HOME/libs/cmake/bin/cmake
+# AthenaK on the GPU. KOKKOS_ARCH matches the partition: HOPPER90 (h100, h200),
+# AMPERE80 (a100), AMPERE86 (a10, a40).
+ATHENAK_CMAKE_FLAGS=(-D Kokkos_ENABLE_CUDA=ON -D "Kokkos_ARCH_${KOKKOS_ARCH:-HOPPER90}=ON")
 SUNDIALS_DIR=
 PYTHON=$HOME/miniconda3/envs/pyathena/bin/python
 MAKE_JOBS=${SLURM_CPUS_ON_NODE:-4}
-
-# CMake 3.31 must come first on PATH for AthenaK's test suite.
-export PATH=$HOME/libs/cmake/bin:$PATH
 
 mpi_launch() {
   local n=$1
