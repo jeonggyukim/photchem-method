@@ -85,10 +85,49 @@ mesh/x2min=-6 mesh/x2max=6 mesh/x3min=-6 mesh/x3max=6 time/tlim=0.05 time/nlim=5
 output2/dt=0.005` with the 5-band build of `bands/build.sh`; `compare_cloudy.py
 OUT.png "5 bands:RUNDIR"` draws the radial profiles and prints the H+-zone averages.
 
-## Rule
+## Machines
 
-Every script, harness or input that produced a number or a figure, including
-debug harnesses, is copied here when it is made and committed. The working
-folder (`$PHOTCHEM_RUNS`) holds runs and
-scratch; this repository is the record. `ncr_physics/` holds the checks of the
-NCR physics ported into GOW17 (hot gas, LyC path, equilibrium solver, limiter).
+Build and run scripts take every machine-specific setting (compilers, MPI launcher,
+library prefixes, Python) from `tests/machine.sh`, which is not tracked. Make it once
+per machine from the preset in `tests/machines/`:
+
+    cp tests/machines/grammar.sh tests/machine.sh     # or macos-homebrew, syntax, stellar
+
+and edit it if your machine differs. A new machine gets a new preset in
+`tests/machines/`, defining the names listed at the top of `macos-homebrew.sh`.
+`stellar.sh` is incomplete: its module loads still have to be filled in.
+
+## Conventions
+
+These rules let anyone with a Tigris or AthenaK checkout rerun a result and know which
+code produced it. `python -m photchem_method.check` tests them, and the pre-commit hook
+runs that check, so a commit that breaks a rule is refused. Enable the hook once per
+clone with `git config core.hooksPath .githooks`.
+
+1. **One folder per result.** A test lives in `tests/<problem>/`; a paper figure from
+   it in `tests/<problem>/fig_<name>/`, named by content, never by figure number.
+   Every `plot*.py` under `tests/` is in a `fig_<name>/` folder.
+2. **Builds and runs go through `tests/env.sh`.** A build script sources it and calls
+   `tigris_build OUTDIR <configure flags>`, which writes `OUTDIR/build.log`: the code's
+   repository, branch and commit, whether the tree was dirty, the configure line and
+   the compiler. A dirty build also saves `OUTDIR/code.diff` and lists untracked
+   files under `src/`, so the commit plus the diff is the source that was built. A run
+   goes through `run_logged RUNDIR BUILDDIR mpi_launch N ...`, which copies
+   `build.log` into `RUNDIR/run.log` and adds the command line, host, exit status and
+   wall time.
+3. **No machine paths in tracked files.** Only `tests/machines/*.sh` name a compiler,
+   library prefix, Python or home directory.
+4. **Every location comes from an environment variable** listed in
+   `photchem_method/paths.py` (the table above). Python reads them through
+   `photchem_method.paths`, C++ through `tests/paths.hpp`, shell as `${NAME:?...}`.
+5. **A figure reads its reduced file by default**; `--from-runs` reads the runs and
+   rewrites it. `reduced.save` requires the list of runs and files the arrays came
+   from and writes them, with their commits, as `# provenance:` lines at the top of
+   the file.
+6. **Results of other codes are read, not copied.** A reference value from Athena++,
+   AthenaK, Cloudy or CHIANTI is read from that code's checkout or output at
+   `--from-runs` time and named in the provenance lines; it is never typed into a
+   script.
+7. **Everything that produced a number or a figure is committed here** when it is
+   made, including checks written while debugging. `$PHOTCHEM_RUNS` holds the runs;
+   this repository is the record.

@@ -1,5 +1,6 @@
 # Bulky or machine-specific things that should not travel with a shared repo.
-# Reduced arrays a figure actually plots belong in data/ and are tracked.
+# The reduced arrays a figure plots are tracked beside its script
+# (tests/<problem>/fig_<name>/reduced*.txt).
 *.vtk
 *.athdf
 *.hdf5
@@ -9,20 +10,22 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
-# Figure output stays out until a figure is near final: these are redrawn on
-# every tweak, and a repository of drafts is not worth the history. The script
-# is the tracked artifact; run it to get the figure.
+# This machine's settings: a copy of one of tests/machines/*.sh.
+tests/machine.sh
+
+# Figure output: the scripts are tracked, the figures they write are not.
 figures/*.pdf
 figures/*.png
+figures/*.pptx
 
-# Simulation output never enters this repository, not even reduced. It lives in
-# ../data/, one level above the repository root, so no `git add` can reach it.
+# Raw simulation output never enters this repository. The runs live in
+# $PHOTCHEM_RUNS; ../data/ beside the repository holds the large reduced arrays of
+# tests/pdr_sphere.
 data/
 *.diffuse
 *.npz
-*.vtk
 
-# Python environments and build products from pip install .
+# Python environments and build products from pip install.
 .venv/
 *.egg-info/
 build/

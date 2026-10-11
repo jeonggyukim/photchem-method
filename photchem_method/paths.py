@@ -16,6 +16,10 @@ VARIABLES = {
                      'M5_hii_dtype_ions, M6_rad_snr, T7_cost)',
     'PHOTCHEM_POSTPROC_RUNS': 'the directory holding the post-processing runs (be_net)',
     'PYATHENA_DIR': 'a pyathena checkout (its data/ directory is read)',
+    'TIGRIS_DATA_DIR': 'a checkout of github.com/jeonggyukim/tigris-data (dust models)',
+    'CLOUDY_EXE': 'the cloudy.exe of Cloudy 25.00',
+    'CLOUDY_DATA_DIR': 'the data directory of Cloudy 25.00',
+    'XUVTOP': 'the CHIANTI 11 database (read through ChiantiPy 0.16)',
 }
 
 

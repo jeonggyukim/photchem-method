@@ -1,0 +1,6 @@
+#!/bin/sh
+# Refuse a commit that breaks the conventions of tests/README.md. Enable once per
+# clone with: git config core.hooksPath .githooks
+# The check needs only the Python standard library.
+root=$(git rev-parse --show-toplevel)
+cd "$root" && PYTHONPATH="$root" python3 -m photchem_method.check
