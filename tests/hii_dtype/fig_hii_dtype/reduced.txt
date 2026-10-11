@@ -1,3 +1,7 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/M5_hii_dtype_ions/F12_run/run (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: file ${TIGRIS_DIR}/tst/regression/data/ref_rayt_solutions/hii_dtype_simple.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
+# provenance: file ${TIGRIS_DIR}/tst/regression/data/ref_rayt_solutions/hii_dtype_ncr.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
 # F12: shell radius (t_g, r_g) and ionized-gas T (times, tions) of M5_hii_dtype_ions/F12_run/run,
 # the Simple and NCR references of tst/regression/data/ref_rayt_solutions,
 # radial profiles at t = 1 (rc, prof_*) and z = 0 slices of n_H and x_H+ at time_0 .. time_3

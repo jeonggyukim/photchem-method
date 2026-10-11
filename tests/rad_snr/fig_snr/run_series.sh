@@ -4,25 +4,22 @@
 # as tst/regression/scripts/tests/feedback/rad_snr.py.
 # usage: run_series.sh WORKDIR   (WORKDIR holds athinput.snr_gow17 and src_noreturn, a copy
 # of the tigris-gow17 tree without the three returned-metal lines of SharedHighIonTable)
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
-export OMPI_CXX=/opt/homebrew/bin/g++-16
-common=(-mpi -fb --prob=radiative_snr --nghost=4 -hdf5 --hdf5_path=/opt/homebrew/opt/hdf5-mpi
-        --include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw)
+common=(-mpi -fb --prob=radiative_snr --nghost=4 -hdf5)
 reg=(time/ncycle_out=10 time/dt_diagnostics=-1 time/integrator=rk2 cooling/coolftn=tigress
      output2/dt=-1 output3/dt=-1 time/tlim=0.05 time/ops_task=true feedback/ischeme=Subcell)
 build() {  # tree name extra-configure-args...
   local tree=$1 name=$2; shift 2
-  (cd $tree && python3 configure.py "${common[@]}" "$@" >/dev/null && make clean >/dev/null \
-     && make -j8 >$W/build_$name.out 2>&1) || { echo "build $name failed"; exit 1; }
-  /bin/cp -f $tree/bin/athena $W/athena_$name
+  (TIGRIS_DIR=$tree; tigris_build $W/build_$name "${common[@]}" "$@") || exit 1
 }
 run() {  # name input args...
   local name=$1 input=$2; shift 2
   mkdir -p $W/run_$name
   /bin/cp -f $T/inputs/tables/tigress_coolftn.txt $T/inputs/tables/tigress_coolftn_ncr.txt $W/run_$name/
-  (cd $W/run_$name && /usr/bin/time -p mpirun -np 8 ../athena_$name -i $input "$@" \
-     job/problem_id=snr >run.out 2>time.out)
+  run_logged $W/run_$name $W/build_$name mpi_launch 8 ../build_$name/athena -i $input "$@" \
+    job/problem_id=snr
   echo "$name exit=$?"
 }
 build $T classic

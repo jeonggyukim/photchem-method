@@ -3,17 +3,13 @@
 # the regression test's arguments (tst/.../rayt_point/hii_dtype.py), no HDF5, 4 ranks,
 # one run at a time. GOW17 core uses the same seven bands as GOW17 + ions.
 # usage: run_hii_cost.sh WORKDIR
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 tables=$T/inputs/tables
-export OMPI_CXX=/opt/homebrew/bin/g++-16
-paths=(--include=/opt/homebrew/opt/boost/include --fftw_path=/opt/homebrew/opt/fftw)
 build() {  # name configure-args...
   local name=$1; shift
-  (cd $T && python3 configure.py -mpi --prob=hii "$@" "${paths[@]}" >/dev/null \
-     && make clean >/dev/null && make -j8 >$W/build_$name.out 2>&1) \
-     || { echo "build $name failed"; exit 1; }
-  /bin/cp -f $T/bin/athena $W/athena_$name
+  tigris_build $W/build_$name -mpi --prob=hii "$@" || exit 1
 }
 common=(output2/dt=-1 output3/dt=-1 time/ncycle_out=10
         mesh/nx1=64 mesh/nx2=64 mesh/nx3=64 mesh/x1min=-18 mesh/x2min=-18 mesh/x3min=-18
@@ -31,8 +27,8 @@ run() {  # name input args...
   local name=$1 input=$2; shift 2
   mkdir -p $W/run_$name
   /bin/cp -f $tables/tigress_coolftn_ncr.txt $W/run_$name/
-  (cd $W/run_$name && /usr/bin/time -p mpirun -np 4 ../athena_$name -i $input \
-     "${common[@]}" "$@" job/problem_id=hii >run.out 2>time.out)
+  run_logged $W/run_$name $W/build_$name mpi_launch 4 ../build_$name/athena -i $input \
+    "${common[@]}" "$@" job/problem_id=hii
   grep -q "FATAL" $W/run_$name/run.out && echo "$name FATAL" || echo "$name done"
 }
 build simple --nspecies=1 --ngroup_rayt_point=1

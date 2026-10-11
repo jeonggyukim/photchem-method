@@ -1,3 +1,10 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_ions (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: file ${TIGRIS_DIR}/inputs/tables/chianti_v11/ioneq_C.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
+# provenance: file ${TIGRIS_DIR}/inputs/tables/chianti_v11/ioneq_Si.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
+# provenance: file ${TIGRIS_DIR}/inputs/tables/chianti_v11/ioneq_O.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
+# provenance: file ${TIGRIS_DIR}/inputs/tables/chianti_v11/ioneq_S.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
+# provenance: file ${TIGRIS_DIR}/inputs/tables/chianti_v11/ioneq_N.txt (branch=rayt-photchem-updates commit=a4525e4c7fe9eea2cb45ba8a1a4369c8e9b39d42 tree=clean)
 # F13b: n_H-weighted stage fractions in log T bins (mid) of M6_rad_snr/F13_series/run_ions
 # snr.out2.00006 (row 0) and .00009 (row 1), one row per stage, and the CHIANTI v11 CIE
 # fractions (cie_logT, cie) of inputs/tables/chianti_v11/ioneq_<el>.txt; t [code]

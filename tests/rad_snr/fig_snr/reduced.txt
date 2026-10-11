@@ -1,3 +1,9 @@
+# provenance: photchem-method branch=main commit=711dfb4699e0e81ce0920f5ef1bcf2e4a48d4188 tree=dirty
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_classic (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_ncr (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_core (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_ions (no run.log: run before tests/env.sh recorded runs; code revision unknown)
+# provenance: run ${PHOTCHEM_RUNS}/M6_rad_snr/F13_series/run_noreturn (no run.log: run before tests/env.sh recorded runs; code revision unknown)
 # F13: histories of the runs M6_rad_snr/F13_series/run_<name> and their wall time
 # t [Myr], M_hot [M_sun], pr [M_sun km/s], E_tot [erg], wall [s]
 @ t_classic 145

@@ -2,15 +2,12 @@
 # F12 run: hii_dtype with GOW17 + O3,S3,N3, seven bands, the arguments of
 # tst/regression/scripts/tests/rayt_point/hii_dtype.py (gow17_ions mode) plus HDF5 dumps
 # every 0.02 code. usage: run_f12.sh WORKDIR
+source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 W=${1:A}
 T=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}
 tables=$T/inputs/tables
-export OMPI_CXX=/opt/homebrew/bin/g++-16
-(cd $T && python3 configure.py -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 --prob=hii \
-   -hdf5 --hdf5_path=/opt/homebrew/opt/hdf5-mpi --include=/opt/homebrew/opt/boost/include \
-   --fftw_path=/opt/homebrew/opt/fftw >/dev/null && make clean >/dev/null \
-   && make -j8 >$W/build.out 2>&1) || { echo "build failed"; exit 1; }
-/bin/cp -f $T/bin/athena $W/athena
+tigris_build $W -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 --prob=hii -hdf5 \
+  || exit 1
 args=(output2/dt=0.02 output3/dt=-1 time/ncycle_out=10
       mesh/nx1=64 mesh/nx2=64 mesh/nx3=64 mesh/x1min=-18 mesh/x2min=-18 mesh/x3min=-18
       mesh/x1max=18 mesh/x2max=18 mesh/x3max=18 meshblock/nx1=32 meshblock/nx2=32
@@ -26,6 +23,6 @@ args=(output2/dt=0.02 output3/dt=-1 time/ncycle_out=10
       job/problem_id=hii_dtype_gow17_ions)
 mkdir -p $W/run
 /bin/cp -f $tables/tigress_coolftn_ncr.txt $W/run/
-(cd $W/run && /usr/bin/time -p mpirun -np 4 ../athena \
-   -i $T/inputs/rayt_point/athinput.hii_dtype_gow17_ions "${args[@]}" >run.out 2>time.out)
+run_logged $W/run $W mpi_launch 4 ../athena \
+  -i $T/inputs/rayt_point/athinput.hii_dtype_gow17_ions "${args[@]}"
 echo "run exit=$?"

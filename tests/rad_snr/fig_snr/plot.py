@@ -42,7 +42,9 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
                                 if ln.startswith('real')][0]
     reduced.save(REDUCED, 'F13: histories of the runs M6_rad_snr/F13_series/run_<name> and '
                  'their wall time\nt [Myr], M_hot [M_sun], pr [M_sun km/s], E_tot [erg], '
-                 'wall [s]', data)
+                 'wall [s]', data,
+                 sources=[paths.runs('M6_rad_snr', 'F13_series', 'run_' + name)
+                          for name, *_ in RUNS])
 else:
     data = reduced.load(REDUCED)
 

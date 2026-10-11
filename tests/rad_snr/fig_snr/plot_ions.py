@@ -77,7 +77,9 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
                  'M6_rad_snr/F13_series/run_ions\nsnr.out2.00006 (row 0) and .00009 '
                  '(row 1), one row per stage, and the CHIANTI v11 CIE\nfractions '
                  '(cie_logT, cie) of inputs/tables/chianti_v11/ioneq_<el>.txt; t [code]',
-                 data)
+                 data,
+                 sources=[run] + [paths.tigris('inputs/tables/chianti_v11', 'ioneq_%s.txt' % el)
+                                  for el, *_ in ELEMENTS])
 else:
     data = reduced.load(REDUCED)
 

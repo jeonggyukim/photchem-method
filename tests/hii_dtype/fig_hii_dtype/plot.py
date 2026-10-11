@@ -111,7 +111,10 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
                  'of M5_hii_dtype_ions/F12_run/run,\nthe Simple and NCR references of '
                  'tst/regression/data/ref_rayt_solutions,\nradial profiles at t = 1 '
                  '(rc, prof_*) and z = 0 slices of n_H and x_H+ at time_0 .. time_3\n'
-                 't [code], r [pc], T [K], n_H [cm^-3]', data)
+                 't [code], r [pc], T [K], n_H [cm^-3]', data,
+                 sources=[run] + [paths.tigris('tst/regression/data/ref_rayt_solutions',
+                                               'hii_dtype_%s.txt' % name)
+                                  for name in ('simple', 'ncr')])
 else:
     data = reduced.load(REDUCED)
 
