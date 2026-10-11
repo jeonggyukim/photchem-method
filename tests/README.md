@@ -6,8 +6,8 @@ at the commit named in each subdirectory's entry below.
 
 The C++ harnesses include Tigris headers directly and build with
 
-    OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -ffp-contract=off \
-        -I $TIGRIS_DIR/src <harness>.cpp -o <harness>
+    source tests/env.sh     # sets OMPI_CXX and CXX from tests/machine.sh
+    mpicxx -std=c++17 -O2 -ffp-contract=off -I $TIGRIS_DIR/src <harness>.cpp -o <harness>
 
 after `configure.py -gow17 [...]` has written `defs.hpp`. Bit-identity checks
 need `-ffp-contract=off`. Python scripts read Tigris output with

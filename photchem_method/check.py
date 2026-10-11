@@ -56,7 +56,8 @@ def check(files):
             continue
         text = lines(path)
         for n, line in enumerate(text, 1):
-            if not path.startswith(MACHINES) and MACHINE_PATH.search(line):
+            if not path.startswith(MACHINES) and path != 'photchem_method/check.py' \
+                    and MACHINE_PATH.search(line):
                 bad(path, n, 'machine-path', line)
             if path.endswith('.py') and SYSPATH.search(line):
                 bad(path, n, 'sys-path-import', line)
