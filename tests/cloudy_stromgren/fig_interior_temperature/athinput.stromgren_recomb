@@ -5,7 +5,7 @@ configure = -ncr -shld_ci -shld_cr --prob=photchem_postproc
 
 # A Bonnor-Ebert sphere of 1000 H per cm^3 at the centre, 2 pc in radius, in thin warm
 # gas, lit from every side by one interstellar radiation field of Draine (1978).  The
-# diffuse solver carries the field in from the faces of the box, and it and the NCR
+# diffuse ray tracer carries the field in from the faces of the box, and it and the NCR
 # photochemistry are repeated in turn until the abundances stop changing.  The result
 # is a cloud with an atomic envelope, a molecular interior, and carbon as C+, C and CO
 # in nested shells.  About 230 iterations and 10 minutes on eight cores.
@@ -124,7 +124,7 @@ fuv_from_sed = true
 tau_max       = 20      # optical depth at which a ray stops
 rays_per_cell = 4       # rays crossing each cell, which sets the HEALPix level
 rayt_point = true
-rotate_rays = fixed     # a new ray orientation each trace would set a floor under the
+rotate_rays = fixed     # a new ray orientation each ray-tracing pass would set a floor under the
                         # convergence test
 
 <rayt_diffuse>
@@ -148,7 +148,7 @@ cfl_photchem = 1.0
 
 <photchem_gow17>
 z_dust         = 0.0
-recombination_ots = true  # false: H and He case A, photons through the diffuse tracer
+recombination_ots = true  # false: H and He case A, photons through the diffuse ray tracer
 ion_cooling_dir = ${TIGRIS_DIR}/inputs/tables/chianti_v11/ion_cooling
 semi_implicit_gauss_seidel = true
 chi0           = 0.0

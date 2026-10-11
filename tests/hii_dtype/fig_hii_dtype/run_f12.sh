@@ -1,5 +1,5 @@
 #!/bin/zsh
-# F12 run: hii_dtype with GOW17 + O3,S3,N3, seven bands, the arguments of
+# One run of hii_dtype with GOW17 + O3,S3,N3, seven bands, the arguments of
 # tst/regression/scripts/tests/rayt_point/hii_dtype.py (gow17_ions mode) plus HDF5 dumps
 # every 0.02 code. usage: run_f12.sh WORKDIR
 source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"

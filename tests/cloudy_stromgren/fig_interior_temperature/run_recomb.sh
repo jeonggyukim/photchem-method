@@ -1,5 +1,5 @@
 #!/bin/zsh
-# F11 runs: the post-processed Stromgren sphere (GOW17 + O3,S3,N3, 7 bands, 64^3, 8 ranks)
+# Two runs of the post-processed Stromgren sphere (GOW17 + O3,S3,N3, 7 bands, 64^3, 8 ranks)
 # with <photchem_gow17>/recombination_ots = true and = false (the diffuse ray tracer on,
 # 11 diffuse groups: 7 point bands and 4 recombination groups).
 # usage: run_recomb.sh WORKDIR   (athinput.stromgren_recomb is copied there)

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# F10 band-count series: the postproc Stromgren sphere (64^3, 8 ranks) with 3, 5, 6, 7
+# Band-count series: the post-processed Stromgren sphere (64^3, 8 ranks) with 3, 5, 6, 7
 # point-source bands, GOW17 + O3,S3,N3, from the current tigris-gow17 tree.
 # usage: run_series.sh WORKDIR   (WORKDIR holds athinput.stromgren_postproc)
 #   Each build goes to WORKDIR/build_b<n> (athena, build.log) and each run to

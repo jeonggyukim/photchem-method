@@ -1,4 +1,4 @@
-"""F11: where the interior temperature of the static H II region comes from. T(r) and
+"""Where the interior temperature of the static H II region comes from. T(r) and
 x(H+)(r) of the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands) with the
 recombination photons of H and He absorbed on the spot (recombination_ots = true: H
 case B, He on-the-spot split) and carried by the diffuse ray tracer (false: H and He case A,

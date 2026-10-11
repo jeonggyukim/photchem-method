@@ -1,4 +1,4 @@
-"""F09: static H II region, Tigris against Cloudy 25. Radial T, n_e and the stage fractions
+"""Static H II region, Tigris against Cloudy 25. Radial T, n_e and the stage fractions
 of H, He, O, S and N from the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands, 64^3)
 against Cloudy 25 with its default diffuse field (solid) and `diffuse OTS` (dashed). Tigris
 X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes

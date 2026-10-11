@@ -90,7 +90,7 @@ rays_per_cell = 4.0     # Nominal angular resolution (can be a real number)
 healpix_lev_min = 4     # HealPix level at creation
 nexit_max = 100         # Maximum number of rays to send to neighbor ranks (MPI only)
 tau_max = 30.0          # Stop following a ray if tau > tau_max at all freq bins
-rotate_rays = true      # Random rotation of ray directions: true (new each trace), fixed (one for the run), false
+rotate_rays = true      # Random rotation of ray directions: true (new each ray-tracing pass), fixed (one for the run), false
 
 <photchem>
 photchem = true

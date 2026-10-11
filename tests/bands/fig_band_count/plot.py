@@ -1,4 +1,4 @@
-"""F10: how many point-source bands the static H II region needs. T(r) and x(H+)(r) of
+"""How many point-source bands the static H II region needs. T(r) and x(H+)(r) of
 the Tigris post-processed sphere (GOW17 + O3,S3,N3, 64^3) with 3, 5, 6 and 7 bands against
 Cloudy 25 (default and `diffuse OTS`); R_s (x_H+ = 0.5) and wall time per run in the
 legend. Writes ../../../figures/band_count.{pdf,png}.

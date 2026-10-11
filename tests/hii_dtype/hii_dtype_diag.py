@@ -5,10 +5,10 @@ usage: python hii_dtype_diag.py RUNDIR [SNAP] [OUT.png]
 
 Every slice uses one colour range for all frames, so a movie's frames compare.
 
-Row 1: history -- shell radius (with the NCR reference), timestep, masses, photon
-budget per band, radial momentum, ionization-front radius; a line marks the frame.
-Row 2: midplane slices of n_H, T, |v|, P/k and the band energy densities.
-Rows 3-4: midplane slices of every species, as a fraction of its element.
+Row 1: history of the shell radius (with the NCR reference), timestep, masses, photon
+budget per band, radial momentum and ionization-front radius; a line marks the frame.
+Row 2: slices through the source (z = 0) of n_H, T, |v|, P/k and the band energy densities.
+Rows 3-4: slices through the source of every species, as a fraction of its element.
 Row 5: density-weighted spherical averages of T, n_H, the ion fractions and v_r.
 """
 import glob

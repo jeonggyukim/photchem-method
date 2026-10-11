@@ -1,4 +1,4 @@
-"""F12: D-type H II region, Q = 1e49 s^-1 into n_H = 100 cm^-3, 64^3. Top: shell radius
+"""D-type H II region, Q = 1e49 s^-1 into n_H = 100 cm^-3, 64^3. Top: shell radius
 against time for Simple (T fixed at 8000 K) and NCR (stored regression references) and
 GOW17 + O3,S3,N3 (this run), with the Spitzer (1978) and Hosokawa & Inutsuka (2006)
 solutions at 8000 K; mass-weighted T of the ionized gas (x_H+ > 0.9) against time; radial
