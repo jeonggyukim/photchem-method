@@ -1,7 +1,7 @@
-"""The diffuse field solver drawn in 3D: for each of a few fixed directions of the angle
-set, a bundle of parallel rays crosses the grid and a cloud in it; each ray fades with
-the optical depth it has crossed.  The solver launches one ray per face cell through
-every entry face; the bundle is a sample of those.
+"""The diffuse ray tracer drawn in 3D.  For each of a few fixed directions of the angle
+set, a bundle of parallel rays crosses the grid and a cloud in it.  Each ray fades with
+the optical depth it has crossed.  The diffuse ray tracer launches one ray per face
+cell through every entry face; the bundle is a sample of those.
 
     python diffuse_rays_3d.py [outdir]
 
@@ -26,9 +26,9 @@ COLORS = ('#E69F00', '#CC79A7', '#56B4E9')
 
 def ray_paths(d, n, nbundle=3, spacing=2.0):
     """Entry and exit points of a bundle of nbundle^2 parallel rays of direction d,
-    spacing cells apart, aimed through the centre of an n^3 grid of unit cells: one
-    sample of the rays the solver launches, one per face cell, through every entry
-    face."""
+    spacing cells apart, aimed through the centre of an n^3 grid of unit cells.  They
+    sample the rays the diffuse ray tracer launches, one per face cell, through every
+    entry face."""
     centre = np.full(3, 0.5*n)
     e1 = np.cross(d, [0.0, 0.0, 1.0] if abs(d[2]) < 0.9 else [1.0, 0.0, 0.0])
     e1 /= np.linalg.norm(e1)

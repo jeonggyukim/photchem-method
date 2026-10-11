@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-"""Figure 1: the GOW17 network and its Tigris extension, in four versions.
+"""The GOW17 chemical network and its Tigris extension, in four versions.
 
-    core        GOW17 core only (the AthenaK diagram of plot_gow17_network.py)
-    greycore    full Tigris network, additions in colour, GOW17 core in grey
+    core        GOW17 core chemical network only (the AthenaK diagram of
+                plot_gow17_network.py)
+    greycore    full Tigris chemical network, additions in colour, GOW17 core in grey
     2panel      (a) core + ionized-gas additions, (b) ion ladders
-    colour      full Tigris network in full colour, additions highlighted
+    colour      full Tigris chemical network in full colour, additions highlighted
 
 and a contact sheet of the four. The core reactions and their layout are copied
 from athenak-chem/scripts/plot_gow17_network.py. Every Tigris arrow cites the

@@ -1,4 +1,4 @@
-# Bulky or machine-specific things that should not travel with a shared repo.
+# Large or machine-specific files, which are not tracked.
 # The reduced arrays a figure plots are tracked beside its script
 # (tests/<problem>/fig_<name>/reduced*.txt).
 *.vtk

@@ -1,7 +1,8 @@
-"""Schematic of the TIGRESS-NCR coupling for a talk: gas dynamics on top, radiation
-transfer by adaptive ray tracing from point sources (no diffuse field) at lower left,
-photochemistry and thermodynamics at lower right, with a cosmic ray ionizing H2, and
-cosmic rays entering only as a prescribed ionization rate, without a transport module.
+"""Schematic of the TIGRESS-NCR coupling, for a talk.  Gas dynamics is on top.
+Radiation transfer by adaptive ray tracing from point sources (no diffuse field) is at
+lower left.  Photochemistry and thermodynamics is at lower right, with a cosmic ray
+ionizing H2.  Cosmic rays enter only as a prescribed ionization rate; there is no
+transport module.
 
     python ncr_coupling.py [--no-cr-icon]
 

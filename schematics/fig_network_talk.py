@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Talk versions of the GOW17 core network (fig_network.py, version core).
+"""Talk versions of the GOW17 core chemical network (fig_network.py, version core).
 
     fig_network_talk_all    all reactions by kind; CR (vermillion) and FUV (purple) thick
-    fig_network_talk_ncr    what the TIGRESS-NCR network keeps from GOW17
+    fig_network_talk_ncr    what the TIGRESS-NCR chemical network keeps from GOW17
 
 Sized for a TV screen: 13 in wide, species 20 pt, legend and note >= 18 pt.
 

@@ -4,9 +4,9 @@ explanations are in the presenter notes.
 
     python make_cr_slides.py [output.pptx]
 
-Writes ../figures/cr-coupling.pptx unless an output path is given.  Figures are read
-from ../figures (git-ignored); make them
-first with rad_cr_chem_coupling.py beside this script:
+Writes ../figures/cr-coupling.pptx unless an output path is given.  The figures are
+read from ../figures, which git ignores.  Make them first with rad_cr_chem_coupling.py
+beside this script:
 
     python rad_cr_chem_coupling.py talk --mhd --cr-left
     python rad_cr_chem_coupling.py talk --mhd --cr-left --crpic=A
@@ -469,7 +469,7 @@ N_eff). Multi-group cr_mg transport (Armillotta et al. 2025) would let the low-e
 spectrum steepen on its own.
 """)
 
-# 5. the paper version -------------------------------------------------------------------
+# 5. the post-processing version -------------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 title(s, 'Backup: post-processing version (paper figure)')
 figure(s, 'rad_cr_chem_coupling_paper.png')

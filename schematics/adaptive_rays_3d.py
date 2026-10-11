@@ -4,9 +4,9 @@ cover more than 1/f of a cell's face, A(l) r^2 > dx^2/f with A(l) = 4 pi/(12 4^l
 
     python adaptive_rays_3d.py [outdir]
 
-Writes adaptive_rays_3d.png and .pdf, with a legend-free adaptive_rays_3d_panel for
-Figure 1 of the method paper, to outdir (default ../figures).  draw_ray_tree() is
-also used by rad_cr_chem_coupling.py.
+Writes adaptive_rays_3d.png and .pdf, and a copy without the legend,
+adaptive_rays_3d_panel, to outdir (default ../figures).  draw_ray_tree() is also used
+by rad_cr_chem_coupling.py.
 """
 import os
 import sys
@@ -175,8 +175,7 @@ def main(out):
         path = os.path.join(out, 'adaptive_rays_3d.' + ext)
         fig.savefig(path, dpi=200)
         print('wrote', os.path.normpath(path))
-    # Figure 1 of the method paper shrinks this to a 34 mm panel, where the
-    # legend would be 2 pt type.
+    # At a 34 mm panel width the legend would be 2 pt type.
     ax.get_legend().remove()
     for ext in ('png', 'pdf'):
         path = os.path.join(out, 'adaptive_rays_3d_panel.' + ext)

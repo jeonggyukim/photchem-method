@@ -3,7 +3,7 @@
     python rad_cr_chem_coupling.py [talk|paper] [--mhd] [--cr-left] [--crpic=A|B]
 
 The argument picks the labels: symbols in large type for slides (talk, default), or
-symbols with a few words each for a paper.
+symbols with a few words each for print (paper).
 
 --mhd adds a gas-dynamics box for a coupled simulation, with the forces and heating
 the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray boxes.
@@ -201,7 +201,7 @@ PITCH = (0.42, 0.2)
 
 
 def resonant_waves(ax, x0, y, r0):
-    """Field line, two wave packets and the scattered helix shared by A and C."""
+    """Field line, two wave packets and the scattered helix of picture A."""
     xk, xk2 = x0 + 1.9, x0 + 3.4
     rippled_field(ax, x0 + 0.45, x0 + 4.35, y, ((xk, PITCH[0]), (xk2, PITCH[1])))
     scattered_helix(ax, x0 + 0.5, x0 + 4.1, y, xk, r0=r0, pitch=PITCH)
@@ -339,8 +339,8 @@ def main():
     xm = 1.85 if SIM else 0.0   # shift of the chemistry box
     width = 12.0 + xc
     # The chemistry box spans cb..ct. The talk labels are one line each, so the gap
-    # between it and the upper boxes is narrower there; the paper labels run to four
-    # lines and keep the full gap.
+    # between it and the upper boxes is narrower there. The paper-style labels run to
+    # four lines and keep the full gap.
     ct = 2.55 if PAPER else 3.1
     cb = 0.75 if PAPER else 1.1
     bot = cb - 0.15
@@ -450,8 +450,8 @@ def main():
 
     # photochemistry
     box(ax, 2.6 + xm, cb, 9.4 + xm, ct, COL_CHEM, 'Photochemistry and Thermodynamics')
-    # molecules and equations sit 1.0-1.2 below the top; the paper's species line
-    # takes the bottom 0.3
+    # molecules and equations sit 1.0-1.2 below the top; in the paper style the
+    # species line takes the bottom 0.3
     ym = ct - (1.0 if PAPER else 1.2)
     draw_molecules(ax, (3.35 if PAPER else 3.45) + xm, ym - 0.15, k=1.1 if PAPER else 1.3)
     # the two equations, and under them what every rate, heating and cooling term

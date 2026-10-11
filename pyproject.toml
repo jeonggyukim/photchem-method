@@ -14,7 +14,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "photchem-method"
 version = "0.1"
-description = "Figures and test-problem harnesses for the photochemistry method paper"
+description = "Figures and test-problem harnesses for the TIGRESS++ photochemistry method"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
