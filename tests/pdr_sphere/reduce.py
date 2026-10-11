@@ -1,10 +1,11 @@
-"""Mid-plane slices of the post-processed sphere, for fig_slices/plot.py.
+"""Slices through the centre of the post-processed sphere, for fig_slices/plot.py.
 
     python reduce.py <run_dir> <out.npz> [athena_read directory]
 
 The athena_read directory defaults to $TIGRIS_DIR/vis/python.
 
-Write out.npz to ../data/pdr_sphere/pdr_sphere_<mode>.npz, outside the repository.
+fig_slices/plot.py reads out.npz from ../../../data/pdr_sphere/pdr_sphere_<mode>.npz,
+beside the repository.
 
 Reads the last HDF5 dump of a run of run.sh (prim and uov, cloud.out2.*.athdf) and
 keeps the plane x3 = 0 through the centre of the sphere: n_H, x_e, x_H, x_H2, the

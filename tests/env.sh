@@ -1,9 +1,13 @@
 # Sourced by every build and run script in tests/ (bash or zsh):
 #     source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
-# It reads tests/machine.sh and defines the functions that build a code, run it and
-# record what was run. A build writes build.log and a run writes run.log beside its
-# output; photchem_method.provenance reads them when a figure script rewrites its
-# reduced file, so every reduced file names the code commit it came from.
+# It finds the repository root from its own path, reads tests/machine.sh and defines
+#   code_revision DIR             the commit of a checkout and whether its tree is dirty
+#   write_build_log OUTDIR DIR    OUTDIR/build.log, plus OUTDIR/code.diff for a dirty tree
+#   tigris_build OUTDIR ARGS      build Tigris into OUTDIR/athena
+#   athenak_build OUTDIR FLAGS    build AthenaK into OUTDIR/athena
+#   run_logged RUNDIR BUILDDIR CMD  run CMD; write run.out, run.err, time.out, run.log
+# photchem_method.provenance reads build.log and run.log when a figure script rewrites
+# its reduced file, so every reduced file names the code commit it came from.
 
 # The repository root, from this file's own location (bash and zsh name a sourced
 # file differently).

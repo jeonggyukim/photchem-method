@@ -2,9 +2,9 @@
 
     python plot.py [npz ...]
 
-Reads the reduced mid-plane slices that ../reduce.py writes (default: the NCR and
-GOW17 ones in ../data/pdr_sphere, beside this repository) and writes
-figures/pdr_sphere_<mode>.{pdf,png}.
+Reads the reduced slices through the centre that ../reduce.py writes (default: the
+NCR and GOW17 ones in ../../../../data/pdr_sphere, beside this repository) and writes
+../../../figures/pdr_sphere_<mode>.{pdf,png}.
 A uniform sphere of 1000 H cm^-3, 2 pc in radius, in gas of 0.05 H cm^-3, lit from
 every side by one Draine field through the diffuse solver.
 """

@@ -1,6 +1,6 @@
 # The scripts run in place (python schematics/<name>.py, python tests/.../plot.py).
 # Installing the repository installs their dependencies and the small package
-# photchem_method (paths, reduced) that the tests/ scripts import:
+# photchem_method (paths, reduced, provenance, check) that the tests/ scripts import:
 #     pip install -e .            numpy, matplotlib, healpy, photchem_method
 #     pip install -e ".[slides]"  plus python-pptx for make_cr_slides.py
 #     pip install -e ".[tests]"   plus what the tests/ harnesses read

@@ -4,7 +4,9 @@
 # directions), post-processed to convergence with NCR and with GOW17 + ions (O3,S3,N3).
 # Same input (inputs/photchem/athinput.cloud_postproc), same bands (LyC off, LW, PE);
 # only <photchem>/mode and the build differ.
-#   bash run.sh [build|run|all]   (default all)
+#   bash run.sh [build|run|all|gow17|run_gow17]   (default all)
+# Each build and run goes to RUNS/ncr and RUNS/gow17 (RUNS defaults to
+# $PHOTCHEM_POSTPROC_RUNS/be_net).
 source "$(git -C "$(dirname "$0")" rev-parse --show-toplevel)/tests/env.sh"
 set -e
 TIGRIS=${TIGRIS_DIR:?set TIGRIS_DIR to a Tigris checkout}

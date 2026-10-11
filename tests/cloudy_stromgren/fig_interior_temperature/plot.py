@@ -1,11 +1,11 @@
 """F11: where the interior temperature of the static H II region comes from. T(r) and
 x(H+)(r) of the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands) with the
 recombination photons of H and He absorbed on the spot (recombination_ots = true: H
-case B, He on-the-spot split) and carried by the diffuse tracer (false: H and He case A,
+case B, He on-the-spot split) and carried by the diffuse ray tracer (false: H and He case A,
 case A recombination cooling), against Cloudy 25 with `diffuse OTS` and with its default
 transfer of the diffuse field; each Tigris run is paired with the Cloudy run of the same
 treatment, and the bottom panel gives their T ratio. Writes
-../../../figures/interior_temperature.{pdf,png}.
+../../../figures/interior_temperature<SUFFIX>.{pdf,png}.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
 of tests/cloudy_stromgren (default) and tests/cloudy_stromgren/thermal_with_N_ots.

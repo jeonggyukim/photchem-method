@@ -3,7 +3,13 @@
     python -m photchem_method.check
 
 Exits 1 and lists each violation as path:line: rule: text. The pre-commit hook in
-.githooks/ runs it, so a commit that breaks a rule is refused.
+.githooks/ runs it, so a commit that breaks a rule is refused. The rules, on tracked
+files: no figure number in a path or output name; a figure script in tests/ sits in a
+fig_<name>/ folder, which holds a plot script and, if that script reads --from-runs, a
+reduced file with provenance lines; no machine path outside tests/machines/; no
+sys.path import; every environment variable is listed in paths.VARIABLES; a shell
+script that configures a build sources tests/env.sh; every shell script passes
+bash -n, or zsh -n when its shebang names zsh.
 """
 import os
 import re
