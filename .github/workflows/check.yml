@@ -1,0 +1,59 @@
+# Runs on every push and pull request to main.
+#   conventions: python -m photchem_method.check, the rules of tests/README.md
+#                (the same check as .githooks/pre-commit), including bash -n / zsh -n
+#                on every shell script.
+#   figures:     every figure script, run from the repository alone: each
+#                tests/*/fig_*/plot.py from its reduced file, and the schematics.
+# Neither job builds or runs Tigris or AthenaK.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install zsh (several run scripts are zsh)
+        run: sudo apt-get update -q && sudo apt-get install -y -q zsh
+      - name: Check the conventions
+        run: PYTHONPATH=. python -m photchem_method.check
+
+  figures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[slides]"
+      - name: Test-problem figures from their reduced files
+        # fig_slices reads ../data/pdr_sphere, outside the repository by design.
+        run: |
+          set -e
+          for f in $(git ls-files 'tests/*/fig_*/plot*.py' | grep -v '^tests/pdr_sphere/fig_slices/'); do
+            echo "== $f"
+            (cd "$(dirname "$f")" && python "$(basename "$f")")
+          done
+      - name: Schematics
+        run: |
+          set -e
+          cd schematics
+          for f in adaptive_rays_3d.py diffuse_rays_3d.py fig_network.py fig_network_talk.py \
+                   ncr_coupling.py art_schematic_talk.py; do
+            echo "== $f"; python "$f"
+          done
+          python rad_cr_chem_coupling.py paper
+          python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
+          for pic in "" --crpic=A --crpic=B; do
+            python rad_cr_chem_coupling.py talk --mhd --cr-left $pic
+          done
+          python make_cr_slides.py

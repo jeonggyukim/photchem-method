@@ -7,6 +7,7 @@ Exits 1 and lists each violation as path:line: rule: text. The pre-commit hook i
 """
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -38,6 +39,20 @@ def lines(path):
         return f.read().splitlines()
 
 
+def shell_syntax(path, text):
+    """'' if `<shell> -n` accepts the script, else the first error line. The shell is
+    the one its shebang names (zsh or bash; sh and sourced files without a shebang
+    are read by bash). A missing shell is reported, not skipped."""
+    shell = 'zsh' if text and 'zsh' in text[0] else 'bash'
+    if shutil.which(shell) is None:
+        return '%s is not installed, so the syntax was not checked' % shell
+    r = subprocess.run([shell, '-n', os.path.join(ROOT, path)], capture_output=True,
+                       text=True)
+    if r.returncode == 0:
+        return ''
+    return (r.stderr.strip().splitlines() or ['%s -n failed' % shell])[0]
+
+
 def check(files):
     found = []
 
@@ -55,6 +70,10 @@ def check(files):
         if not SOURCE.search(path):
             continue
         text = lines(path)
+        if path.endswith('.sh'):
+            problem = shell_syntax(path, text)
+            if problem:
+                bad(path, 0, 'shell-syntax', problem)
         for n, line in enumerate(text, 1):
             if not path.startswith(MACHINES) and path != 'photchem_method/check.py' \
                     and MACHINE_PATH.search(line):
