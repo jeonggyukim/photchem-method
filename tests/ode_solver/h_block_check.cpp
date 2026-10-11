@@ -8,8 +8,8 @@
 // Reference: the default at 200000 substeps; the block at 200000 is printed against it.
 // Output per row: case N, then per variant |dT/T| |dx_H+/x_H+| |dx_H2/x_H2| |dx_CO/x_CO|.
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
-//   -I/opt/homebrew/opt/hdf5-mpi/include h_block_check.cpp -o h_block_check
+//   mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
+//   -I<hdf5 prefix>/include h_block_check.cpp -o h_block_check
 #include <cmath>
 #include <cstdio>
 #include <limits>

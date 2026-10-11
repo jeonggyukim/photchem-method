@@ -1,7 +1,8 @@
 """The block Gauss-Seidel schematic on the real GOW17 network, molecular gas.
-jacobian_dump.txt (CO-formation test at 2.93 Myr, 64 substeps) ->
-../../figures/block_gs_gow17.{pdf,png} (sensitivity) and
-../../figures/block_gs_gow17_lag.{pdf,png} (lag carried).
+../jacobian_dump.txt (CO-formation test at 2.93 Myr, 64 substeps), read through
+../fig_gs_error_matrix/plot.py ->
+../../../figures/block_gs_gow17.{pdf,png} (sensitivity) and
+../../../figures/block_gs_gow17_lag.{pdf,png} (lag carried).
 
 A = I - hJ in update order.  Each off-diagonal dot is the coupling of species i to
 species j, sized by |A_ij| x_j / (A_ii x_i): the fractional change of the new x_i per
@@ -25,9 +26,9 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIG = os.path.join(HERE, '..', '..', 'figures')
+FIG = os.path.join(HERE, '..', '..', '..', 'figures')
 with contextlib.redirect_stdout(io.StringIO()):
-    g = runpy.run_path(os.path.join(HERE, 'plot_gs_error_matrix.py'))
+    g = runpy.run_path(os.path.join(HERE, '..', 'fig_gs_error_matrix', 'plot.py'))
 J, X, perm, ORDER, LABEL, t_myr = g['J'], g['X'], g['perm'], g['ORDER'], g['LABEL'], g['t_myr']
 ns = len(ORDER)
 N = 64

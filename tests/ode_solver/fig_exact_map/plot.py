@@ -1,7 +1,7 @@
-"""Exponential map against backward Euler, one zone, GOW17 core, from exact_map_check.txt:
+"""Exponential map against backward Euler, one zone, GOW17 core, from ../exact_map_check.txt:
 |dT/T| (top) and |dy/y| (bottom) against the number of equal substeps for the three F05
 cases, with backward Euler (default), exact_map, exact_block and both. Reference: the default
-with 200000 substeps. Writes ../../figures/exact_map_check.{pdf,png}."""
+with 200000 substeps. Writes ../../../figures/exact_map_check.{pdf,png}."""
 import os
 import numpy as np
 import matplotlib
@@ -9,8 +9,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', 'figures', 'exact_map_check')
-d = np.loadtxt(os.path.join(HERE, 'exact_map_check.txt'))
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'exact_map_check')
+d = np.loadtxt(os.path.join(HERE, '..', 'exact_map_check.txt'))
 # Gauss-Seidel: C_i, D_i take the species earlier in the order at n+1 and the rest at n,
 # y~ = (y_{<i}^{n+1}, y_{>=i}^n); T and the ghost species stay at t^n
 BE = (r'$y_i^{n+1} = \frac{y_i^n + \mathcal{C}_i(\tilde{\mathbf{y}})\,h}'

@@ -8,8 +8,8 @@
 // and C+ at 100 K, t 3 code = 2.9 Myr).
 // Output per row: case N, then per variant |dT/T| |dx/x|, x = x_H+ (A, B) or x_CO (C).
 // Build: configure tigris-gow17 with -gow17 (defs.hpp only), then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
-//   -I/opt/homebrew/opt/hdf5-mpi/include solver_sweep.cpp -o solver_sweep
+//   mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
+//   -I<hdf5 prefix>/include solver_sweep.cpp -o solver_sweep
 #include <cmath>
 #include <cstdio>
 #include <limits>

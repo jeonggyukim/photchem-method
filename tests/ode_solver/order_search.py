@@ -17,7 +17,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 with contextlib.redirect_stdout(io.StringIO()):
-    g = runpy.run_path(os.path.join(HERE, 'plot_gs_error_matrix.py'))
+    g = runpy.run_path(os.path.join(HERE, 'fig_gs_error_matrix', 'plot.py'))
 J, X, names, t_myr, myr = g['J'], g['X'], g['names'], g['t_myr'], g['myr']
 ORDER0 = g['ORDER']
 N = 64

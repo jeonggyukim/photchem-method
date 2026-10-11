@@ -5,8 +5,8 @@
 //                           chianti neutral, tracked stages..., summed above the top,
 //   then tigris and chianti metal electrons per H.
 // Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
-//   -I/opt/homebrew/opt/hdf5-mpi/include cie_fractions.cpp
+//   mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
+//   -I<hdf5 prefix>/include cie_fractions.cpp
 //   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o cie_fractions
 #include <cmath>
 #include <cstdio>

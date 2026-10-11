@@ -1,5 +1,5 @@
 """Schematic of Jacobi, Gauss-Seidel and block Gauss-Seidel on one sparse matrix.
--> ../../figures/block_gs_schematic.{pdf,png}. Each non-zero entry a_ij (i != j) is the
+-> ../../../figures/block_gs_schematic.{pdf,png}. Each non-zero entry a_ij (i != j) is the
 coupling of unknown i to unknown j; dot size marks its strength. Colour says what
 value of x_j equation i reads in one iteration: solved together (grey block), the new
 value (green) or the old value (orange, the lag). x_4 and x_5 (1-based) are
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIG = os.path.join(HERE, '..', '..', 'figures')
+FIG = os.path.join(HERE, '..', '..', '..', 'figures')
 
 n = 6
 S = np.zeros((n, n))

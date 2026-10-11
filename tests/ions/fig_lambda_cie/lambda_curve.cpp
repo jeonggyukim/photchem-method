@@ -7,7 +7,7 @@
 // Output: one row per T, Lambda_N = cooling per H / n_H [erg cm^3 s^-1]
 // (cooling rate per volume / n_H^2).
 // Build (against a source tree whose defs.hpp has GOW17_ENABLED 1, PHOTCHEM_IONS 1):
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I<src> -I/opt/homebrew/opt/hdf5-mpi/include
+//   mpicxx -std=c++17 -O2 -I<src> -I<hdf5 prefix>/include
 //     lambda_curve.cpp <src>/photchem/network/gow17_thermo_table.cpp -o lambda_curve
 #include <cmath>
 #include <cstdio>

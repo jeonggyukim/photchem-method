@@ -4,8 +4,8 @@
 // every species per H at each output, until T < 1e4 K or t = t_max.
 // usage: isochoric N_H [T0] > out.txt
 // Build: configure tigris-gow17 with -mpi -gow17 --photchem_ions=O3,S3,N3, then
-//   OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
-//   -I/opt/homebrew/opt/hdf5-mpi/include isochoric.cpp
+//   mpicxx -std=c++17 -O2 -I$TIGRIS_DIR/src
+//   -I<hdf5 prefix>/include isochoric.cpp
 //   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o isochoric
 #include <cmath>
 #include <cstdio>

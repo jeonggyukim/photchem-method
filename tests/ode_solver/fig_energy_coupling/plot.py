@@ -1,5 +1,5 @@
 """Energy-species coupling within a substep, CO-formation case of F05.
-energy_coupling.txt -> ../../figures/energy_coupling.{pdf,png}: T and x_CO against time for
+../energy_coupling.txt -> ../../../figures/energy_coupling.{pdf,png}: T and x_CO against time for
 the default (energy and species both read the start-of-substep state), refresh_rates (species
 read rates at the updated T) and n_iter = 2, at 16, 32 and 64 equal substeps, against the
 reference (default, 200000 substeps)."""
@@ -10,8 +10,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIG = os.path.join(HERE, '..', '..', 'figures')
-d = np.loadtxt(os.path.join(HERE, 'energy_coupling.txt'))
+FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+d = np.loadtxt(os.path.join(HERE, '..', 'energy_coupling.txt'))
 mode, N, t, T, xco = d[:, 0], d[:, 1], d[:, 3], d[:, 4], d[:, 6]
 ref = (N == 0)
 styles = {0: ('default: energy and species from start-of-substep state', 'C0', 'o', '-'),

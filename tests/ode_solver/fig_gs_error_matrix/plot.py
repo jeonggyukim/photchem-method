@@ -1,5 +1,5 @@
 """Block Gauss-Seidel error matrix of one substep (Appendix E), CO-formation case of F05.
-jacobian_dump.txt -> ../../figures/gs_error_matrix.{pdf,png}.
+../jacobian_dump.txt -> ../../../figures/gs_error_matrix.{pdf,png}.
 A = I - hJ with J the species Jacobian at frozen coefficients; the species are put in
 update order and split into groups; G = -(D_B + L_B)^{-1} U_B for Gauss-Seidel and
 G = -D_B^{-1}(L_B + U_B) for Jacobi. Panels show the relative-error form
@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIG = os.path.join(HERE, '..', '..', 'figures')
-path = os.path.join(HERE, 'jacobian_dump.txt')
+FIG = os.path.join(HERE, '..', '..', '..', 'figures')
+path = os.path.join(HERE, '..', 'jacobian_dump.txt')
 with open(path) as f:
     names = f.readline().split(':')[1].split()
     myr = float(f.readline().split()[-1])

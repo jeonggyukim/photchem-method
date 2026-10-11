@@ -6,8 +6,8 @@
 // the network: the stages above the top tracked one lumped with a CIE split.
 // usage: fullladder isochoric_n1.txt N_H > fullladder_n1.txt
 // Output per row: t, T, then per element (C, Si, O, S, N) the fractions of every stage.
-// Build: OMPI_CXX=/opt/homebrew/bin/g++-16 mpicxx -std=c++17 -O2
-//   -I$TIGRIS_DIR/src -I/opt/homebrew/opt/hdf5-mpi/include fullladder.cpp
+// Build: mpicxx -std=c++17 -O2
+//   -I$TIGRIS_DIR/src -I<hdf5 prefix>/include fullladder.cpp
 //   $TIGRIS_DIR/src/photchem/network/gow17_thermo_table.cpp -o fullladder
 #include <cmath>
 #include <cstdio>

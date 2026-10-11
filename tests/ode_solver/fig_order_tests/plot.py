@@ -1,7 +1,7 @@
 """Figures for the Gauss-Seidel order tests, one zone, GOW17 core: error against the
 number of equal substeps, measured against the default solver at 200000 substeps.
-  h2_order_check.txt -> ../../figures/h2_order_check.{pdf,png}: H2 last (default) vs first
-  h_block_check.txt  -> ../../figures/h_block_check.{pdf,png}: default vs H+/H2 2x2 block"""
+  ../h2_order_check.txt -> ../../../figures/h2_order_check.{pdf,png}: H2 last (default) vs first
+  ../h_block_check.txt  -> ../../../figures/h_block_check.{pdf,png}: default vs H+/H2 2x2 block"""
 import os
 import numpy as np
 import matplotlib
@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIG = os.path.join(HERE, '..', '..', 'figures')
+FIG = os.path.join(HERE, '..', '..', '..', 'figures')
 CASE_TITLE = [r'A: ionization of atomic gas, $n_{\rm H} = 100$, 978 yr',
               r'B: recombination, $n_{\rm H} = 100$, 978 yr',
               r'C: CO formation, $n_{\rm H} = 10^3$, 2.9 Myr',
@@ -27,7 +27,7 @@ def panel(ax, n, series, ylabel):
 
 
 # H2 order: columns case N, then per variant |dT/T| |dy/y|
-d = np.loadtxt(os.path.join(HERE, 'h2_order_check.txt'))
+d = np.loadtxt(os.path.join(HERE, '..', 'h2_order_check.txt'))
 ylab = [r'$y_{\rm H^+}$', r'$y_{\rm H^+}$', r'$y_{\rm CO}$', r'$y_{\rm H_2}$']
 styles = [('H$_2$ last (default)', 'k', '-', 'o'), ('H$_2$ first', 'C3', '--', 's')]
 fig, axs = plt.subplots(2, 4, figsize=(19, 8), sharex=True, layout='constrained')
@@ -46,7 +46,7 @@ for ext in ('pdf', 'png'):
     fig.savefig(os.path.join(FIG, 'h2_order_check.' + ext), dpi=300)
 
 # H+/H2 block: columns case N, then per variant |dT/T| |dH+| |dH2| |dCO|
-d = np.loadtxt(os.path.join(HERE, 'h_block_check.txt'))
+d = np.loadtxt(os.path.join(HERE, '..', 'h_block_check.txt'))
 styles = [('default (H$^+$ in the sweep, H$_2$ last)', 'k', '-', 'o'),
           ('H$^+$/H$_2$ 2$\\times$2 block', 'C0', '--', 's')]
 rows = [(0, r'$|\Delta T/T|$'), (1, r'$|\Delta y/y|$, $y = y_{\rm H^+}$'),
