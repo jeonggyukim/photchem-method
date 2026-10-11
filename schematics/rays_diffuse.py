@@ -3,10 +3,10 @@ set, a bundle of parallel rays crosses the grid and a cloud in it.  Each ray fad
 the optical depth it has crossed.  The diffuse ray tracer launches one ray per face
 cell through every entry face; the bundle is a sample of those.
 
-    python diffuse_rays_3d.py [outdir]
+    python rays_diffuse.py [outdir]
 
-Writes diffuse_rays_3d.png and .pdf to outdir (default ../figures).
-draw_diffuse_rays() is also used by rad_cr_chem_coupling.py.
+Writes rays_diffuse.png and .pdf to outdir (default ../figures).
+draw_diffuse_rays() is also used by ncr_cr_coupling.py.
 """
 import os
 import sys
@@ -60,7 +60,7 @@ def optical_depth(p, q, centre, radius, kappa, nseg=40):
 
 def draw_diffuse_rays(ax, n=8, nbundle=3, pixels=(0, 5, 11), lw=0.7, kappa=0.55,
                       zoom=1.0, cloud=None, spacing=2.0):
-    """With `cloud` (a clumpy_cloud.Cloud on the n^3 box) the rays cross that density
+    """With `cloud` (a _clumpy_cloud.Cloud on the n^3 box) the rays cross that density
     field instead of a uniform sphere."""
     centre, radius = np.full(3, 0.5*n), 0.3*n
     for a in (0, n):
@@ -107,7 +107,7 @@ def main(out):
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     os.makedirs(out, exist_ok=True)
     for ext in ('png', 'pdf'):
-        path = os.path.join(out, 'diffuse_rays_3d.' + ext)
+        path = os.path.join(out, 'rays_diffuse.' + ext)
         fig.savefig(path, dpi=200)
         print('wrote', os.path.normpath(path))
 

@@ -1,6 +1,6 @@
 """Schematic of how radiation, cosmic rays and the photochemistry of the gas couple.
 
-    python rad_cr_chem_coupling.py [talk|paper] [--mhd] [--cr-left] [--crpic=A|B]
+    python ncr_cr_coupling.py [talk|paper] [--mhd] [--cr-left] [--crpic=A|B]
 
 The argument picks the labels: symbols in large type for slides (talk, default), or
 symbols with a few words each for print (paper).
@@ -11,9 +11,9 @@ the other modules exert on the gas. --cr-left swaps the radiation and cosmic-ray
 by the waves it drives; B, the self-confinement loop as a diagram; omitted, a cosmic
 ray gyrating along B.
 
-Writes rad_cr_chem_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and .pdf to
+Writes ncr_cr_coupling_{talk,paper}[_mhd][_crleft][_crA|_crB] .png and .pdf to
 ../figures.
-The two 3D ray panels come from adaptive_rays_3d.py and diffuse_rays_3d.py beside
+The two 3D ray panels come from rays_adaptive.py and rays_diffuse.py beside
 this script.
 """
 import argparse
@@ -25,9 +25,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
 
-from adaptive_rays_3d import draw_ray_tree
-from clumpy_cloud import Cloud
-from diffuse_rays_3d import draw_diffuse_rays
+from rays_adaptive import draw_ray_tree
+from _clumpy_cloud import Cloud
+from rays_diffuse import draw_diffuse_rays
 
 # Two point sources on different sides of the cloud, each with its adaptive ray tree
 # aimed at it: (position, aim, narrow) on a 16^3 grid; the second follows one child
@@ -64,7 +64,7 @@ PAPER = STYLE == 'paper'
 SIM = _args.mhd
 CRL = _args.cr_left
 CRPIC = _args.crpic
-NAME = ('rad_cr_chem_coupling_' + STYLE + ('_mhd' if SIM else '')
+NAME = ('ncr_cr_coupling_' + STYLE + ('_mhd' if SIM else '')
         + ('_crleft' if CRL else '') + ('_cr' + CRPIC if CRPIC else ''))
 
 # Labels per style: (text, font size).

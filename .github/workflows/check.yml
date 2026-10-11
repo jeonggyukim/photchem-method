@@ -47,13 +47,13 @@ jobs:
         run: |
           set -e
           cd schematics
-          for f in adaptive_rays_3d.py diffuse_rays_3d.py fig_network.py fig_network_talk.py \
-                   ncr_coupling.py art_schematic_talk.py; do
+          for f in rays_adaptive.py rays_diffuse.py network_gow17.py network_gow17_talk.py \
+                   ncr_coupling.py rays_adaptive_talk.py; do
             echo "== $f"; python "$f"
           done
-          python rad_cr_chem_coupling.py paper
-          python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
+          python ncr_cr_coupling.py paper
+          python ncr_cr_coupling.py paper --mhd --cr-left --crpic=B
           for pic in "" --crpic=A --crpic=B; do
-            python rad_cr_chem_coupling.py talk --mhd --cr-left $pic
+            python ncr_cr_coupling.py talk --mhd --cr-left $pic
           done
-          python make_cr_slides.py
+          python cr_slides.py

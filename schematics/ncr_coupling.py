@@ -9,7 +9,7 @@ transport module.
 --no-cr-icon draws H2 without the cosmic ray that ionizes it (ncr_coupling_nocricon).
 
 Writes ncr_coupling.png and .pdf to ../figures. Drawing helpers (boxes, arrows,
-molecules, the adaptive ray tree) come from rad_cr_chem_coupling.py beside this script.
+molecules, the adaptive ray tree) come from ncr_cr_coupling.py beside this script.
 """
 import argparse
 import os
@@ -25,10 +25,10 @@ _parser = argparse.ArgumentParser(
 _parser.add_argument('--no-cr-icon', action='store_true',
                      help='draw H2 without the cosmic ray that ionizes it')
 CR_ICON = not _parser.parse_args().no_cr_icon
-sys.argv = sys.argv[:1]   # rad_cr_chem_coupling reads its style from argv at import
-from rad_cr_chem_coupling import (COL_CHEM, COL_MHD, COL_RAD, POINT_SOURCES, TXT,  # noqa: E402
-                                  arrow, atom, box, electron, make_cloud, photon)
-from adaptive_rays_3d import draw_ray_tree  # noqa: E402
+sys.argv = sys.argv[:1]   # ncr_cr_coupling reads its style from argv at import
+from ncr_cr_coupling import (COL_CHEM, COL_MHD, COL_RAD, POINT_SOURCES, TXT,  # noqa: E402
+                             arrow, atom, box, electron, make_cloud, photon)
+from rays_adaptive import draw_ray_tree  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 COL_CRION = '#0072B2'

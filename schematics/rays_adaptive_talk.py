@@ -1,10 +1,10 @@
 """The adaptive ray-tracing panel of ncr_coupling.py on its own, for a slide: rays from
 two star clusters split as they spread through a clumpy cloud.
 
-    python art_schematic_talk.py
+    python rays_adaptive_talk.py
 
-Writes art_schematic_talk.png and .pdf to ../figures. Uses draw_ray_tree from
-adaptive_rays_3d.py and the same sources and cloud as rad_cr_chem_coupling.py.
+Writes rays_adaptive_talk.png and .pdf to ../figures. Uses draw_ray_tree from
+rays_adaptive.py and the same sources and cloud as ncr_cr_coupling.py.
 """
 import os
 import sys
@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.transforms import Bbox
 
-sys.argv = sys.argv[:1]   # rad_cr_chem_coupling reads its style from argv at import
-from rad_cr_chem_coupling import POINT_SOURCES, make_cloud  # noqa: E402
-from adaptive_rays_3d import draw_ray_tree  # noqa: E402
+sys.argv = sys.argv[:1]   # ncr_cr_coupling reads its style from argv at import
+from ncr_cr_coupling import POINT_SOURCES, make_cloud  # noqa: E402
+from rays_adaptive import draw_ray_tree  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figures')
 
@@ -45,7 +45,7 @@ def main():
     y0, y1 = (h - ys.max() - pad)/fig.dpi, (h - ys.min() + pad)/fig.dpi
     box = Bbox([[max(x0, 0), max(y0, 0)], [min(x1, w/fig.dpi), min(y1, h/fig.dpi)]])
     for ext in ('png', 'pdf'):
-        path = os.path.normpath(os.path.join(OUT, 'art_schematic_talk.' + ext))
+        path = os.path.normpath(os.path.join(OUT, 'rays_adaptive_talk.' + ext))
         fig.savefig(path, dpi=dpi, bbox_inches=box)
         print('wrote', path)
 

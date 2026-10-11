@@ -1,7 +1,7 @@
 """A clumpy, turbulent-looking cloud for the 3D ray panels: a lognormal density field
 (a Gaussian random field with a power-law spectrum, exponentiated) inside a smooth
 envelope, with the optical depth a ray accumulates through it.  Used by
-adaptive_rays_3d.py and diffuse_rays_3d.py.
+rays_adaptive.py and rays_diffuse.py.
 """
 import numpy as np
 

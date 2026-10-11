@@ -2,7 +2,7 @@
 # Installing the repository installs their dependencies and the small package
 # photchem_method (paths, reduced, provenance, check) that the tests/ scripts import:
 #     pip install -e .            numpy, matplotlib, healpy, photchem_method
-#     pip install -e ".[slides]"  plus python-pptx for make_cr_slides.py
+#     pip install -e ".[slides]"  plus python-pptx for cr_slides.py
 #     pip install -e ".[tests]"   plus what the tests/ harnesses read
 # Several harnesses also read Athena++/Tigris output with athena_read.py from the
 # code's vis/python directory, which is not on PyPI.

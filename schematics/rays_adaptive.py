@@ -2,11 +2,11 @@
 HEALPix base ray splits into four child rays whenever the solid angle it carries would
 cover more than 1/f of a cell's face, A(l) r^2 > dx^2/f with A(l) = 4 pi/(12 4^l).
 
-    python adaptive_rays_3d.py [outdir]
+    python rays_adaptive.py [outdir]
 
-Writes adaptive_rays_3d.png and .pdf, and a copy without the legend,
-adaptive_rays_3d_panel, to outdir (default ../figures).  draw_ray_tree() is also used
-by rad_cr_chem_coupling.py.
+Writes rays_adaptive.png and .pdf, and a copy without the legend,
+rays_adaptive_panel, to outdir (default ../figures).  draw_ray_tree() is also used
+by ncr_cr_coupling.py.
 """
 import os
 import sys
@@ -57,7 +57,7 @@ def ray_tree(ncell=16, f=1.0, src=(5.0, 6.0, 5.0), narrow=1, aim=(0.8, 0.5, 0.35
 def draw_ray_tree(ax, ncell=16, f=1.0, lw=0.7, grid=True, cmap='plasma', zoom=1.0,
                   ms=1.5, narrow=1, sources=None, cloud=None, kappa=0.5):
     """Draw the grid's edges and the ray tree on a 3D axes.  `sources` is a list of
-    (position, aim) pairs, one tree each; with `cloud` (a clumpy_cloud.Cloud on the
+    (position, aim) pairs, one tree each; with `cloud` (a _clumpy_cloud.Cloud on the
     ncell^3 box) the cloud is drawn and each ray fades with the optical depth it has
     crossed since leaving its source."""
     if sources is not None or cloud is not None:
@@ -172,13 +172,13 @@ def main(out):
     fig.tight_layout(pad=0.1)
     os.makedirs(out, exist_ok=True)
     for ext in ('png', 'pdf'):
-        path = os.path.join(out, 'adaptive_rays_3d.' + ext)
+        path = os.path.join(out, 'rays_adaptive.' + ext)
         fig.savefig(path, dpi=200)
         print('wrote', os.path.normpath(path))
     # At a 34 mm panel width the legend would be 2 pt type.
     ax.get_legend().remove()
     for ext in ('png', 'pdf'):
-        path = os.path.join(out, 'adaptive_rays_3d_panel.' + ext)
+        path = os.path.join(out, 'rays_adaptive_panel.' + ext)
         fig.savefig(path, dpi=200, bbox_inches='tight', pad_inches=0.02)
         print('wrote', os.path.normpath(path))
 

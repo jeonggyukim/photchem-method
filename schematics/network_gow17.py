@@ -15,7 +15,7 @@ tracked to O III, S III, N III, plus one higher-ion species per element for
 C, Si, O, S and N; gow17_core.hpp:25-31).
 
 Usage:
-    fig_network.py [--outdir ../figures]
+    network_gow17.py [--outdir ../figures]
 """
 import argparse
 import pathlib
@@ -705,18 +705,18 @@ def main():
     outdir = pathlib.Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     made = []
-    for name, make in [("fig_network_core", fig_core),
-                       ("fig_network_tigris_greycore", lambda: fig_full("grey")),
-                       ("fig_network_2panel", fig_2panel),
-                       ("fig_network_1panel_colour", lambda: fig_full("highlight"))]:
+    for name, make in [("network_gow17_core", fig_core),
+                       ("network_gow17_tigris_greycore", lambda: fig_full("grey")),
+                       ("network_gow17_2panel", fig_2panel),
+                       ("network_gow17_1panel_colour", lambda: fig_full("highlight"))]:
         fig = make()
         for ext in ("pdf", "png"):
             fig.savefig(outdir / f"{name}.{ext}", dpi=300)
         plt.close(fig)
         made.append(outdir / f"{name}.png")
         print("wrote", outdir / name, "{pdf,png}")
-    contact_sheet(made, outdir / "fig_network_versions.png")
-    print("wrote", outdir / "fig_network_versions.png")
+    contact_sheet(made, outdir / "network_gow17_versions.png")
+    print("wrote", outdir / "network_gow17_versions.png")
 
 
 if __name__ == "__main__":

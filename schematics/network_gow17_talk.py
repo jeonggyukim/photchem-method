@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-"""Talk versions of the GOW17 core chemical network (fig_network.py, version core).
+"""Talk versions of the GOW17 core chemical network (network_gow17.py, version core).
 
-    fig_network_talk_all    all reactions by kind; CR (vermillion) and FUV (purple) thick
-    fig_network_talk_ncr    what the TIGRESS-NCR chemical network keeps from GOW17
+    network_gow17_talk_all  all reactions by kind; CR (vermillion) and FUV (purple) thick
+    network_gow17_talk_ncr  what the TIGRESS-NCR chemical network keeps from GOW17
 
 Sized for a TV screen: 13 in wide, species 20 pt, legend and note >= 18 pt.
 
@@ -23,7 +23,7 @@ H2Rates, GetxCII, GetxeMol, CalculateFreeElectron, CalculateCOAbundance):
     H, C, O by conservation; x_e = x_H+ + x_C+ + x_O+ + x_MH+, Eq. (27).
 
 Usage:
-    fig_network_talk.py [--outdir ../figures]
+    network_gow17_talk.py [--outdir ../figures]
 """
 import argparse
 import pathlib
@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import patheffects  # noqa: E402
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
-import fig_network as fn  # noqa: E402
+import network_gow17 as fn  # noqa: E402
 
 WIDTH_IN = 13.0
 FS_SPECIES, FS_LABEL, FS_LEGEND, FS_NOTE = 20, 15, 20, 18
@@ -85,7 +85,7 @@ ARC_FIX = {("H+", "O+", "chem"): 0.08, ("O+", "H+", "chem"): -0.2}
 
 # GOW17 cosmic-ray rates scaled by 2 x(H2) are CR-induced UV photoreactions
 # (AthenaK gow17.hpp:1924-1937): C -> C+ (520, beside the direct 3.85), CO -> C + O
-# (92) and Si -> Si+ (8400). fig_network draws only CO as CR-induced UV; here Si is
+# (92) and Si -> Si+ (8400). network_gow17 draws only CO as CR-induced UV; here Si is
 # redrawn dashed and C gets a second, dashed arrow for its induced part.
 CR_INDUCED = [fn.E("C", "C+", "crphoto", "", 0.55)]
 
@@ -209,7 +209,7 @@ CR_LABEL = {
 
 
 def reactant_label(ax, e, color, extra=None):
-    """Partner reactant on an ion-molecule or collisional arrow, as in fig_network."""
+    """Partner reactant on an ion-molecule or collisional arrow, as in network_gow17."""
     if e["kind"] not in ("chem", "coll", "ct") or not e["label"]:
         return
     if (e["src"], e["dst"], e["kind"]) in NO_REACTANT:
@@ -371,8 +371,8 @@ def main():
     args = parser.parse_args()
     outdir = pathlib.Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
-    for name, make in [("fig_network_talk_all", fig_all),
-                       ("fig_network_talk_ncr", fig_ncr)]:
+    for name, make in [("network_gow17_talk_all", fig_all),
+                       ("network_gow17_talk_ncr", fig_ncr)]:
         fig = make()
         for ext in ("pdf", "png"):
             fig.savefig(outdir / f"{name}.{ext}", dpi=200)
