@@ -13,13 +13,12 @@ __pycache__/
 # This machine's settings: a copy of one of tests/machines/*.sh.
 tests/machine.sh
 
-# Figure output: the scripts are tracked, the figures they write are not.
-figures/*.pdf
-figures/*.png
-figures/*.pptx
+# Figure output: the scripts are tracked, the figures they write are not. Each
+# script creates figures/ if it is missing; it may also be a link to a synced folder.
+/figures
 
 # Raw simulation output never enters this repository. The runs live in
-# $PHOTCHEM_RUNS; ../data/ beside the repository holds the large reduced arrays of
+# $PHOTCHEM_RUNS, and $PHOTCHEM_DATA_DIR holds the large reduced arrays of
 # tests/pdr_sphere.
 data/
 *.diffuse
