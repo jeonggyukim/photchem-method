@@ -54,7 +54,7 @@ rewrite the reduced file. The figures go to `figures/` at the repository root.
 | directory | serves | what |
 | --- | --- | --- |
 | `onezone/` | 5.1 | B1: AthenaK GOW17_uniform in one zone, Tigris port vs AthenaK and Athena++ |
-| `solver/` | 4, 5.1 | Riccati step check, ionization-front one-zone error vs substeps, change-based step control |
+| `ode_solver/` | 4, 5.1 | time integration of the per-cell ODEs: semi-implicit error vs substeps, Gauss-Seidel order and blocks, Riccati step, step control |
 | `pdr_slab/` | 5.2 | PDR slab vs Athena++ chem_pdr_static; CO shielding; per-reaction dust |
 | `ions/` | 2.4 | ion-ladder balance, band-averaged ion cross sections, CIE tables and pool |
 | `cloudy_stromgren/` | 5.3 | Cloudy 25.00 static Stromgren sphere: input, SED conversion, reduced radial profiles |
