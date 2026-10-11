@@ -1,95 +1,75 @@
-# Paper figures
+# photchem-method
 
-Figures for the photochemistry method paper, and the scripts that make them.
+This repository has the scripts behind the figures of the TIGRESS++
+photochemistry method paper. It also has the test problems those figures come
+from, set up to run with Tigris and AthenaK.
 
-This repository is meant to be shareable. Collaborators may get it, and it may
-be published with the paper, so nothing private belongs here and nothing bulky
-does either -- raw simulation output and Cloudy runs go in the parent
-directory, which Dropbox backs up without committing anything.
+- `schematics/` draws the diagrams: how the modules couple, the ray tracer, and
+  the chemical network.
+- `tests/` has one folder per test problem. A paper figure lives in
+  `tests/<problem>/fig_<name>/`, next to the data it plots.
+- `photchem_method/` is a small Python package the scripts share.
 
-| directory | holds |
-| --- | --- |
-| `schematics/` | figures drawn from code alone: coupling diagrams, ray-tracing panels, the network |
-| `tests/` | the test problems: inputs and harnesses that regenerate each quoted number |
-| `figures/` | the output, tracked once a figure is near final |
-
-A script has to run from something a reader can get, so where a figure comes
-from a large simulation output, commit the reduced array it actually plots and
-leave the raw output in the parent directory.
-
-Copy a figure into the Overleaf `figures/` once it is going into the paper, so
-that directory holds only what the manuscript includes.
-
-## Requirement
-
-Python **3.10** or higher, with numpy, matplotlib and healpy. LaTeX is not
-needed.
+You do not need the simulation runs to remake a figure. Each figure that comes
+from a simulation keeps a small `reduced*.txt` file with the numbers it plots.
 
 ## Installation
 
-The scripts run in place from `schematics/` and `tests/`. Installing the
-repository installs their dependencies and `photchem_method`, a small package
-of helpers (`paths`, `reduced`) that the `tests/` scripts import. Install it
-editable (`-e`), so it points at this checkout.
+You need Python 3.10 or newer. Clone the repository first:
 
 ```sh
 git clone https://github.com/jeonggyukim/photchem-method.git
 cd photchem-method
 ```
 
-Then pick one of the options below.
+With conda:
 
-**Option 1 — conda** ([miniforge](https://github.com/conda-forge/miniforge)
-recommended; swap `conda` for `mamba` if you have it)
 ```sh
 conda create -n photchem-method -c conda-forge python=3.12 numpy matplotlib healpy
 conda activate photchem-method
-pip install -e . --no-deps    # conda already installed the dependencies
+pip install -e . --no-deps
 ```
 
-**Option 2 — [uv](https://docs.astral.sh/uv/) (no conda)**
+Or with [uv](https://docs.astral.sh/uv/):
+
 ```sh
 uv venv --python 3.12
 source .venv/bin/activate
 uv pip install -e .
 ```
 
-Plain `python -m venv .venv` followed by `pip install -e .` works the same way.
+A few scripts need more packages. `pip install -e ".[slides]"` adds python-pptx
+for `schematics/make_cr_slides.py`, and `pip install -e ".[tests]"` adds pandas
+and pyathena for the scripts under `tests/` that need them.
 
-Two extras add what the other scripts read:
+## Making a figure
 
-```sh
-pip install -e ".[slides]"   # python-pptx, for make_cr_slides.py
-pip install -e ".[tests]"    # pandas and pyathena, for the tests/ harnesses
-```
-
-Some harnesses also need `athena_read.py` from the Athena++ or Tigris
-`vis/python` directory, which is not on PyPI. `tests/README.md` lists the
-environment variables that tell them where the codes and runs are.
-
-Sanity check any option with:
-```sh
-python schematics/rad_cr_chem_coupling.py --help
-python -c "import photchem_method; print(photchem_method.__file__)"
-```
-
-### Uninstall
+Run a script from anywhere. It writes its figure to `figures/`.
 
 ```sh
-conda deactivate && conda env remove -n photchem-method   # Option 1
-deactivate && rm -rf .venv                                # Option 2
+python schematics/rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
+python tests/hii_dtype/fig_hii_dtype/plot.py
 ```
 
-## Making the figures
+The comment at the top of each script lists its options and the files it writes.
 
-Run each script from `schematics/`; the output goes to `figures/`. The docstring at the top of each script gives its usage,
-options and output names. For example:
+## Rerunning the tests
+
+To rebuild Tigris or AthenaK, rerun a test, or redraw a figure from the raw runs
+(`plot.py --from-runs`), see `tests/README.md`. It explains how to set up your
+machine and which environment variables point to the codes and runs.
+
+## Keeping things consistent
+
+`python -m photchem_method.check` looks for common mistakes, such as a hard-coded
+path to one person's computer or a data file that does not say where it came from.
+To run it before every commit, turn on the hook once:
+
 ```sh
-cd schematics
-python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
+git config core.hooksPath .githooks
 ```
 
-Each paper figure from a test problem is made by `tests/<problem>/fig_<name>/plot.py`.
+GitHub runs the same check, and every figure script, on each push to `main`.
 
-matplotlib 3.10 and 3.11 place text slightly differently, so a figure is
-reproduced pixel for pixel only with the same matplotlib version.
+Figures can differ by a few pixels between matplotlib versions, because text is
+placed slightly differently. The data are the same.
