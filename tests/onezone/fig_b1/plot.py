@@ -1,12 +1,13 @@
 """Test B1: AthenaK's GOW17_uniform problem in one zone. Relative difference of the end
-state (e_int and the 12 species) from the Athena++ reference values of AthenaK's
-test_GOW17_uniform_gpu.py, for the Tigris semi-implicit solver (b1_uniform.txt from
+state (e_int and the 12 species) from the Athena++ end state (fiducial_data of AthenaK's
+test_GOW17_uniform_gpu.py), for the Tigris semi-implicit solver (b1_uniform.txt from
 ../b1_uniform.cpp) and AthenaK kokkos_BDF (last record of gow17_time_series.npz).
 Writes ../../../figures/b1_uniform.{pdf,png}.
 
-The Tigris and AthenaK end states come from reduced.txt when it exists;
-`python plot.py --from-runs` reads b1_uniform.txt ($PHOTCHEM_RUNS/T3_onezone) and the
-AthenaK time series ($ATHENAK_DIR) and rewrites it."""
+The three end states come from reduced.txt when it exists; `python plot.py --from-runs`
+reads b1_uniform.txt ($PHOTCHEM_RUNS/T3_onezone) and the AthenaK test and time series
+($ATHENAK_DIR) and rewrites it."""
+import ast
 import os
 import sys
 import numpy as np
@@ -21,23 +22,32 @@ OUT = os.path.join(HERE, "..", "..", "..", "figures", "b1_uniform")
 REDUCED = os.path.join(HERE, "reduced.txt")
 names = ["He+", "OHx", "CHx", "CO", "C+", "HCO+", "H2", "H+", "H3+", "H2+", "O+", "Si+"]
 keys = ["eint"] + names
-ref = dict(eint=28.234391212463375, **dict(zip(names, [4.4769834062208247e-07,
-    1.4335562809719704e-05, 6.079905467970548e-09, 0.00013345545448828489,
-    3.4978197049895243e-07, 6.033158683749207e-08, 0.44989413022994995,
-    2.9430591439449927e-06, 1.2544340961540001e-06, 1.969339358254274e-09,
-    8.677133317425145e-11, 6.625605806220847e-07])))
+CHEM = "tst/test_suite/chemistry/"
+
+
+def athenapp_reference():
+    """fiducial_data of AthenaK's test_GOW17_uniform_gpu.py: the Athena++ end state."""
+    with open(paths.athenak(CHEM + "test_GOW17_uniform_gpu.py")) as f:
+        tree = ast.parse(f.read())
+    node = next(n for n in tree.body if isinstance(n, ast.Assign)
+                and getattr(n.targets[0], "id", "") == "fiducial_data")
+    fid = ast.literal_eval(node.value)
+    return [fid["eint"]] + [fid[f"s_{i:02d}_chem_{n}"] for i, n in enumerate(names)]
+
 
 if "--from-runs" in sys.argv or not os.path.exists(REDUCED):
-    ts = np.load(paths.athenak("tst/test_suite/chemistry/data/gow17_time_series.npz"))[
-        "time_series"][-1]
+    ts = np.load(paths.athenak(CHEM + "data/gow17_time_series.npz"))["time_series"][-1]
     bdf = [float(ts["eint"])] + [float(ts[f"s_{i:02d}_chem_{n}"])
                                  for i, n in enumerate(names)]
     row = np.atleast_2d(np.loadtxt(paths.runs("T3_onezone", "b1_uniform.txt")))[0]
     tig = [row[2]] + list(row[3:15])
-    reduced.save(REDUCED, "B1 end state, e_int then " + " ".join(names) + ": AthenaK "
-                 "kokkos_BDF (last record of gow17_time_series.npz) and Tigris "
-                 "(T3_onezone/b1_uniform.txt)", {"bdf": bdf, "tigris": tig})
+    reduced.save(REDUCED, "B1 end state, e_int then " + " ".join(names) + ": Athena++ "
+                 "(fiducial_data of AthenaK " + CHEM + "test_GOW17_uniform_gpu.py), "
+                 "AthenaK kokkos_BDF (last record of " + CHEM + "data/"
+                 "gow17_time_series.npz) and Tigris (T3_onezone/b1_uniform.txt)",
+                 {"athenapp": athenapp_reference(), "bdf": bdf, "tigris": tig})
 data = reduced.load(REDUCED)
+ref = dict(zip(keys, data["athenapp"]))
 bdf = dict(zip(keys, data["bdf"]))
 tig = dict(zip(keys, data["tigris"]))
 
