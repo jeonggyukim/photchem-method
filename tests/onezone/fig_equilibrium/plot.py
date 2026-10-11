@@ -2,7 +2,7 @@
 z = 1: P/k, T, x_e and x_H2 against n_H. GOW17 + O3,S3,N3 (one-zone harness,
 equilibrium.cpp), NCR in Tigris (photchem_equil, run_ncr.sh) and the NCR python reference
 of the regression test (Kim J.-G. et al. 2023). Writes
-../../../figures/F06_equilibrium.{pdf,png}.
+../../../figures/equilibrium.{pdf,png}.
 
 The NCR curves come from reduced.txt when it exists; `python plot.py --from-runs` reads
 the NCR run ($PHOTCHEM_RUNS) and the reference ($TIGRIS_DIR) and rewrites it."""
@@ -18,7 +18,7 @@ import paths  # noqa: E402
 import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F06_equilibrium')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'equilibrium')
 REDUCED = os.path.join(HERE, 'reduced.txt')
 KB = 1.380649e-16
 

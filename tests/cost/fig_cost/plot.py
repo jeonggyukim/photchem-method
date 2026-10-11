@@ -1,7 +1,7 @@
 """F14: cost per cycle, split by task, for the thermal/chemical modes on hii_dtype (64^3,
 4 ranks, to t = 1 code, no HDF5) and rad_snr (64^3, 8 ranks, to t = 0.05 code), from
 cost_table.txt; cycles and total per-cycle cost x cycles written above each bar.
-Writes ../../../figures/F14_cost.{pdf,png}."""
+Writes ../../../figures/cost.{pdf,png}."""
 import os
 import numpy as np
 import matplotlib
@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F14_cost')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cost')
 rows = [ln.split() for ln in open(os.path.join(HERE, 'cost_table.txt'))
         if not ln.startswith('#')]
 PARTS = [('photochemistry', 4, 'C0'), ('hydro', 5, 'C7'), ('operator split', 6, 'C2'),

@@ -1,7 +1,7 @@
 """F02: collisional-equilibrium stage fractions of C, Si, O, S, N from the GOW17 network
 with --photchem_ions=O3,S3,N3 (fixed T, no radiation, steady state) against CHIANTI v11,
 and the metal electrons per H. Reads cie_fractions.txt; writes
-../../../figures/F02_cie_fractions.{pdf,png}."""
+../../../figures/cie_fractions.{pdf,png}."""
 import os
 import numpy as np
 import matplotlib
@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F02_cie_fractions')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cie_fractions')
 d = np.loadtxt(os.path.join(HERE, 'cie_fractions.txt'))
 T = 10**d[:, 0]
 # element, spectroscopic labels of neutral .. top tracked, then the higher ions

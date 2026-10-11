@@ -2,9 +2,9 @@
 of H, He, O, S and N from the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands, 64^3)
 against Cloudy 25 with its default diffuse field (solid) and `diffuse OTS` (dashed). Tigris
 X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes
-../../../figures/F09_cloudy_sphere.{pdf,png}.
+../../../figures/cloudy_sphere.{pdf,png}.
 
-Inputs: run64_b7 of ../F10_band_count/run_series.sh; Cloudy radial_profiles.txt of
+Inputs: run64_b7 of tests/bands/fig_band_count/run_series.sh; Cloudy radial_profiles.txt of
 tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
 reduced.txt when it exists; `python plot.py --from-runs` reads run64_b7 ($PHOTCHEM_RUNS)
 and rewrites it."""
@@ -22,7 +22,7 @@ import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F09_cloudy_sphere')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cloudy_sphere')
 REDUCED = os.path.join(HERE, 'reduced.txt')
 CLOUDY = [('default', os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'), '-'),
           ('diffuse OTS', os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',

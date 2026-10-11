@@ -1,14 +1,14 @@
 """Lambda(T) of GOW17 + multi-ion at CIE (lambda_curve.cpp output at n_H = 1), components,
 against NCR's hot-gas table and a CHIANTI all-element solar total. n_H = 0.01 differs from
 n_H = 1 by at most 0.9% (at 1e4 K), so one density is shown. Reads lambda_curve_n1.txt
-beside this script; writes ../../../figures/F03_lambda_cie.{pdf,png}."""
+beside this script; writes ../../../figures/lambda_cie.{pdf,png}."""
 import os
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F03_lambda_cie')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'lambda_cie')
 a = np.loadtxt(os.path.join(HERE, 'lambda_curve_n1.txt'))
 lT = a[:, 0]; T = 10**lT
 fig, (ax, axr) = plt.subplots(2, 1, figsize=(8, 8.5), sharex=True,

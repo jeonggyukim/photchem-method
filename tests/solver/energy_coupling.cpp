@@ -6,7 +6,7 @@
 // one-substep calls over t_end/N, printing the state after each. The reference (N = 0)
 // is mode 0 with 200000 substeps, printed at 64 times; N = 100 is mode 2 with 200000.
 // Rows: mode N k t_Myr T x_H2 x_CO x_C+ x_HCO+ x_e.
-// Build as solver_sweep.cpp (../figures/F05_solver).
+// Build as solver_sweep.cpp (fig_substeps/).
 #include <cmath>
 #include <cstdio>
 #include <limits>

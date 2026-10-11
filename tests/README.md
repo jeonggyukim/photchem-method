@@ -15,10 +15,11 @@ need `-ffp-contract=off`. Python scripts read Tigris output with
 
 The harnesses find code checkouts and simulation output through the environment
 variables below; none has a default, and a harness that needs an unset one stops
-with a message naming it. The simulation output is not in the repository. The
-figure scripts under `figures/` that plot simulation output also read a reduced
-copy of the arrays they plot (`reduced*.txt` beside the script), so they remake
-the figures without the raw runs.
+with a message naming it. The simulation output is not in the repository. Each
+paper figure has a `fig_<name>/` folder inside the test it plots, holding its
+`plot.py` and, where the figure comes from simulation output, a reduced copy of
+the arrays it plots (`reduced*.txt`), so it remakes the figure without the raw
+runs.
 
 ## Environment variables
 
@@ -26,7 +27,7 @@ the figures without the raw runs.
 | --- | --- |
 | `TIGRIS_DIR` | a Tigris checkout, branch `rayt-photchem-updates` (headers, `inputs/tables`, `tst/regression/data`, `vis/python`) |
 | `PHOTCHEM_RUNS` | the directory holding the Tigris runs: `T3_onezone`, `T6_multi_ion`, `M5_hii_dtype_ions`, `M6_rad_snr`, `T7_cost` |
-| `PHOTCHEM_POSTPROC_RUNS` | the directory holding the post-processing runs (`be_net` of F15) |
+| `PHOTCHEM_POSTPROC_RUNS` | the directory holding the post-processing runs (`be_net`, `be_sphere/`) |
 | `ATHENAPP_PDR_DIR` | an Athena++ checkout with `tst/regression/data/chem_pdr_static.vtk` (`pdr_slab/`) |
 | `ATHENAK_DIR` | an AthenaK checkout with the chemistry module (`onezone/`) |
 | `PYATHENA_DIR` | a pyathena checkout, for its `data/` directory (`ions/`) |
@@ -44,7 +45,7 @@ goes; expand them before a run, e.g.
 
     pip install ".[tests]"              # from the repository root
     export TIGRIS_DIR=/path/to/tigris PHOTCHEM_RUNS=/path/to/runs   # as the harness needs
-    python tests/figures/F12_hii_dtype/plot.py
+    python tests/hii_dtype/fig_hii_dtype/plot.py
 
 Scripts are run in place, from any directory. A figure script with a `reduced*.txt`
 reads it and needs no variable; `--from-runs` makes it read the raw runs and

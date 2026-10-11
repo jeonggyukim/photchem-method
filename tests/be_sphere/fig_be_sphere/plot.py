@@ -5,7 +5,7 @@ ai-notes/docs-code/tigris-rayt/scripts/postproc_background_slices.py.
     python plot.py [--from-runs] [RUNS]    (default RUNS: $PHOTCHEM_POSTPROC_RUNS/be_net)
 
 RUNS/ncr and RUNS/gow17 hold the tab slices out3 (prim) and out4 (uov) of run.sh.
-Writes ../../../figures/F15_be_sphere_{ncr,gow17}.{pdf,png}. The planes come from
+Writes ../../../figures/be_sphere_{ncr,gow17}.{pdf,png}. The planes come from
 reduced_{ncr,gow17}.txt when they exist; --from-runs or a RUNS argument reads the runs
 and rewrites them.
 
@@ -248,9 +248,9 @@ def figure(net, label):
                  % (CLOUD, DUST[net], int(data['ndir']), ended), fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.965))
     for ext_ in ('pdf', 'png'):
-        fig.savefig(os.path.join(FIG, 'F15_be_sphere_%s.%s' % (net, ext_)), dpi=150)
+        fig.savefig(os.path.join(FIG, 'be_sphere_%s.%s' % (net, ext_)), dpi=150)
     plt.close(fig)
-    print('wrote', os.path.join(FIG, 'F15_be_sphere_%s.png' % net))
+    print('wrote', os.path.join(FIG, 'be_sphere_%s.png' % net))
 
 
 if __name__ == '__main__':

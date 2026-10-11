@@ -5,7 +5,7 @@ case B, He on-the-spot split) and carried by the diffuse tracer (false: H and He
 case A recombination cooling), against Cloudy 25 with `diffuse OTS` and with its default
 transfer of the diffuse field; each Tigris run is paired with the Cloudy run of the same
 treatment, and the bottom panel gives their T ratio. Writes
-../../../figures/F11_interior_temperature.{pdf,png}.
+../../../figures/interior_temperature.{pdf,png}.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
 of tests/cloudy_stromgren (default) and tests/cloudy_stromgren/thermal_with_N_ots.
@@ -30,7 +30,7 @@ ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
 # optional suffix of the run directories and the figure, e.g. _r20 for the runs with
 # rayt_point/rays_per_cell = 20 and tau_max = 30
 SUFFIX = ARGS[0] if ARGS else ''
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F11_interior_temperature' + SUFFIX)
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'interior_temperature' + SUFFIX)
 REDUCED = os.path.join(HERE, 'reduced%s.txt' % SUFFIX)
 CLOUDY_DEFAULT = os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt')
 CLOUDY_OTS = os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',

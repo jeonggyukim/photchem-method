@@ -3,7 +3,7 @@
 // equal substeps is N one-substep calls over t_end/N, printing the state after each.
 // The reference (label 0) takes 200000/16 substeps per sixteenth of t_end.
 // Rows: N k t_Myr T x_H2 x_CO x_C+ x_HCO+ x_e x_OHx x_CHx.
-// Build as solver_sweep.cpp (../figures/F05_solver).
+// Build as solver_sweep.cpp (fig_substeps/).
 #include <cmath>
 #include <cstdio>
 #include <limits>

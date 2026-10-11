@@ -2,7 +2,7 @@
 GOW17 core, from solver_sweep.txt (solver_sweep.cpp). Columns: A ionization, B
 recombination (n_H 100, 978 yr), C CO formation (n_H 1e3, cosmic rays only, 2.9 Myr); rows:
 |dT/T| and |dx/x| (x = x_H+ for A and B, x_CO for C) against the default with 200000
-substeps. Writes ../../../figures/F05_solver.{pdf,png}."""
+substeps. Writes ../../../figures/substeps.{pdf,png}."""
 import os
 import numpy as np
 import matplotlib
@@ -10,7 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F05_solver')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'substeps')
 d = np.loadtxt(os.path.join(HERE, 'solver_sweep.txt'))
 VARIANTS = [('Gauss-Seidel + CO/HCO$^+$ block (default)', 'k', '-', 'o'),
             ('Gauss-Seidel, no block', 'C1', '--', 's'),

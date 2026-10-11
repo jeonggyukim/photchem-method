@@ -86,7 +86,7 @@ cd scripts
 python rad_cr_chem_coupling.py paper --mhd --cr-left --crpic=B
 ```
 
-The paper figures F02–F15 are made by `tests/figures/F*/plot.py`.
+Each paper figure from a test problem is made by `tests/<problem>/fig_<name>/plot.py`.
 
 matplotlib 3.10 and 3.11 place text slightly differently, so a figure is
 reproduced pixel for pixel only with the same matplotlib version.

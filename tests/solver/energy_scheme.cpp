@@ -9,7 +9,7 @@
 // test (neither beat the default); apply energy_scheme_options.patch to the
 // tigris-gow17 tree (git apply -p1) to rebuild.
 // Output per row: case N, then per variant |dT/T| |dx/x|, x = x_H+ (A, B) or x_CO (C).
-// Build as ../figures/F05_solver/solver_sweep.cpp.
+// Build as fig_substeps/solver_sweep.cpp.
 #include <cmath>
 #include <cstdio>
 #include <limits>

@@ -2,7 +2,7 @@
 cooling, NCR, GOW17 core, GOW17 + O3,S3,N3, and the same without the returned grain C, O, Si.
 Hot-gas mass, radial momentum and total cooling rate (-dE_tot/dt; periodic box, one SN at
 t = 0) against time; shell formation (maximum of M_hot) marked. Writes
-../../../figures/F13_snr.{pdf,png}.
+../../../figures/snr.{pdf,png}.
 
 Inputs: run_series.sh output in WORKDIR (run_<name>/snr.hst, athinput.runtime, time.out).
 The histories and wall times come from reduced.txt when it exists;
@@ -20,7 +20,7 @@ import paths  # noqa: E402
 import reduced  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'F13_snr')
+OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'snr')
 REDUCED = os.path.join(HERE, 'reduced.txt')
 RUNS = [('classic', 'classic cooling', 'C7', ':'),
         ('ncr', 'NCR', 'k', '-'),

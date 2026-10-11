@@ -1,12 +1,12 @@
 // Species Jacobian along the reference run of the F05 CO-formation case (cosmic rays
 // only, n_H 1e3, from atomic H and C+ at 100 K, 2.9 Myr; setup as
-// ../figures/F05_solver/solver_sweep.cpp), for the block Gauss-Seidel error matrix of
+// fig_substeps/solver_sweep.cpp), for the block Gauss-Seidel error matrix of
 // Appendix E. At 16 times of the reference run (default update, 12500 substeps per
 // sixteenth of t_end) the rate coefficients and ghost species are frozen and
 // J_ij = d(C_i - D_i x_i)/dx_j by finite difference of CDRates.
 // Rows: k t_code i j J_ij (code time units), with i, j in network enum order; rows
 // with j = -1 give the abundance x_i at that time.
-// Build as ../figures/F05_solver/solver_sweep.cpp.
+// Build as fig_substeps/solver_sweep.cpp.
 #include <cmath>
 #include <cstdio>
 #include <limits>
