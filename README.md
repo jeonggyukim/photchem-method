@@ -1,12 +1,11 @@
 # photchem-method
 
-This repository has the scripts behind the figures of the TIGRESS++
-photochemistry method paper. It also has the test problems those figures come
-from, set up to run with Tigris and AthenaK.
+This repository tests the photochemistry module of TIGRESS++ in Tigris and
+AthenaK, and has the scripts that reproduce the figures from those tests.
 
 - `schematics/` draws the diagrams: how the modules couple, the ray tracer, and
   the chemical network.
-- `tests/` has one folder per test problem. A paper figure lives in
+- `tests/` has one folder per test problem. Each figure lives in
   `tests/<problem>/fig_<name>/`, next to the data it plots.
 - `photchem_method/` is a small Python package the scripts share.
 
