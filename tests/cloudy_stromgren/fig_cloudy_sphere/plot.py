@@ -1,13 +1,14 @@
 """Static H II region, Tigris against Cloudy 25. Radial T, n_e and the stage fractions
-of H, He, O, S and N from the Tigris post-processed sphere (GOW17 + O3,S3,N3, 7 bands, 64^3)
-against Cloudy 25 with its default diffuse field (solid) and `diffuse OTS` (dashed). Tigris
-X_high (stages above the top tracked one) is compared with Cloudy's X^3+. Writes
-../../../figures/cloudy_sphere.png.
+of H, He, O, S and N from two Tigris post-processed spheres (GOW17 + O3,S3,N3, 7 bands,
+64^3): recombination photons carried by the diffuse ray tracer (filled), against Cloudy's
+default diffuse field (solid), and absorbed on the spot (open), against Cloudy's
+`diffuse OTS` (dashed). Tigris X_high (stages above the top tracked one) is compared with
+Cloudy's X^3+. Writes ../../../figures/cloudy_sphere.png.
 
-Inputs: run64_b7 of tests/bands/fig_band_count/run_series.sh; Cloudy radial_profiles.txt of
-tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris profiles come from
-reduced.txt when it exists; `python plot.py --from-runs` reads run64_b7 ($PHOTCHEM_RUNS)
-and rewrites it."""
+Inputs: ots_false and ots_true of ../fig_interior_temperature/run_recomb.sh; Cloudy
+radial_profiles.txt of tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris
+profiles come from reduced_<run>.txt when they exist; `python plot.py --from-runs` reads
+the runs ($PHOTCHEM_RUNS) and rewrites them."""
 import glob
 import os
 import sys
@@ -23,7 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cloudy_sphere')
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
-REDUCED = os.path.join(HERE, 'reduced.txt')
+REDUCED = os.path.join(HERE, 'reduced_%s.txt')
 CLOUDY = [('default', os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'), '-'),
           ('diffuse OTS', os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
                                        'radial_profiles.txt'), '--')]
@@ -54,13 +55,15 @@ def tigris_profile(rundir):
     X3, X2, X1 = np.meshgrid(d['x3v'], d['x2v'], d['x1v'], indexing='ij')
     R = np.sqrt(X1**2 + X2**2 + X3**2)
     dx = d['x1f'][1] - d['x1f'][0]
-    rb = np.arange(0, d['x1f'][-1] + 1e-9, dx)
+    rb = np.arange(0, d['x1f'][-1] + 1e-9, 0.25*dx)
     ri = np.digitize(R.ravel(), rb)
     w = nh.ravel()
     den = np.bincount(ri, w, len(rb) + 1)[1:len(rb)]
     prof = {k: np.bincount(ri, v.ravel()*w, len(rb) + 1)[1:len(rb)]/np.maximum(den, 1e-300)
             for k, v in f.items()}
-    return 0.5*(rb[1:] + rb[:-1]), prof
+    # shells a quarter cell wide; near the centre some hold no cell centre
+    full = den > 0
+    return 0.5*(rb[1:] + rb[:-1])[full], {k: v[full] for k, v in prof.items()}
 
 
 def radius_half(r, xhp):
@@ -68,17 +71,24 @@ def radius_half(r, xhp):
     return np.interp(0.5, [xhp[i], xhp[i - 1]], [r[i], r[i - 1]])
 
 
-if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
-    athena_read = paths.athena_read()
-    run = paths.runs('T6_multi_ion', 'F10_bands', 'run64_b7')
-    r, tg = tigris_profile(run)
-    reduced.save(REDUCED, 'F09: density-weighted radial profiles of the Tigris run '
-                 'T6_multi_ion/F10_bands/run64_b7\nr [pc], T [K], ne [cm^-3], ions as '
-                 'fractions of the element', dict(r=r, **tg), sources=[run])
-else:
-    tg = reduced.load(REDUCED)
-    r = tg.pop('r')
-cl =[(lab, np.loadtxt(fn), ls) for lab, fn, ls in CLOUDY]
+# (run, legend label, matching Cloudy model, marker face)
+RUNS = [('ots_false', r'Tigris ($N = 64^3$), no OTS', 'default', None),
+        ('ots_true', r'Tigris ($N = 64^3$), OTS', 'diffuse OTS', 'white')]
+TG = {}
+for run, _, _, _ in RUNS:
+    fn = REDUCED % run
+    if '--from-runs' in sys.argv or not os.path.exists(fn):
+        athena_read = paths.athena_read()
+        src = paths.runs('T6_multi_ion', 'recomb_ots', run)
+        r, tg = tigris_profile(src)
+        reduced.save(fn, 'density-weighted radial profiles of the Tigris run '
+                     'T6_multi_ion/recomb_ots/%s\nr [pc], T [K], ne [cm^-3], ions as '
+                     'fractions of the element' % run, dict(r=r, **tg), sources=[src])
+    else:
+        tg = reduced.load(fn)
+        r = tg.pop('r')
+    TG[run] = (r, tg)
+cl = [(lab, np.loadtxt(fn), ls) for lab, fn, ls in CLOUDY]
 PANELS = [(r'$T$ [K]', ['T'], 'lin'), (r'$n_e$ [cm$^{-3}$]', ['ne'], 'lin'),
           ('H, He', ['H+', 'He+'], 'log'), ('O', ['O+', 'O++', 'O_high'], 'log'),
           ('S', ['S+', 'S++', 'S_high'], 'log'), ('N', ['N+', 'N++'], 'log')]
@@ -109,8 +119,10 @@ for ax, (ylab, keys, scale) in zip(axs.ravel(), PANELS):
         col = stage_colour(k)
         for lab, c, ls in cl:
             ax.plot(c[:, 0], c[:, CCOL[k]], color=col, ls=ls, lw=1.1)
-        ax.plot(r, tg[k], 'o', color=col, ms=3.2, mfc='white', mew=0.9,
-                label=LABEL.get(k))
+        for i, (run, _, _, mfc) in enumerate(RUNS):
+            r, tg = TG[run]
+            ax.plot(r, tg[k], 'o', color=col, ms=3.0, mfc=mfc or col, mew=0.8,
+                    label=LABEL.get(k) if i == 0 else None)
     if scale == 'log':
         ax.set_yscale('log')
         ax.set_ylim(1e-3, 8)
@@ -123,26 +135,30 @@ for ax, t in zip(axs.ravel(), 'abcdef'):
     ax.text(0.97, 0.94, '(%s)' % t, transform=ax.transAxes, ha='right', va='top')
 axs[0, 0].set_ylim(4000, 11000)
 axs[0, 1].set_ylim(-5, 130)
-handles = [plt.Line2D([], [], color='k', ls='-', lw=1.1),
-           plt.Line2D([], [], color='k', ls='--', lw=1.1),
-           plt.Line2D([], [], color='k', ls='none', marker='o', ms=3.2, mfc='white',
-                      mew=0.9)]
-axs[0, 0].legend(handles, ['Cloudy, default', 'Cloudy, diffuse OTS', 'Tigris'],
-                 loc='upper left', handlelength=1.8)
+L2D = matplotlib.lines.Line2D
+handles = [L2D([], [], color='k', ls='-', lw=1.1),
+           L2D([], [], color='k', ls='none', marker='o', ms=3.0, mew=0.8),
+           L2D([], [], color='k', ls='--', lw=1.1),
+           L2D([], [], color='k', ls='none', marker='o', ms=3.0, mfc='white', mew=0.8)]
+axs[0, 0].legend(handles, ['Cloudy, no OTS', RUNS[0][1], 'Cloudy, OTS',
+                           RUNS[1][1]], loc='upper left', handlelength=1.8)
 for ax in axs[-1]:
     ax.set_xlabel(r'$r$ [pc]')
-rs = [radius_half(r, tg['H+'])] + [radius_half(c[:, 0], c[:, 3]) for _, c, _ in cl]
-print('R_s [pc]: Tigris %.3f, Cloudy default %.3f, Cloudy diffuse OTS %.3f' % tuple(rs))
 fig.tight_layout(h_pad=0.4, w_pad=1.0)
 for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
-# ionization-weighted means inside 2.5 pc, Tigris vs Cloudy default
-m = r < 2.5
-for k in ['T', 'ne', 'He+', 'O+', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++']:
-    c = cl[0][1]
-    mc = c[:, 0] < 2.5
+cmodel = {lab: c for lab, c, _ in cl}
+for lab, c in cmodel.items():
+    print('R_s [pc] Cloudy %-11s %.3f' % (lab, radius_half(c[:, 0], c[:, 3])))
+# ionization-weighted means inside 2.5 pc, each Tigris run against its Cloudy model
+for run, rlab, clab, _ in RUNS:
+    r, tg = TG[run]
+    print('R_s [pc] %-26s %.3f' % (rlab, radius_half(r, tg['H+'])))
+    c = cmodel[clab]
+    m, mc = r < 2.5, c[:, 0] < 2.5
     wt, wc = r[m]**2, c[mc, 0]**2*np.gradient(c[mc, 0])
-    vt = np.sum(tg[k][m]*wt)/np.sum(wt)
-    vc = np.sum(c[mc, CCOL[k]]*wc)/np.sum(wc)
-    print('%-7s Tigris %.4g Cloudy %.4g ratio %.3f' % (k, vt, vc, vt/vc))
+    for k in ['T', 'ne', 'He+', 'O+', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++']:
+        vt = np.sum(tg[k][m]*wt)/np.sum(wt)
+        vc = np.sum(c[mc, CCOL[k]]*wc)/np.sum(wc)
+        print('  %-7s Tigris %.4g Cloudy %s %.4g ratio %.3f' % (k, vt, clab, vc, vt/vc))
 print(OUT)
