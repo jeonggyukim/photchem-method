@@ -45,10 +45,11 @@ MUH, KB, PC = 2.34335276e-24, 1.380649e-16, 3.0856776e18
 LAYOUT = [['T', 'ne', 'heat', None], ['H0', 'H+', None, None],
           ['He0', 'He+', 'He++', None]] + \
          [[el + '0', el + '+', el + '++', el + '_high'] for el in 'OSN']
-# heat: total heating; cool: total cooling, drawn in the heat panel
+# heat: total heating, drawn; cool: total cooling, kept in the reduced file for the
+# thermal-balance check (|cool - heat|/heat < 0.5% beyond the cells at the source)
 QTY = [q for col in LAYOUT for q in col if q] + ['cool']
 LAB = {'T': r'$T$ [K]', 'ne': r'$n_e$ [cm$^{-3}$]',
-       'heat': r'$\Gamma$, $n_{\rm H}\Lambda$ [$10^{-22}$ erg s$^{-1}$]',
+       'heat': r'$\Gamma$ [$10^{-22}$ erg s$^{-1}$]',
        'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
        'He0': r'He$^0$/He', 'He+': r'He$^+$/He', 'He++': r'He$^{2+}$/He'}
 for el in 'OSN':
@@ -173,9 +174,6 @@ for mode, label in MODES:
         ax[q].plot(rc, pc[q], color=COL[mode], lw=1.0, alpha=0.85, zorder=1)
         ax[q].plot(rt, pt[q], MARK[mode], color=COL[mode], ms=2.6, mfc='none',
                    mew=0.7, ls='none', markevery=2, alpha=0.75, zorder=3)
-    # Tigris cooling on its heating: a cell in balance puts the + on the marker
-    ax['heat'].plot(rt, pt['cool'], '+', color=COL[mode], ms=4.5, mew=0.8, ls='none',
-                    markevery=2, zorder=4)
 for q in QTY:
     if q == 'cool':
         continue
@@ -194,10 +192,6 @@ for q in QTY:
         a.set_ylim(0, 1.25*a.get_ylim()[1])
     if q == 'heat':
         a.set_ylim(0, 1.3*a.get_ylim()[1])
-        key = [Line2D([], [], color='0.3', marker='o', ls='none', ms=3, mfc='none'),
-               Line2D([], [], color='0.3', marker='+', ls='none', ms=5, mew=0.9)]
-        a.legend(key, [r'$\Gamma$', r'$n_{\rm H}\Lambda$'], loc='upper right', ncol=2,
-                 fontsize=8, handletextpad=0.2, columnspacing=0.8, borderaxespad=0.3)
 for a in axs.ravel():
     a.set_xlim(0, 1.15*rmax)
     a.grid(color='0.85', lw=0.5, zorder=0)
