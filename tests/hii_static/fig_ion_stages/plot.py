@@ -192,8 +192,10 @@ for q in QTY:
         a.set_ylim(0, 1.25*a.get_ylim()[1])
     if q == 'heat':
         a.set_ylim(0, 1.3*a.get_ylim()[1])
-        a.text(0.04, 0.95, r'symbols $\Gamma$, + $n_{\rm H}\Lambda$ (Tigris)',
-               transform=a.transAxes, va='top', fontsize=7.5)
+        key = [Line2D([], [], color='0.3', marker='o', ls='none', ms=3),
+               Line2D([], [], color='0.3', marker='+', ls='none', ms=5, mew=0.9)]
+        a.legend(key, [r'$\Gamma$', r'$n_{\rm H}\Lambda$'], loc='upper right', ncol=2,
+                 fontsize=8, handletextpad=0.2, columnspacing=0.8, borderaxespad=0.3)
 for a in axs.ravel():
     a.set_xlim(0, 1.15*rmax)
 # the abundance columns share one y range: tick labels only on the first visible one
