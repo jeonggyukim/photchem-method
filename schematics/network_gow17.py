@@ -560,9 +560,10 @@ XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge
              r" for $T \geq 2\times10^4$ K also"
              r"$\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
              r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$")
-HIGH_TEXT = (r"X$^{\geq q+}$ groups every ion above the highest tracked stage into one "
-             "species. Its recombination and cooling\nare computed as if it were split "
-             "among those stages as in CIE at the local temperature.\n"
+HIGH_TEXT = (r"X$^{\geq q+}$ is one species that holds all the higher ions of an element: "
+             r"for example, O$^{\geq 3+}$ is the sum of O$^{3+}$ to O$^{8+}$."
+             "\nIts recombination and cooling assume that these ions share it as they "
+             "would in CIE at the local temperature.\n"
              "The option --photchem_ions=O3,S3,N3 tracks O, S and N up to O$^{2+}$, "
              "S$^{2+}$ and N$^{2+}$, and C and Si up to C$^+$ and Si$^+$.")
 
