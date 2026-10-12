@@ -564,12 +564,6 @@ HIGH_TEXT = (r"X$^{\geq q+}$: every stage above the top tracked one, one species
              "one set so far: O, S, N to O$^{2+}$, S$^{2+}$, N$^{2+}$,\nwith C$^{\\geq 2+}$ "
              "and Si$^{\\geq 2+}$); other elements need rates and code. "
              "H$_2$, CO and the internal energy limit the substep.")
-HOT_TEXT = ("Hot gas, $T > 2\\times10^4$ K: He cools as in CIE; elements no ladder tracks "
-            "(Ne, Mg, Ar, Ca, Fe; C, O, Si returned from grains) cool from the CIE table\n"
-            "with weight $w(T)$, rising to 1 at $3.5\\times10^4$ K, while the cold-gas "
-            "cooling fits, heating and grain-assisted recombination are scaled by $1-w$.\n"
-            "Tracked ions and X$^{\\geq q+}$ cool from their own abundances at every $T$; "
-            "$x_e$ adds the CIE electrons of He$^{2+}$ and of metals beyond the tracked ions.")
 
 
 def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
@@ -588,10 +582,8 @@ def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
 
 
 def footer(fax):
-    fax.text(0.5, 0.92, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
-    fax.text(0.5, 0.64, HIGH_TEXT, ha="center", va="center", fontsize=FS_NOTE,
-             linespacing=1.3)
-    fax.text(0.5, 0.20, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+    fax.text(0.5, 0.85, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
+    fax.text(0.5, 0.36, HIGH_TEXT, ha="center", va="center", fontsize=FS_NOTE,
              linespacing=1.3)
 
 
@@ -610,7 +602,7 @@ def fig_core():
 
 
 SIGN_FULL = {"O": -1.0, "S": 1.0, "N": -1.0, "C": 1.0, "Si": 1.0}
-FOOT_H = 1.35
+FOOT_H = 0.75
 # The core O+ -> O (H2) arrow bows under the O <-> O+ ladder arrows.
 O_H2_ARC = 1.0
 
