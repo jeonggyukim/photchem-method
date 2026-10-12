@@ -1,0 +1,151 @@
+<comment>
+problem   = H II region in a turbulent cloud, density bounded
+reference =
+configure = -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=8 -shld_co -shld_ci -fft
+            --prob=hii -hdf5   (the diffuse ray tracer mirrors the 8 bands)
+
+# The source of athinput.hii_dtype_ions_dusty64_n1e3 (SB99 2 Myr, Q = 1e49 s^-1, LW and
+# PE from the spectrum, recombination photons on the spot) at the centre of a cloud of
+# radius 4 pc and n_H = 1e3 cm^-3 in gas of n_H = 10 cm^-3, in a box of 16 pc (64^3,
+# 0.25 pc cells). The cloud starts with decaying turbulence, v3d = 2.4 km/s (the
+# virial velocity of its 9e3 Msun, although there is no self-gravity), from a k^-2
+# velocity spectrum. Dust (z_dust = 1) and cosmic rays (2e-16 s^-1 per H); an
+# isotropic Draine (1978) field of chi0 = 1 enters through the boundaries in the LW and
+# PE groups of the diffuse ray tracer (<problem>/iso_chi0) instead of a uniform
+# background, so it is attenuated and shielded into the cloud. The cloud is
+# molecular after the initial equilibration; the front breaks out of it into the
+# tenuous gas (the H II region is density bounded). Time is in the code unit,
+# 0.978 Myr.
+
+<job>
+problem_id = HII
+output_timing = true
+
+<output1>
+file_type  = hst        # History data dump
+dt         = 1e-3       # time increment between outputs
+
+<output2>
+file_type  = hdf5       # HDF5 data dump, one movie frame each
+variable   = prim,uov   # variables to be output [prim, cons]
+dt         = 2e-2       # time increment between outputs
+
+<output3>
+file_type  = rst        # Restart data dump
+dt         = 2e-1       # time increment between outputs
+
+<time>
+cfl_number = 0.3        # The Courant, Friedrichs, & Lewy (CFL) Number
+nlim       = -1         # cycle limit
+tlim       = 1.0        # time limit [0.978 Myr]
+integrator  = rk2       # time integration algorithm
+xorder      = 2         # order of spatial reconstruction
+ncycle_out  = 10        # interval for stdout summary info
+dt_diagnostics = 0
+ops_task = true
+
+<mesh>
+nx1        = 64         # Number of zones in X1-direction
+x1min      = -8         # minimum value of X1 [pc]
+x1max      =  8         # maximum value of X1
+ix1_bc     = user       # inner-X1 boundary flag
+ox1_bc     = user       # outer-X1 boundary flag
+
+nx2        = 64
+x2min      = -8
+x2max      =  8
+ix2_bc     = user
+ox2_bc     = user
+
+nx3        = 64
+x3min      = -8
+x3max      =  8
+ix3_bc     = user
+ox3_bc     = user
+
+refinement = none
+
+<meshblock>
+nx1        = 32
+nx2        = 32
+nx3        = 32
+
+<hydro>
+gamma           = 1.666666666667 # gamma = C_p/C_v
+neighbor_flooring = true
+fofc              = true
+
+<problem>
+nH0        = 1000.0   # Number density of H [H/cm^-3]
+nH0_amb    = 10.0     # Number density of H for r > r0 [H/cm^-3]
+r0         = 4.0      # cloud radius [pc]
+iso_chi0   = 1.0      # isotropic Draine (1978) field through the diffuse ray tracer
+x1_src     = 0.0      # x1 source position [code]
+x2_src     = 0.0      # x2 source position [code]
+x3_src     = 0.0      # x3 source position [code]
+t0_src     = 0.0      # Time at which source is turned on [code]
+Qi         = 1e49     # Ionizing photon rate [1/s]
+Ln_over_Li = 0.0      # Ratio between FUV and EUV luminosities (unused with fuv_from_sed)
+fuv_from_sed = true   # LW and PE luminosities from the spectrum
+amp_den    = 0.0      # Amplitude of density perturbation (non zero to turn on)
+turb_flag  = 1        # decaying turbulence, set once at t = 0
+v3d        = 2.4      # 3D velocity dispersion [km/s], the cloud's virial velocity
+dedt       = 0.0
+t0_refine  = 0.0      # Turn on refinement after t0 [code]
+thr        = 1.0      # gradient threshold for AMR
+
+<perturbation>
+nlow          = 2
+nhigh         = 32         # nx1/2
+expo          = 2          # velocity power spectrum k^-expo
+rseed         = 1
+
+<rayt_point>
+rayt_point = true      # true or false
+rays_per_cell = 4.0     # Nominal angular resolution (can be a real number)
+healpix_lev_min = 4     # HealPix level at creation
+nexit_max = 100         # Maximum number of rays to send to neighbor ranks (MPI only)
+tau_max = 30.0          # Stop following a ray if tau > tau_max at all freq bins
+rotate_rays = true      # Random rotation of ray directions: true (new each ray-tracing pass), fixed (one for the run), false
+
+<rayt_diffuse>
+rayt_diffuse = true        # carries the isotropic field <problem>/iso_chi0
+scattering   = isotropic
+eps_scatter  = 1.0         # 1 - albedo, every group; 1 = pure absorption
+angle_set    = healpix
+angle_order  = 2           # nside; 48 directions
+ray_bc       = open
+ray_spacing  = 1.0
+niteration   = 1
+
+<photchem>
+photchem = true
+mode = gow17               # Mode of photochemistry [simple,ncr,gow17]
+bookkeeping = true         # Keep track of net creation term for HI (add uov to <output2>/type)
+flag_op_split  = true      # Operator split update
+flag_rad_force = false     # Turn on radiation pressure force (Simple and NCR modes)
+flag_update_dt_main = true # Update dt_main using dt_user=dt_coolchem
+cfl_photchem = 10.0        # dt_user = cfl_photchem*t_coolchem, as ../ions_7bands
+
+<photchem_gow17>
+z_dust         = 1.0       # dust at the solar-neighbourhood abundance
+chi0           = 0.0       # no uniform field: the ISRF arrives through the diffuse rays
+xi_cr0         = 2e-16     # cosmic-ray ionization rate per H [s^-1]
+h2_diss_bg_flag = false
+recombination_ots = true   # recombination photons absorbed on the spot (H case B)
+semi_implicit_gauss_seidel = true
+ion_cooling_dir = ${TIGRIS_DIR}/inputs/tables/chianti_v11/ion_cooling
+rates_dir      = ${TIGRIS_DIR}/inputs/tables/rates
+coolftn_file   = ${TIGRIS_DIR}/inputs/tables/tigress_coolftn_ncr.txt
+sed_average    = computed
+sed_format     = table
+sed_file       = ${TIGRIS_DIR}/inputs/tables/sed/sb99_Z014_GenevaV00_2Myr.txt
+photoion_xsec_file = ${TIGRIS_DIR}/inputs/tables/rates/verner96_photx.dat
+sigma_d[0]     = 1.0e-21   # [cm^2/H] at z_dust = 1, every band; a grain model can be
+sigma_d[1]     = 1.0e-21   # band-averaged instead with dust_file and dust_model
+sigma_d[2]     = 1.0e-21   # (radiative_properties/dust_band_average.hpp)
+sigma_d[3]     = 1.0e-21
+sigma_d[4]     = 1.0e-21
+sigma_d[5]     = 1.0e-21
+sigma_d[6]     = 1.0e-21   # LW
+sigma_d[7]     = 1.0e-21   # PE

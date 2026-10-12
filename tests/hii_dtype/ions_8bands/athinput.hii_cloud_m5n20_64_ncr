@@ -1,0 +1,147 @@
+<comment>
+problem   = H II region in a turbulent cloud, density bounded, NCR chemistry
+reference =
+configure = -mpi -ncr -shld_ci -fft --prob=hii -hdf5
+
+# athinput.hii_cloud_m5n20_64 with the NCR chemical network in place of GOW17: the same
+# cloud (M = 1e5 Msun, n_H = 100 cm^-3, radius 19.4 pc, in gas of n_H = 1 cm^-3), box
+# (116.4 pc, 64^3), turbulence (v3d = 5.2 km/s, k^-4, rseed 1), source (Q = 10^50.5
+# s^-1 at t0_src = 2.58, radiation pressure on), isotropic Draine (1978) field of chi0
+# = 1 through the diffuse ray tracer, dust (z_dust = 1, sigma_d = 1e-21 cm^2/H) and
+# cosmic rays (2e-16 s^-1 per H). NCR carries one ionizing band; its mean photon
+# energy and cross sections are band-averaged from the same SB99 2 Myr spectrum. NCR
+# divides L_FUV between LW and PE as 0.3 : 0.7; Ln_over_Li = 1.815 is the spectrum's
+# L_FUV/L_LyC (34.96 eV of FUV per 19.26 eV of ionizing radiation, photon_frac and
+# hnu of the GOW17 run), whose own split is 0.33 : 0.67. Without metal ions or helium
+# NCR leaves the ion cooling to its cooling table. Time is in the code unit, 0.978 Myr.
+
+<job>
+problem_id = HII
+output_timing = true
+
+<output1>
+file_type  = hst        # History data dump
+dt         = 1e-2       # time increment between outputs
+
+<output2>
+file_type  = hdf5       # HDF5 data dump, one movie frame each
+variable   = prim,uov   # variables to be output [prim, cons]
+dt         = 1e-1       # time increment between outputs
+
+<output3>
+file_type  = rst        # Restart data dump
+dt         = 1.0        # time increment between outputs
+
+<time>
+cfl_number = 0.3        # The Courant, Friedrichs, & Lewy (CFL) Number
+nlim       = -1         # cycle limit
+tlim       = 8.0        # time limit [0.978 Myr]
+integrator  = rk2       # time integration algorithm
+xorder      = 2         # order of spatial reconstruction
+ncycle_out  = 10        # interval for stdout summary info
+dt_diagnostics = 0
+ops_task = true
+
+<mesh>
+nx1        = 64         # Number of zones in X1-direction
+x1min      = -58.2      # minimum value of X1 [pc]
+x1max      =  58.2      # maximum value of X1
+ix1_bc     = user       # inner-X1 boundary flag
+ox1_bc     = user       # outer-X1 boundary flag
+
+nx2        = 64
+x2min      = -58.2
+x2max      =  58.2
+ix2_bc     = user
+ox2_bc     = user
+
+nx3        = 64
+x3min      = -58.2
+x3max      =  58.2
+ix3_bc     = user
+ox3_bc     = user
+
+refinement = none
+
+<meshblock>
+nx1        = 32
+nx2        = 32
+nx3        = 32
+
+<hydro>
+gamma           = 1.666666666667 # gamma = C_p/C_v
+neighbor_flooring = true
+fofc              = true
+
+<problem>
+nH0        = 100.0    # Number density of H [H/cm^-3]
+nH0_amb    = 1.0      # Number density of H for r > r0 [H/cm^-3]
+r0         = 19.4     # cloud radius [pc]
+iso_chi0   = 1.0      # isotropic Draine (1978) field through the diffuse ray tracer
+x1_src     = 0.0      # x1 source position [code]
+x2_src     = 0.0      # x2 source position [code]
+x3_src     = 0.0      # x3 source position [code]
+t0_src     = 2.58     # Time at which source is turned on [code], 0.4 t_dyn
+Qi         = 3.16e50  # Ionizing photon rate [1/s]
+Ln_over_Li = 1.815    # L_FUV/L_LyC of the SB99 2 Myr spectrum
+amp_den    = 0.0      # Amplitude of density perturbation (non zero to turn on)
+turb_flag  = 1        # decaying turbulence, set once at t = 0
+v3d        = 5.2      # 3D velocity dispersion [km/s], kinetic = binding energy
+dedt       = 0.0
+t0_refine  = 0.0      # Turn on refinement after t0 [code]
+thr        = 1.0      # gradient threshold for AMR
+
+<perturbation>
+nlow          = 2
+nhigh         = 32         # nx1/2
+expo          = 2          # velocity power spectrum k^-expo
+rseed         = 1
+
+<rayt_point>
+rayt_point = true      # true or false
+rays_per_cell = 4.0     # Nominal angular resolution (can be a real number)
+healpix_lev_min = 4     # HealPix level at creation
+nexit_max = 100         # Maximum number of rays to send to neighbor ranks (MPI only)
+tau_max = 30.0          # Stop following a ray if tau > tau_max at all freq bins
+rotate_rays = true      # Random rotation of ray directions: true (new each ray-tracing pass), fixed (one for the run), false
+
+<rayt_diffuse>
+rayt_diffuse = true        # carries the isotropic field <problem>/iso_chi0
+scattering   = isotropic
+eps_scatter  = 1.0         # 1 - albedo, every group; 1 = pure absorption
+angle_set    = healpix
+angle_order  = 2           # nside; 48 directions
+ray_bc       = open
+ray_spacing  = 1.0
+niteration   = 1
+
+<photchem>
+photchem = true
+mode = ncr                 # Mode of photochemistry [simple,ncr,gow17]
+bookkeeping = true         # Keep track of net creation term for HI (add uov to <output2>/type)
+flag_op_split  = true      # Operator split update
+flag_rad_force = true      # radiation pressure of the point source on gas and dust
+flag_update_dt_main = true # Update dt_main using dt_user=dt_coolchem
+cfl_photchem = 10.0        # dt_user = cfl_photchem*t_coolchem, as the GOW17 run
+
+<photchem_ncr>
+z_gas          = 1.0
+z_dust         = 1.0       # dust at the solar-neighbourhood abundance
+chi0           = 0.0       # no uniform field: the ISRF arrives through the diffuse rays
+xi_cr0         = 2e-16     # cosmic-ray ionization rate per H [s^-1]
+h2_diss_bg_flag = false
+cool_dust_flag = false     # no dust cooling, as the GOW17 run (dust_cooling = 0)
+nsub_max       = 50
+cfl_cool_sub   = 0.1
+shld_len0      = 0.0       # zero to turn off
+shld_n_hyd0    = 1e2
+shld_pow_idx   = -0.7
+shld_column_hyd_cr0 = 9.35e20
+coolftn_file   = ${TIGRIS_DIR}/inputs/tables/tigress_coolftn_ncr.txt
+sed_average    = computed
+sed_format     = table
+sed_file       = ${TIGRIS_DIR}/inputs/tables/sed/sb99_Z014_GenevaV00_2Myr.txt
+photoion_xsec_file = ${TIGRIS_DIR}/inputs/tables/rates/verner96_photx.dat
+sigma_d[0]     = 1.0e-21   # [cm^2/H] at z_dust = 1: LyC, LW, PE, as the GOW17 run
+sigma_d[1]     = 1.0e-21
+sigma_d[2]     = 1.0e-21

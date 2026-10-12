@@ -59,6 +59,8 @@ def layout(molecular, radiation):
 # chi in Draine units, as the chemical network normalizes them
 E_CODE = 1.6738234e-14
 U_DRAINE_LW, U_DRAINE_PE = 1.335e-14, 7.613e-14
+# speed of light [km/s]: the diffuse groups' mean intensity Jdiff gives u = 4 pi J/c
+C_CODE = 2.99792458e5
 EV = 1.602176634e-12
 
 
@@ -157,7 +159,10 @@ def fields(fn):
         n_gamma = sum(u[b]/(hnu[b]*EV) for b in range(6))
         with np.errstate(divide='ignore'):
             f['logU'] = np.log10(n_gamma/f['nH'])
-        f['chiPE'] = u[7]/U_DRAINE_PE
+        u_pe = u[7]
+        if 'Jdiff7' in d:
+            u_pe = u_pe + 4.0*np.pi*d['Jdiff7'][k].astype(np.float64)/C_CODE*E_CODE
+        f['chiPE'] = u_pe/U_DRAINE_PE
         f['chiH2'], f['chiCO'] = d['chi_H2'][k], d['chi_CO'][k]
     return f, d['x1f'], d['x2f'], float(d['Time'])
 
