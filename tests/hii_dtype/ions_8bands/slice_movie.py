@@ -1,7 +1,7 @@
 """z = 0 slice movie of the expanding H II region of run_tigris.sh (GOW17 + O3,S3,N3
 and He++, 8 bands, OTS), laid out as ../../hii_static/fig_slices: first column n_H, T,
-P/k and |v|; with --radiation the point-source fields (u_LyC, the share above 24.6 eV,
-chi_LW, chi_PE); with --molecular H2, CO, C+ and C0; then H, He, O, S, N, one row per
+P/k and |v|; with --radiation log U (ionizing photons per H), chi_PE and the shielded
+chi_H2 and chi_CO; with --molecular H2, CO, C+ and C0; then H, He, O, S, N, one row per
 stage (neutral, singly, doubly and higher ionized). Every panel keeps one colour range
 over all frames.
 
@@ -12,7 +12,9 @@ The frames are independent and are drawn by N processes (default 8). --frame I d
 only dump I, without the movie, to check the layout first.
 """
 import argparse
+import functools
 import glob
+import re
 import multiprocessing
 import os
 import subprocess
@@ -45,7 +47,7 @@ def layout(molecular, radiation):
     the fraction colour bar). --radiation adds the band fields, --molecular H2 and the
     carbon carriers."""
     own = [['nH', 'T', 'Pk', 'v']] + \
-        ([['uLyC', 'fHe', 'chiLW', 'chiPE']] if radiation else [])
+        ([['logU', 'chiPE', 'chiH2', 'chiCO']] if radiation else [])
     shared = ([['H2', 'CO', 'C+', 'C0']] if molecular else []) + \
         [['H0', 'H+', None, None], ['He0', 'He+', 'He++', None]] + \
         [[el + '0', el + '+', el + '++', el + '_high'] for el in 'OSN']
@@ -57,25 +59,39 @@ def layout(molecular, radiation):
 # chi in Draine units, as the chemical network normalizes them
 E_CODE = 1.6738234e-14
 U_DRAINE_LW, U_DRAINE_PE = 1.335e-14, 7.613e-14
+EV = 1.602176634e-12
+
+
+@functools.lru_cache(maxsize=None)
+def band_energies(rundir):
+    """Mean photon energy of each band [eV], hnu[b] of the run's athinput.runtime."""
+    hnu = {}
+    with open(os.path.join(rundir, 'athinput.runtime')) as fin:
+        for line in fin:
+            m = re.match(r'\s*hnu\[(\d+)\]\s*=\s*([0-9.eE+-]+)', line)
+            if m:
+                hnu[int(m.group(1))] = float(m.group(2))
+    return [hnu[b] for b in sorted(hnu)]
+
+
 LAB = {'nH': r'$n_{\rm H}$ [cm$^{-3}$]', 'T': r'$T$ [K]', 'Pk': r'$P/k$ [K cm$^{-3}$]',
        'v': r'$|v|$ [km s$^{-1}$]', 'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
        'He0': r'He$^0$/He', 'He+': r'He$^+$/He', 'He++': r'He$^{2+}$/He',
        'H2': r'2H$_2$/H', 'CO': 'CO/C', 'C+': r'C$^+$/C', 'C0': r'C$^0$/C',
-       'uLyC': r'$u_{\rm LyC}$ [erg cm$^{-3}$]',
-       'fHe': r'$u_{>24.6\,{\rm eV}}/u_{\rm LyC}$', 'chiLW': r'$\chi_{\rm LW}$',
-       'chiPE': r'$\chi_{\rm PE}$'}
+       'logU': r'$\log U = \log(n_\gamma/n_{\rm H})$', 'chiPE': r'$\chi_{\rm PE}$',
+       'chiH2': r'$\chi_{\rm H_2}$', 'chiCO': r'$\chi_{\rm CO}$'}
 X_C = 1.6e-4
 for el in 'OSN':
     LAB.update({el + '0': r'%s$^0$/%s' % (el, el), el + '+': r'%s$^+$/%s' % (el, el),
                 el + '++': r'%s$^{2+}$/%s' % (el, el),
                 el + '_high': r'%s$^{\geq3+}$/%s' % (el, el)})
 NORM = {'nH': LogNorm(10, 1e3), 'T': Normalize(5e3, 1.1e4), 'Pk': LogNorm(1e3, 3e6),
-        'v': Normalize(0, 15), 'ion': LogNorm(1e-5, 1), 'uLyC': LogNorm(1e-14, 1e-8),
-        'fHe': Normalize(0.0, 0.5), 'chiLW': LogNorm(1.0, 1e5),
-        'chiPE': LogNorm(1.0, 1e5)}
+        'v': Normalize(0, 15), 'ion': LogNorm(1e-5, 1), 'logU': Normalize(-6.0, 0.0),
+        'chiPE': LogNorm(1e-2, 1e5), 'chiH2': LogNorm(1e-6, 1e3),
+        'chiCO': LogNorm(1e-6, 1e3)}
 CMAP = {'nH': 'cividis', 'T': 'inferno', 'Pk': 'magma', 'v': 'plasma',
-        'ion': plt.get_cmap('viridis').copy(), 'uLyC': 'magma', 'fHe': 'cividis',
-        'chiLW': 'BuPu_r', 'chiPE': 'BuPu_r'}
+        'ion': plt.get_cmap('viridis').copy(), 'logU': 'magma', 'chiPE': 'BuPu_r',
+        'chiH2': 'BuPu_r', 'chiCO': 'BuPu_r'}
 CMAP['ion'].set_bad(CMAP['ion'](0.0))   # a fraction of exactly 0 takes the lowest colour
 # --temp-log: T in a colour map with one hue family per phase, on a two-segment scale so
 # that both the neutral and the ionized gas show their structure: 10-5000 K on a log
@@ -133,11 +149,16 @@ def fields(fn):
         for nm in ions:
             f[nm] = x[nm]/XTOT[el]
         f[el + '0'] = np.maximum(1.0 - sum(f[nm] for nm in ions), 0.0)
-    u = [d['Er_rayt%d' % b][k].astype(np.float64)*E_CODE for b in range(8)]
-    f['uLyC'] = sum(u[:6])
-    with np.errstate(invalid='ignore', divide='ignore'):
-        f['fHe'] = np.where(f['uLyC'] > 0, sum(u[:3])/f['uLyC'], np.nan)
-    f['chiLW'], f['chiPE'] = u[6]/U_DRAINE_LW, u[7]/U_DRAINE_PE
+    if 'chi_H2' in d:
+        u = [d['Er_rayt%d' % b][k].astype(np.float64)*E_CODE for b in range(8)]
+        # ionizing photons per H: the band energy densities over their mean photon
+        # energies, which the band averaging wrote back into athinput.runtime
+        hnu = band_energies(os.path.dirname(os.path.abspath(fn)))
+        n_gamma = sum(u[b]/(hnu[b]*EV) for b in range(6))
+        with np.errstate(divide='ignore'):
+            f['logU'] = np.log10(n_gamma/f['nH'])
+        f['chiPE'] = u[7]/U_DRAINE_PE
+        f['chiH2'], f['chiCO'] = d['chi_H2'][k], d['chi_CO'][k]
     return f, d['x1f'], d['x2f'], float(d['Time'])
 
 
