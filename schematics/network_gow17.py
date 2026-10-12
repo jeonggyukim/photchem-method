@@ -75,7 +75,6 @@ TEX = {"He+": "He$^+$", "H2": "H$_2$", "H+": "H$^+$", "H2+": "H$_2^+$",
        "N_high": r"N$^{\geq 3+}$"}
 GHOSTS = {"H", "He", "C", "O", "Si", "S", "N"}
 MOLECULES = {"H2", "CHx", "OHx", "CO"}
-LIMITERS = {"H2", "CO"}
 # gow17_core.hpp:25-31 (Species enum under PHOTCHEM_IONS); S and N are ghosts
 # (GhostSpecies, gow17_network.hpp:318-319).
 NEW_SPECIES = {"S", "S+", "S2+", "S_high", "O2+", "O_high", "N", "N+", "N2+",
@@ -401,7 +400,7 @@ def draw_box(ax, name, x, y, mode, gs_order, label=None):
         ec = "#7A7A7A" if ghost else BLACK
         tc = "#5A5A5A" if ghost else "black"
     ls = "--" if ghost else "-"
-    lw = 2.2 if name in LIMITERS else 0.9
+    lw = 0.9
     if mode == "highlight" and new:
         ax.add_patch(FancyBboxPatch((x - w / 2 - 0.13, y - h / 2 - 0.13),
                                     w + 0.26, h + 0.26,
@@ -509,7 +508,6 @@ def draw_legend(fig, lax, kinds, boxes, mode, ncol=3, nbcol=4, row=0.155):
                 "ion": ("#DCEBF7", BLACK, "-", 0.9),
                 "mol": ("#E3F2DC", BLACK, "-", 0.9),
                 "ghost": ("white", "#7A7A7A", "--", 0.9),
-                "limit": ("white", BLACK, "-", 2.2),
                 "grey": (GREY_FILL, GREY, "-", 0.9),
                 "optional": ("white", GREY, (0, (1, 1.5)), 0.9),
                 "new": ("#DCEBF7", BLACK, "-", 0.9),
@@ -534,7 +532,7 @@ ALL_KINDS = ["cr", "crphoto", "uv", "euv", "grain", "rec", "chem", "coll", "ct",
 
 def boxes_legend(version):
     b = [("ion", "ion"), ("mol", "molecule"), ("ghost", "ghost (conservation)"),
-         ("limit", "limits the substep"), ("gs", "Gauss–Seidel order"),
+         ("gs", "Gauss–Seidel order"),
          ("partner", "partner reactant")]
     if version == "greycore":
         b.insert(0, ("grey", "GOW17 core (grey)"))
@@ -641,7 +639,7 @@ def fig_2panel():
     xb, yb = (-2.75, 17.85), (-4.3, 3.55)
     ha = WIDTH_IN * (ya[1] - ya[0]) / (xa[1] - xa[0])
     hb = WIDTH_IN * (yb[1] - yb[0]) / (xb[1] - xb[0])
-    boxes = boxes_legend("2panel")
+    boxes = boxes_legend("full")
     legend_h, foot_h, gap = legend_height(ALL_KINDS, boxes), FOOT_H, 0.1
     H = ha + gap + hb + foot_h + legend_h + 0.04
     fig = plt.figure(figsize=(WIDTH_IN, H))
@@ -654,10 +652,10 @@ def fig_2panel():
         ax.axis("off")
     # (a) core with the ionized-gas additions; O <-> O+ is drawn in (b)
     mids = draw_edges(axa, core_edges_tigris() + ION_GAS + NEUTRAL_CI, POS_CORE,
-                      "highlight")
+                      "plain")
     draw_partners(axa, mids, POS_CORE, grey=False)
     for n, (x, y) in POS_CORE.items():
-        draw_box(axa, n, x, y, "highlight", GS_TIGRIS)
+        draw_box(axa, n, x, y, "plain", GS_TIGRIS)
     axa.text(-2.6, 9.15, "(a)", fontsize=9, fontweight="bold", va="top")
     axa.text(6.6, 0.6, "O ladder and O$\\leftrightarrow$O$^+$\ncharge transfer: see (b)",
              color=DARK, fontsize=FS_NOTE, style="italic", ha="center", va="center")
@@ -665,18 +663,18 @@ def fig_2panel():
     SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in POS_LADDERS})
     pos = POS_LADDERS
     sign = {k: -1.0 for k in SIGN_FULL}
-    draw_edges(axb, ladder_edges(sign), pos, "highlight")
+    draw_edges(axb, ladder_edges(sign), pos, "plain")
     for n, (x, y) in pos.items():
-        draw_box(axb, n, x, y, "highlight", GS_TIGRIS)
+        draw_box(axb, n, x, y, "plain", GS_TIGRIS)
     axb.text(-2.6, 3.5, "(b)", fontsize=9, fontweight="bold", va="top")
     axb.text(-0.75, -4.0, "O, O$^+$, C$^+$ and Si$^+$ are the boxes of (a); "
              "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17 (near-resonant)",
              fontsize=FS_NOTE, color=DARK, ha="left", va="center", style="italic")
-    draw_optional(axb, 14.5, -2.45, 3.4, "highlight")
+    draw_optional(axb, 14.5, -2.45, 3.4, "plain")
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
     footer(fax)
     lax = legend_axes(fig, [0.03, 0.0, 0.97, legend_h / H])
-    draw_legend(fig, lax, ALL_KINDS, boxes, "highlight")
+    draw_legend(fig, lax, ALL_KINDS, boxes, "plain")
     return fig
 
 
