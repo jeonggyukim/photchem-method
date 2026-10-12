@@ -170,11 +170,9 @@ for i, (mode, label) in enumerate(MODES):
         # OTS and no OTS differ in T and the heating; elsewhere OTS alone is shown
         if q == 'cool' or (mode == 'no_ots' and q not in BOTH_MODES):
             continue
-        ax[q].plot(rc, pc[q], color=COL[mode], lw=1.8, alpha=0.5,
-                   ls='--' if mode == 'ots' else '-', zorder=1)
-        ax[q].plot(rt, pt[q], MARK[mode], color=COL[mode], ms=2.6,
-                   mfc='white' if mode == 'ots' else COL[mode], mew=0.7, ls='none',
-                   markevery=(i, 2), alpha=0.75, zorder=3)
+        ax[q].plot(rc, pc[q], color=COL[mode], lw=1.8, alpha=0.5, zorder=1)
+        ax[q].plot(rt, pt[q], MARK[mode], color=COL[mode], ms=2.6, mfc='none',
+                   mew=0.7, ls='none', markevery=(i, 2), alpha=0.75, zorder=3)
     # Tigris cooling on its heating: a cell in balance puts the + on the marker
     ax['heat'].plot(rt, pt['cool'], '+', color=COL[mode], ms=4.5, mew=0.8, ls='none',
                     markevery=(i, 2), zorder=4)
@@ -196,7 +194,7 @@ for q in QTY:
         a.set_ylim(0, 1.25*a.get_ylim()[1])
     if q == 'heat':
         a.set_ylim(0, 1.3*a.get_ylim()[1])
-        key = [Line2D([], [], color='0.3', marker='o', ls='none', ms=3),
+        key = [Line2D([], [], color='0.3', marker='o', ls='none', ms=3, mfc='none'),
                Line2D([], [], color='0.3', marker='+', ls='none', ms=5, mew=0.9)]
         a.legend(key, [r'$\Gamma$', r'$n_{\rm H}\Lambda$'], loc='upper right', ncol=2,
                  fontsize=8, handletextpad=0.2, columnspacing=0.8, borderaxespad=0.3)
@@ -216,9 +214,9 @@ for acol in axs.T:
     low.tick_params(labelbottom=True)
     low.set_xlabel(r'$r$ [pc]')
 h = [Line2D([], [], color=COL['no_ots'], lw=1.8, alpha=0.5),
-     Line2D([], [], color=COL['no_ots'], marker='o', ls='none', ms=3),
-     Line2D([], [], color=COL['ots'], lw=1.8, alpha=0.5, ls='--'),
-     Line2D([], [], color=COL['ots'], marker='s', ls='none', ms=3, mfc='white')]
+     Line2D([], [], color=COL['no_ots'], marker='o', ls='none', ms=3, mfc='none'),
+     Line2D([], [], color=COL['ots'], lw=1.8, alpha=0.5),
+     Line2D([], [], color=COL['ots'], marker='s', ls='none', ms=3, mfc='none')]
 fig.legend(h, ['Cloudy, no OTS', r'Tigris ($N=64^3$), no OTS', 'Cloudy, OTS',
                r'Tigris ($N=64^3$), OTS'], loc='upper center', ncol=4,
            bbox_to_anchor=(0.5, 1.0))
