@@ -12,8 +12,9 @@ Inputs: run_tigris.sh output in $PHOTCHEM_RUNS/T6_multi_ion/hii_static_bands10
 (<spectrum>_ots, <spectrum>_no_ots) and ../blackbody/run_cloudy_bb.sh output in
 $PHOTCHEM_RUNS/T6_multi_ion/cloudy_<spectrum> (ots, no_ots). The profiles come from
 reduced_<spectrum>.txt when it exists; `python plot.py SPECTRUM --from-runs` reads the
-runs and rewrites it.
-Usage: python plot.py [SPECTRUM] [--from-runs]   (default: sb99)"""
+runs and rewrites it. --linear draws the abundance panels on a linear axis from 0 to
+1.1 and writes ion_stages_<spectrum>_linear.png instead.
+Usage: python plot.py [SPECTRUM] [--from-runs] [--linear]   (default: sb99)"""
 import glob
 import os
 import sys
@@ -26,10 +27,12 @@ from photchem_method import paths  # noqa: E402
 from photchem_method import reduced  # noqa: E402
 from photchem_method.paths import figure_formats  # noqa: E402
 
-ARGS = [a for a in sys.argv[1:] if a != '--from-runs']
+ARGS = [a for a in sys.argv[1:] if a not in ('--from-runs', '--linear')]
 SPEC = ARGS[0] if ARGS else 'sb99'
+LINEAR = '--linear' in sys.argv[1:]
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'ion_stages_' + SPEC)
+OUT = os.path.join(HERE, '..', '..', '..', 'figures',
+                   'ion_stages_' + SPEC + ('_linear' if LINEAR else ''))
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced_%s.txt' % SPEC)
 NAMES = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+',
@@ -183,9 +186,13 @@ for q in QTY:
         a.yaxis.labelpad = 1
     else:
         a.set_title(LAB[q], fontsize=9.5, pad=2)
-        a.set_yscale('log')
-        a.set_ylim(1e-5, 1e1)
-        a.set_yticks([1e-4, 1e-2, 1])
+        if LINEAR:
+            a.set_ylim(0, 1.1)
+            a.set_yticks([0, 0.5, 1])
+        else:
+            a.set_yscale('log')
+            a.set_ylim(1e-5, 1e1)
+            a.set_yticks([1e-4, 1e-2, 1])
     if q == 'T':
         a.set_ylim(5000, 12000)
     if q == 'ne':
