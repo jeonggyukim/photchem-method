@@ -15,7 +15,9 @@ tracked to O III, S III, N III, plus one higher-ion species per element for
 C, Si, O, S and N; gow17_core.hpp:25-31).
 
 Usage:
-    network_gow17.py [--outdir ../figures]
+    network_gow17.py [--outdir ../figures] [--gs-order]
+
+--gs-order numbers each species by its Gauss-Seidel update order (off by default).
 """
 import argparse
 import pathlib
@@ -83,6 +85,7 @@ NEW_SPECIES = {"S", "S+", "S2+", "S_high", "O2+", "O_high", "N", "N+", "N2+",
 OPTIONAL = ["Ne", "Mg", "Fe"]
 # Block Gauss-Seidel order (OrderedGaussSeidelUpdate, default placement of H2 last;
 # CO and HCO+ are one 2x2 block, numbered in that order).
+SHOW_GS_ORDER = False
 GS_CORE = ["He+", "Si+", "H2+", "H3+", "H+", "O+", "C+", "CHx", "OHx", "CO",
            "HCO+", "H2"]
 # gow17_network.hpp:1834-1849 with the defaults semi_implicit_hep_first = true and
@@ -412,7 +415,7 @@ def draw_box(ax, name, x, y, mode, gs_order, label=None):
     ax.text(x, y, label or TEX.get(name, name), ha="center", va="center",
             fontsize=FS_SPECIES - (0.5 if "_high" in name else 0),
             style="italic" if ghost else "normal", color=tc, zorder=4)
-    if gs_order and name in gs_order:
+    if SHOW_GS_ORDER and gs_order and name in gs_order:
         ax.text(x - w / 2 + 0.03, y + h / 2 - 0.01, str(gs_order.index(name) + 1),
                 fontsize=5.5 if len(gs_order) < 10 else 4.8, ha="center",
                 va="center", color="white", zorder=5,
@@ -531,9 +534,10 @@ ALL_KINDS = ["cr", "crphoto", "uv", "euv", "grain", "rec", "chem", "coll", "ct",
 
 
 def boxes_legend(version):
-    b = [("ion", "ion"), ("mol", "molecule"), ("ghost", "ghost (conservation)"),
-         ("gs", "Gauss–Seidel order"),
-         ("partner", "partner reactant")]
+    b = [("ion", "ion"), ("mol", "molecule"), ("ghost", "ghost (conservation)")]
+    if SHOW_GS_ORDER:
+        b.append(("gs", "Gauss–Seidel order"))
+    b.append(("partner", "partner reactant"))
     if version == "greycore":
         b.insert(0, ("grey", "GOW17 core (grey)"))
     if version in ("colour", "2panel"):
@@ -556,11 +560,11 @@ XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge
              r" for $T \geq 2\times10^4$ K also"
              r"$\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
              r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$")
-HIGH_TEXT = (r"X$^{\geq q+}$ groups every ion above the highest tracked stage into one species. "
-             "Its recombination and cooling\nare computed as if it were split among those "
-             "stages as in CIE at the local temperature.\n"
-             "The option --photchem_ions=O3,S3,N3 tracks O, S and N up to O$^{2+}$, S$^{2+}$ "
-             "and N$^{2+}$, and C and Si up to C$^+$ and Si$^+$.")
+HIGH_TEXT = (r"X$^{\geq q+}$ groups every ion above the highest tracked stage into one "
+             "species. Its recombination and cooling\nare computed as if it were split "
+             "among those stages as in CIE at the local temperature.\n"
+             "The option --photchem_ions=O3,S3,N3 tracks O, S and N up to O$^{2+}$, "
+             "S$^{2+}$ and N$^{2+}$, and C and Si up to C$^+$ and Si$^+$.")
 
 
 def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
@@ -694,7 +698,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     here = pathlib.Path(__file__).resolve().parent
     parser.add_argument("--outdir", default=str(here.parent / "figures"))
+    parser.add_argument("--gs-order", action="store_true",
+                        help="number each species by its Gauss-Seidel update order")
     args = parser.parse_args()
+    global SHOW_GS_ORDER
+    SHOW_GS_ORDER = args.gs_order
     outdir = pathlib.Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     made = []
