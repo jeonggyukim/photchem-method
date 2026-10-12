@@ -562,7 +562,7 @@ HIGH_TEXT = (r"X$^{\geq q+}$: every stage above the top tracked one, one species
              "its split among stages, recombination and cooling follow CIE at $T$.\n"
              "The ladders are on or off at configure time (--photchem_ions=O3,S3,N3, the "
              "one set so far: O, S, N to O$^{2+}$, S$^{2+}$, N$^{2+}$,\nwith C$^{\\geq 2+}$ "
-             "and Si$^{\\geq 2+}$); other elements need rates and code. "
+             "and Si$^{\\geq 2+}$). "
              "H$_2$, CO and the internal energy limit the substep.")
 
 
@@ -626,7 +626,7 @@ def draw_full(ax, mode):
 def fig_full(mode):
     SIZE_OVERRIDE.clear()
     SIZE_OVERRIDE.update({n: (BOX_W, 1.25) for n in ("O", "O+", "O2+", "O_high")})
-    version = "greycore" if mode == "grey" else "colour"
+    version = {"grey": "greycore", "highlight": "colour"}.get(mode, "full")
     boxes = boxes_legend(version)
     lh = legend_height(ALL_KINDS, boxes)
     fig, ax, fax, lax = canvas((-6.9, 22.5), (-1.0, 9.25), lh, FOOT_H)
@@ -707,7 +707,7 @@ def main():
     for name, make in [("network_gow17_core", fig_core),
                        ("network_gow17_tigris_greycore", lambda: fig_full("grey")),
                        ("network_gow17_2panel", fig_2panel),
-                       ("network_gow17_1panel_colour", lambda: fig_full("highlight"))]:
+                       ("network_gow17_1panel_colour", lambda: fig_full("plain"))]:
         fig = make()
         for ext in figure_formats():
             fig.savefig(outdir / f"{name}.{ext}", dpi=300)
