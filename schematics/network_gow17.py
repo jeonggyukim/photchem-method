@@ -63,7 +63,7 @@ LEGEND = {
     "chem": "ion-molecule / neutral-neutral",
     "coll": "collisional (e; H, H$_2$)",
     "ct": "charge transfer (H$^+$ up, H down)",
-    "ots": "He recombination photons on H",
+    "ots": "H ionized by He recombination",
 }
 
 TEX = {"He+": "He$^+$", "H2": "H$_2$", "H+": "H$^+$", "H2+": "H$_2^+$",
