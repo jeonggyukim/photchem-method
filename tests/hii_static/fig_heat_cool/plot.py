@@ -3,7 +3,8 @@ of n_H = 100 cm^-3): heating and cooling by process, Tigris against Cloudy 25.
 
 Top row: at two cells, r = 1.14 and 2.44 pc (0.39 and 0.83 R_s), the heating and
 cooling rates per n_H^2 as functions of T with the cell's abundances and radiation held
-fixed (the probes of ../fig_ion_stages/athinput.stromgren_stages). The crossing of total heating and cooling is the
+fixed (the probes of ../fig_ion_stages/athinput.stromgren_stages). The crossing of
+total heating and cooling is the
 equilibrium temperature these abundances predict; vertical lines mark the temperature
 of the Tigris cell and of Cloudy at the same radius. Middle row: radial profiles of
 the heating and cooling by agent. Bottom row: the mean heat per H photoionization and
