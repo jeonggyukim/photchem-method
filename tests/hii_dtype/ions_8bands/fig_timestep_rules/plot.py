@@ -54,13 +54,15 @@ def main():
     fig, ax = plt.subplots(1, 3, figsize=(13, 3.6), constrained_layout=True)
     for case, lab, ls in CASES:
         t = r[case + '_time']*MYR
-        ax[0].semilogy(t[1:], r[case + '_dt'][1:], ls, color='k', lw=1, label=lab)
+        mk = 'o' if len(t) < 5 else None
+        ax[0].semilogy(t, r[case + '_dt'], ls, color='k', lw=1, marker=mk, ms=3,
+                       label=lab)
         if case != 'nolimit':
             for k, klab, col in KINDS:
                 ax[1].semilogy(t[1:], r['%s_%s' % (case, k)][1:], ls, color=col, lw=0.9,
                                label=klab if case == 'cfl10' else None)
-        ax[2].plot(t, r[case + '_mass_ion'], ls, color='k', lw=1,
-                   marker='o' if len(t) < 5 else None, ms=3, label=lab)
+        ax[2].plot(t, r[case + '_mass_ion'], ls, color='k', lw=1, marker=mk, ms=3,
+                   label=lab)
     ax[0].set_ylabel('dt [code]')
     ax[1].set_ylabel('shortest timescale over the domain [code]')
     ax[2].set_ylabel('ionized mass [code]')
