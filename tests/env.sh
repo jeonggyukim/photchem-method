@@ -110,7 +110,8 @@ _now() { "$PYTHON" -c 'import time; print("%.2f" % time.time())'; }
 # read. COMMAND may be a shell function:
 #     run_logged "$W/run" "$W" mpi_launch 4 ../athena -i athinput.local
 run_logged() {
-  local run=$1 build=$2 status start wall
+  # rc, not status: status is a read-only variable in zsh
+  local run=$1 build=$2 rc start wall
   shift 2
   mkdir -p "$run"
   {
@@ -121,9 +122,9 @@ run_logged() {
   } > "$run/run.log"
   start=$(_now)
   (cd "$run" && "$@" > run.out 2> run.err)
-  status=$?
+  rc=$?
   wall=$("$PYTHON" -c "print('%.2f' % ($(_now) - $start))")
   echo "real $wall" > "$run/time.out"
-  { echo "exit: $status"; echo "wall_s: $wall"; } >> "$run/run.log"
-  return $status
+  { echo "exit: $rc"; echo "wall_s: $wall"; } >> "$run/run.log"
+  return $rc
 }
