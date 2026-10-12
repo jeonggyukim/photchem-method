@@ -131,8 +131,9 @@ def E(src, dst, kind, label="", arc=0.0, t=0.5, new=False, emph=False, off=None,
 CORE_EDGES = [
     E("H2", "H2+", "cr", "CR", 0.0), E("He", "He+", "cr", "CR", 0.25),
     E("H", "H+", "cr", "CR", 0.25), E("C", "C+", "cr", "CR", 0.25),
+    E("C", "C+", "crphoto", "", 0.4),
     E("CO", "C", "crphoto", "CR", 0.35), E("CO", "HCO+", "cr", "CR", 0.3),
-    E("Si", "Si+", "cr", "CR", 0.3),
+    E("Si", "Si+", "crphoto", "CR", 0.3),
     E("C", "C+", "uv", "", -0.25), E("CHx", "C", "uv", "", 0.3),
     E("CO", "C", "uv", "", -0.25), E("OHx", "O", "uv", "", 0.3),
     E("H2", "H", "uv", "", 0.35), E("Si", "Si+", "uv", "", -0.3),
@@ -235,7 +236,7 @@ def ladder_edges(sign):
     """
     o_up = [U("crphoto"), U("coll"), U("ct", new=False, emph=True)]
     o_down = [U("ct", new=False, emph=True), U("rec")]
-    s_up = [U("uv", "10.4"), U("crphoto"), U("coll"), U("ct")]
+    s_up = [U("euv", "10.4"), U("uv"), U("crphoto"), U("coll"), U("ct")]
     return (ladder_step("O", "O+", o_up, o_down, sign["O"])
             + ladder_step("O+", "O2+", STD_UP("35.1"), STD_DOWN, sign["O"])
             + ladder_step("O2+", "O_high", STD_UP("54.9"), STD_DOWN, sign["O"])
@@ -553,17 +554,22 @@ XE_CORE = (r"$x_e = x({\rm He^+}) + x({\rm C^+}) + x({\rm HCO^+}) + x({\rm H_3^+
 # species_table.hpp ChargeSum over species_rows (gow17_core.hpp:36-63): X_high
 # counts the charge of its lowest stage; above temp_hot0 HigherIonExtraCharge adds
 # the rest of its CIE mean charge (gow17_network.hpp:2355-2367, 3135-3150).
-XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge $q$"
-             r"$\;+\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
-             r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$ in hot gas")
+XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge $q$;"
+             r" for $T \geq 2\times10^4$ K also"
+             r"$\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
+             r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$")
 HIGH_TEXT = (r"X$^{\geq q+}$: every stage above the top tracked one, one species; "
              "its split among stages, recombination and cooling follow CIE at $T$.\n"
-             "The ladders are a configure choice (--photchem_ions=O3,S3,N3 here: O, S, N "
-             "to O$^{2+}$, S$^{2+}$, N$^{2+}$); other elements need rates and code.")
-HOT_TEXT = ("Hot gas, $T > 2\\times10^4$ K, with weight $w(T)$ rising to 1 at "
-            "$3.5\\times10^4$ K: He and metal cooling from the CIE table;\n"
-            "$x_e$ adds the CIE electrons of He$^{2+}$ and of metals beyond the tracked ions; "
-            "heating and grain-assisted recombination are scaled by $1-w$.")
+             "The ladders are on or off at configure time (--photchem_ions=O3,S3,N3, the "
+             "one set so far: O, S, N to O$^{2+}$, S$^{2+}$, N$^{2+}$,\nwith C$^{\\geq 2+}$ "
+             "and Si$^{\\geq 2+}$); other elements need rates and code. "
+             "H$_2$, CO and the internal energy limit the substep.")
+HOT_TEXT = ("Hot gas, $T > 2\\times10^4$ K: He cools as in CIE; elements no ladder tracks "
+            "(Ne, Mg, Ar, Ca, Fe; C, O, Si returned from grains) cool from the CIE table\n"
+            "with weight $w(T)$, rising to 1 at $3.5\\times10^4$ K, while the cold-gas "
+            "cooling fits, heating and grain-assisted recombination are scaled by $1-w$.\n"
+            "Tracked ions and X$^{\\geq q+}$ cool from their own abundances at every $T$; "
+            "$x_e$ adds the CIE electrons of He$^{2+}$ and of metals beyond the tracked ions.")
 
 
 def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
@@ -582,10 +588,10 @@ def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
 
 
 def footer(fax):
-    fax.text(0.5, 0.88, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
-    fax.text(0.5, 0.56, HIGH_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+    fax.text(0.5, 0.92, XE_TIGRIS, ha="center", va="center", fontsize=FS_NOTE)
+    fax.text(0.5, 0.64, HIGH_TEXT, ha="center", va="center", fontsize=FS_NOTE,
              linespacing=1.3)
-    fax.text(0.5, 0.17, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
+    fax.text(0.5, 0.20, HOT_TEXT, ha="center", va="center", fontsize=FS_NOTE,
              linespacing=1.3)
 
 
@@ -604,7 +610,7 @@ def fig_core():
 
 
 SIGN_FULL = {"O": -1.0, "S": 1.0, "N": -1.0, "C": 1.0, "Si": 1.0}
-FOOT_H = 1.05
+FOOT_H = 1.35
 # The core O+ -> O (H2) arrow bows under the O <-> O+ ladder arrows.
 O_H2_ARC = 1.0
 
