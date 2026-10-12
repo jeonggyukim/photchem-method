@@ -8,7 +8,7 @@ treatment, and the bottom panel gives their T ratio. Writes
 ../../../figures/interior_temperature<SUFFIX>.png.
 
 Inputs: run_recomb.sh output in WORKDIR (ots_true, ots_false); Cloudy radial_profiles.txt
-of tests/cloudy_stromgren (default) and tests/cloudy_stromgren/thermal_with_N_ots.
+of tests/hii_static (default) and tests/hii_static/thermal_with_N_ots.
 The Tigris profiles come from reduced<SUFFIX>.txt when it exists;
 `python plot.py [SUFFIX] --from-runs` reads WORKDIR
 ($PHOTCHEM_RUNS/T6_multi_ion/recomb_ots) and rewrites it."""
@@ -32,8 +32,8 @@ SUFFIX = ARGS[0] if ARGS else ''
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'interior_temperature' + SUFFIX)
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced%s.txt' % SUFFIX)
-CLOUDY_DEFAULT = os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt')
-CLOUDY_OTS = os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
+CLOUDY_DEFAULT = os.path.join(REPRO, 'hii_static', 'radial_profiles.txt')
+CLOUDY_OTS = os.path.join(REPRO, 'hii_static', 'thermal_with_N_ots',
                           'radial_profiles.txt')
 # (Tigris run, its label, Cloudy file, Cloudy label, colour)
 PAIRS = [('ots_true', 'Tigris, recombination_ots = true (on the spot)', CLOUDY_OTS,

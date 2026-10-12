@@ -4,7 +4,7 @@ Cloudy 25 (default and `diffuse OTS`); R_s (x_H+ = 0.5) and wall time per run in
 legend. Writes ../../../figures/band_count.png.
 
 Inputs: run_series.sh output in WORKDIR (run64_b3 .. run64_b7, each with time.out);
-Cloudy radial_profiles.txt of tests/cloudy_stromgren and its thermal_with_N_ots.
+Cloudy radial_profiles.txt of tests/hii_static and its thermal_with_N_ots.
 The Tigris profiles and wall times come from reduced.txt when it exists;
 `python plot.py --from-runs` reads WORKDIR ($PHOTCHEM_RUNS/T6_multi_ion/F10_bands) and
 rewrites it."""
@@ -24,8 +24,8 @@ REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'band_count')
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced.txt')
-CLOUDY = {'Cloudy 25, default': os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'),
-          'Cloudy 25, diffuse OTS': os.path.join(REPRO, 'cloudy_stromgren',
+CLOUDY = {'Cloudy 25, default': os.path.join(REPRO, 'hii_static', 'radial_profiles.txt'),
+          'Cloudy 25, diffuse OTS': os.path.join(REPRO, 'hii_static',
                                                  'thermal_with_N_ots', 'radial_profiles.txt')}
 NAMES = ['He+', 'OHx', 'CHx', 'CO', 'C+', 'HCO+', 'H2', 'H+', 'H3+', 'H2+', 'O+', 'Si+',
          'C_high', 'Si_high', 'O++', 'O_high', 'S+', 'S++', 'S_high', 'N+', 'N++', 'N_high']

@@ -14,10 +14,10 @@ to `build.log`. Every reduced data file names its sources and their commits in
 | --- | --- |
 | `bands/` | Tigris builds with 5 and 6 point-source bands, the check of the ionizing photon fractions, the band-count figure |
 | `be_sphere/` | a Bonnor-Ebert sphere in an isotropic far-ultraviolet field, post-processed with NCR and with GOW17 and ions |
-| `cloudy_stromgren/` | a static Stromgren sphere against Cloudy 25.00: Cloudy and Tigris inputs, the Starburst99 spectrum conversion, comparison figures |
 | `cost/` | the cost per cycle of each thermal and chemical mode, split by task |
 | `dust_temperature/` | the closed-form dust temperature against the grain equilibrium and the gas-dust balance |
 | `hii_dtype/` | a D-type H II region: input, shell radius against NCR, diagnostic figure and movie |
+| `hii_static/` | a static H II region (Stromgren sphere) against Cloudy 25.00, lit by Starburst99 at 2 Myr or a blackbody: Cloudy and Tigris inputs, the spectrum conversions, comparison figures |
 | `ions/` | ion-ladder balance, band-averaged ion cross sections, tables of collisional ionization equilibrium (CIE) and the higher ions |
 | `ncr_physics/` | NCR physics inside GOW17: NCR equilibrium method, hot-gas cooling and electrons, grain recombination in hot gas, substep limiter, Lyman-continuum photoionization |
 | `ode_solver/` | time integration of the chemical equations of each cell: semi-implicit error against substeps, Gauss-Seidel order and blocks, Riccati step, step control |
@@ -74,14 +74,14 @@ variable stops with a message naming it.
 | `ATHENAK_DIR` | an AthenaK checkout with the chemistry module (`onezone/`) |
 | `PYATHENA_DIR` | a pyathena checkout, for its `data/` directory (`ions/`) |
 | `TIGRIS_DATA_DIR` | a checkout of https://github.com/jeonggyukim/tigris-data, for the dust models (`pdr_sphere/athinput.cloud_postproc_dust`) |
-| `CLOUDY_EXE`, `CLOUDY_DATA_DIR` | the Cloudy 25.00 executable and its data directory (`cloudy_stromgren/run_cloudy.sh`) |
+| `CLOUDY_EXE`, `CLOUDY_DATA_DIR` | the Cloudy 25.00 executable and its data directory (`hii_static/run_cloudy.sh`, `hii_static/blackbody/run_cloudy_bb.sh`) |
 | `XUVTOP` | the CHIANTI 11 database, read by `ions/ion_cooling/build_ion_cooling.py` through ChiantiPy 0.16 (`pip install ChiantiPy`) |
 
 Athena++ does not expand variables in an input file. Where a table path goes, the
 `athinput.*` files here write `${TIGRIS_DIR}`. Expand them before a run, for example
 with `envsubst '$TIGRIS_DIR $TIGRIS_DATA_DIR' < athinput.X > athinput.local`.
 
-## cloudy_stromgren
+## hii_static
 
 `run_cloudy.sh` runs the Cloudy side in three steps. `make_sed.py` converts the
 Starburst99 spectrum of Tigris to the `table SED` format of Cloudy and checks the

@@ -6,7 +6,7 @@ default diffuse field (solid), and absorbed on the spot (open), against Cloudy's
 Cloudy's X^3+. Writes ../../../figures/cloudy_sphere.png.
 
 Inputs: ots_false and ots_true of ../fig_interior_temperature/run_recomb.sh; Cloudy
-radial_profiles.txt of tests/cloudy_stromgren and its thermal_with_N_ots. The Tigris
+radial_profiles.txt of tests/hii_static and its thermal_with_N_ots. The Tigris
 profiles come from reduced_<run>.txt when they exist; `python plot.py --from-runs` reads
 the runs ($PHOTCHEM_RUNS) and rewrites them."""
 import glob
@@ -26,8 +26,8 @@ REPRO = os.path.join(HERE, '..', '..')
 OUT = os.path.join(HERE, '..', '..', '..', 'figures', 'cloudy_sphere')
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 REDUCED = os.path.join(HERE, 'reduced_%s.txt')
-CLOUDY = [('default', os.path.join(REPRO, 'cloudy_stromgren', 'radial_profiles.txt'), '-'),
-          ('diffuse OTS', os.path.join(REPRO, 'cloudy_stromgren', 'thermal_with_N_ots',
+CLOUDY = [('default', os.path.join(REPRO, 'hii_static', 'radial_profiles.txt'), '-'),
+          ('diffuse OTS', os.path.join(REPRO, 'hii_static', 'thermal_with_N_ots',
                                        'radial_profiles.txt'), '--')]
 CCOL = {'T': 1, 'ne': 2, 'H+': 3, 'He+': 4, 'He++': 5, 'O+': 7, 'O++': 8, 'O_high': 9,
         'S+': 11, 'S++': 12, 'S_high': 13, 'N+': 14, 'N++': 15}

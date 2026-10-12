@@ -1,17 +1,17 @@
 <comment>
 problem   = a static Stromgren sphere, by post-processing
-reference = Cloudy 25.00 run of tests/cloudy_stromgren (hii.in)
-configure = -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=<n> --prob=photchem_postproc -hdf5
+reference = Cloudy 25.00 runs of tests/hii_static (hii.in, thermal_with_N_ots)
+configure = -mpi -gow17 --photchem_ions=O3,S3,N3 --gow17_bands=7 --ngroup_rayt_diffuse=11 --prob=photchem_postproc -hdf5
 
 # One point source of 1e49 ionizing photons per second at the centre of a uniform
 # box of 100 H per cm^3, 12 pc on a side, with the Starburst99 spectrum at 2 Myr.
 # The gas is held fixed. The point-source ray tracer and the GOW17 chemical network
 # with the O, S and N ions are repeated in turn until the abundances stop changing.
-# No dust, no cosmic rays and no far-ultraviolet background. Recombination photons
-# are absorbed on the spot.
+# No dust, no cosmic rays and no far-ultraviolet background.
 #
-# tests/bands/fig_band_count/run_series.sh runs it with 3, 5, 6 and 7 bands, and
-# tests/cloudy_stromgren/fig_cloudy_sphere/plot.py compares the 7-band run with Cloudy.
+# <photchem_gow17>/recombination_ots sets where the recombination photons go: true
+# absorbs them on the spot (H case B); false sends them through the diffuse ray tracer
+# (H and He case A). run_recomb.sh runs both.
 
 <job>
 problem_id = cloud
@@ -118,6 +118,8 @@ src1_L_PE = 0.0
 fuv_from_sed = true
 
 <rayt_point>
+tau_max       = 20      # optical depth at which a ray stops
+rays_per_cell = 4       # rays crossing each cell, which sets the HEALPix level
 rayt_point = true
 rotate_rays = fixed     # a new ray orientation each ray-tracing pass would set a floor under the
                         # convergence test
@@ -125,9 +127,7 @@ rotate_rays = fixed     # a new ray orientation each ray-tracing pass would set 
 <rayt_diffuse>
 rayt_diffuse = false
 scattering   = isotropic
-eps_scatter[0] = 1.0      # 1 - albedo; 1 = pure absorption, so one formal solution a solve
-eps_scatter[1] = 1.0
-eps_scatter[2] = 1.0
+eps_scatter  = 1.0        # 1 - albedo, every group; 1 = pure absorption, one formal solution
 angle_set    = healpix
 angle_order  = 2          # nside; 48 directions
 ray_bc       = open
@@ -145,7 +145,7 @@ cfl_photchem = 1.0
 
 <photchem_gow17>
 z_dust         = 0.0
-he_recombination = on_the_spot
+recombination_ots = true  # false: H and He case A, photons through the diffuse ray tracer
 ion_cooling_dir = ${TIGRIS_DIR}/inputs/tables/chianti_v11/ion_cooling
 semi_implicit_gauss_seidel = true
 chi0           = 0.0
