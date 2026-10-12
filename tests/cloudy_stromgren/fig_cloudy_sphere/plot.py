@@ -79,40 +79,61 @@ else:
     tg = reduced.load(REDUCED)
     r = tg.pop('r')
 cl =[(lab, np.loadtxt(fn), ls) for lab, fn, ls in CLOUDY]
-PANELS = [('T [K]', ['T'], 'lin'), (r'$n_e$ [cm$^{-3}$]', ['ne'], 'lin'),
+PANELS = [(r'$T$ [K]', ['T'], 'lin'), (r'$n_e$ [cm$^{-3}$]', ['ne'], 'lin'),
           ('H, He', ['H+', 'He+'], 'log'), ('O', ['O+', 'O++', 'O_high'], 'log'),
           ('S', ['S+', 'S++', 'S_high'], 'log'), ('N', ['N+', 'N++'], 'log')]
 LABEL = {'H+': 'H$^+$', 'He+': 'He$^+$', 'O+': 'O$^+$', 'O++': 'O$^{2+}$',
-         'O_high': r'O$^{\geq 3+}$ (Cloudy O$^{3+}$)', 'S+': 'S$^+$', 'S++': 'S$^{2+}$',
-         'S_high': r'S$^{\geq 3+}$ (Cloudy S$^{3+}$)', 'N+': 'N$^+$', 'N++': 'N$^{2+}$'}
-fig, axs = plt.subplots(3, 2, figsize=(11, 10), sharex=True)
+         'O_high': r'O$^{\geq 3+}$', 'S+': 'S$^+$', 'S++': 'S$^{2+}$',
+         'S_high': r'S$^{\geq 3+}$', 'N+': 'N$^+$', 'N++': 'N$^{2+}$'}
+# one colour per charge, the same in every element panel (Okabe-Ito)
+STAGE = {'+': '#0072B2', '++': '#D55E00', '_high': '#009E73'}
+plt.rcParams.update({'font.family': 'serif', 'mathtext.fontset': 'dejavuserif',
+                     'font.size': 9, 'axes.linewidth': 0.7, 'xtick.direction': 'in',
+                     'ytick.direction': 'in', 'xtick.top': True, 'ytick.right': True,
+                     'xtick.minor.visible': True, 'ytick.minor.visible': True,
+                     'legend.frameon': False, 'legend.fontsize': 8})
+
+
+def stage_colour(k):
+    if k in ('T', 'ne'):
+        return 'k'
+    if k == 'He+':
+        return STAGE['++']
+    return STAGE['_high'] if k.endswith('_high') else STAGE['++' if k.endswith('++')
+                                                             else '+']
+
+
+fig, axs = plt.subplots(3, 2, figsize=(7.1, 7.6), sharex=True)
 for ax, (ylab, keys, scale) in zip(axs.ravel(), PANELS):
-    for q, k in enumerate(keys):
-        col = 'k' if len(keys) == 1 else 'C%d' % q
+    for k in keys:
+        col = stage_colour(k)
         for lab, c, ls in cl:
-            ax.plot(c[:, 0], c[:, CCOL[k]], color=col, ls=ls, lw=1.8, alpha=0.6)
-        ax.plot(r, tg[k], 'o', color=col, ms=4, label=LABEL.get(k))
+            ax.plot(c[:, 0], c[:, CCOL[k]], color=col, ls=ls, lw=1.1)
+        ax.plot(r, tg[k], 'o', color=col, ms=3.2, mfc='white', mew=0.9,
+                label=LABEL.get(k))
     if scale == 'log':
         ax.set_yscale('log')
-        ax.set_ylim(1e-3, 1.5)
+        ax.set_ylim(1e-3, 8)
         ax.set_ylabel('fraction of ' + ylab)
-        ax.legend(fontsize=8, loc='lower left')
+        ax.legend(loc='upper left', ncol=3, borderaxespad=0.25, handletextpad=0.1, columnspacing=1.0)
     else:
         ax.set_ylabel(ylab)
-    ax.set_xlim(0, 3.5)
-    ax.grid(alpha=0.25)
+    ax.set_xlim(0, 3.3)
+for ax, t in zip(axs.ravel(), 'abcdef'):
+    ax.text(0.97, 0.94, '(%s)' % t, transform=ax.transAxes, ha='right', va='top')
 axs[0, 0].set_ylim(4000, 11000)
-axs[0, 0].plot([], [], 'k-', label='Cloudy 25, default')
-axs[0, 0].plot([], [], 'k--', label='Cloudy 25, diffuse OTS')
-axs[0, 0].plot([], [], 'ko', ms=4, label='Tigris GOW17 + O3,S3,N3, 7 bands')
-axs[0, 0].legend(fontsize=8, loc='upper left')
+axs[0, 1].set_ylim(-5, 130)
+handles = [plt.Line2D([], [], color='k', ls='-', lw=1.1),
+           plt.Line2D([], [], color='k', ls='--', lw=1.1),
+           plt.Line2D([], [], color='k', ls='none', marker='o', ms=3.2, mfc='white',
+                      mew=0.9)]
+axs[0, 0].legend(handles, ['Cloudy, default', 'Cloudy, diffuse OTS', 'Tigris'],
+                 loc='upper left', handlelength=1.8)
 for ax in axs[-1]:
-    ax.set_xlabel('r [pc]')
+    ax.set_xlabel(r'$r$ [pc]')
 rs = [radius_half(r, tg['H+'])] + [radius_half(c[:, 0], c[:, 3]) for _, c, _ in cl]
-fig.suptitle(r'Static H II region, $Q = 10^{49}$ s$^{-1}$, $n_{\rm H} = 100$ cm$^{-3}$, '
-             r'SB99 2 Myr. $R_s$: Tigris %.3f pc, Cloudy %.3f pc (default), %.3f pc (OTS)'
-             % tuple(rs), fontsize=11)
-fig.tight_layout()
+print('R_s [pc]: Tigris %.3f, Cloudy default %.3f, Cloudy diffuse OTS %.3f' % tuple(rs))
+fig.tight_layout(h_pad=0.4, w_pad=1.0)
 for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
 # ionization-weighted means inside 2.5 pc, Tigris vs Cloudy default
