@@ -48,8 +48,7 @@ LAYOUT = [['T', 'ne', 'heat', None], ['H0', 'H+', None, None],
 # heat: total heating; cool: total cooling, drawn in the heat panel
 QTY = [q for col in LAYOUT for q in col if q] + ['cool']
 LAB = {'T': r'$T$ [K]', 'ne': r'$n_e$ [cm$^{-3}$]',
-       'heat': r'$\Gamma, \Lambda$ / $n_{\rm H}^2$' '\n'
-               r'[$10^{-24}$ erg cm$^3$ s$^{-1}$]',
+       'heat': r'$\Gamma$, $n_{\rm H}\Lambda$ [$10^{-22}$ erg s$^{-1}$]',
        'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
        'He0': r'He$^0$/He', 'He+': r'He$^+$/He', 'He++': r'He$^{2+}$/He'}
 for el in 'OSN':
@@ -68,7 +67,7 @@ def tigris(rundir):
     # rho is in m_H cm^-3 (1.4 n_H); the T formula takes rho with mu_H, which cancels
     f = {'T': d['press']*MUH*1e10/KB/(nh*(1.0 - x['H2'] + 0.1 + xe)), 'ne': xe*nh/1.4,
          'H0': np.maximum(1.0 - x['H+'] - 2*x['H2'], 0.0), 'H+': x['H+'],
-         'heat': d['heat_rate']/(nh/1.4), 'cool': d['cool_rate']/(nh/1.4)}
+         'heat': d['heat_rate'], 'cool': d['cool_rate']}
     for el, ions in [('He', ['He+', 'He++']), ('O', ['O+', 'O++', 'O_high']),
                      ('S', ['S+', 'S++', 'S_high']), ('N', ['N+', 'N++', 'N_high'])]:
         for nm in ions:
@@ -93,10 +92,10 @@ def cloudy(mdir):
     rad = np.loadtxt(os.path.join(mdir, 'hii.rad'))
     r_rad = rad[:, 1]/PC
     p = {'T': c[:, 1], 'ne': c[:, 2]}
-    # save cooling: depth, T, Htot, Ctot [erg cm^-3 s^-1]; n_H = 100 cm^-3
+    # save cooling: depth, T, Htot, Ctot [erg cm^-3 s^-1]; per H with n_H = 100 cm^-3
     hc = np.loadtxt(os.path.join(mdir, 'hii.cool'), usecols=(2, 3))
-    p['heat'] = np.interp(c[:, 0], r_rad, hc[:, 0])/1.0e4
-    p['cool'] = np.interp(c[:, 0], r_rad, hc[:, 1])/1.0e4
+    p['heat'] = np.interp(c[:, 0], r_rad, hc[:, 0])/100.0
+    p['cool'] = np.interp(c[:, 0], r_rad, hc[:, 1])/100.0
     # save element columns: depth, X0, X+, X2+, ...; Cloudy appends extra columns after
     # the bare nucleus, so the stages stop at column 1 + Z
     for el, z in [('H', 1), ('He', 2), ('O', 8), ('S', 16), ('N', 7)]:
@@ -127,7 +126,8 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
         sources += [tdir, cdir]
     reduced.save(REDUCED, 'radial profiles of the static H II region, spectrum %s: Tigris '
                  'density-weighted shells, Cloudy zones\n<code>_<mode>_<quantity>; r [pc], '
-                 'T [K], ne [cm^-3], ions as fractions of the element' % SPEC, arrays,
+                 'T [K], ne [cm^-3], ions as fractions of the element, heat (Gamma) and '
+                 'cool (n_H Lambda) per H [erg s^-1]' % SPEC, arrays,
                  sources=sources)
 data = reduced.load(REDUCED)
 
@@ -162,7 +162,7 @@ for i, (mode, label) in enumerate(MODES):
     print('%s: R_s [pc] Tigris %.3f Cloudy %.3f' % (label, radius_half(rt, pt['H+']),
                                                      radius_half(rc, pc['H+'])))
     for q in ('heat', 'cool'):
-        pc[q], pt[q] = 1e24*pc[q], 1e24*pt[q]
+        pc[q], pt[q] = 1e22*pc[q], 1e22*pt[q]
     for q in QTY:
         if q == 'cool':
             continue
@@ -192,7 +192,7 @@ for q in QTY:
         a.set_ylim(0, 1.25*a.get_ylim()[1])
     if q == 'heat':
         a.set_ylim(0, 1.3*a.get_ylim()[1])
-        a.text(0.04, 0.95, r'symbols $\Gamma$, + $\Lambda$ (Tigris)',
+        a.text(0.04, 0.95, r'symbols $\Gamma$, + $n_{\rm H}\Lambda$ (Tigris)',
                transform=a.transAxes, va='top', fontsize=7.5)
 for a in axs.ravel():
     a.set_xlim(0, 1.15*rmax)
