@@ -616,8 +616,6 @@ def draw_full(ax, mode):
     for n, (x, y) in POS_FULL.items():
         draw_box(ax, n, x, y, mode, GS_TIGRIS)
     draw_optional(ax, 17.2, 1.2, 3.4, mode)
-    text_halo(ax, 10.9, -0.75, "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17"
-              " (2-body 27, 28); near-resonant", GREEN, fs=FS_NOTE)
 
 
 def fig_full(mode):
@@ -667,8 +665,7 @@ def fig_2panel():
     for n, (x, y) in pos.items():
         draw_box(axb, n, x, y, "plain", GS_TIGRIS)
     axb.text(-2.6, 3.5, "(b)", fontsize=9, fontweight="bold", va="top")
-    axb.text(-0.75, -4.0, "O, O$^+$, C$^+$ and Si$^+$ are the boxes of (a); "
-             "O$\\leftrightarrow$O$^+$ charge transfer is in GOW17 (near-resonant)",
+    axb.text(-0.75, -4.0, "O, O$^+$, C$^+$ and Si$^+$ are the boxes of (a)",
              fontsize=FS_NOTE, color=DARK, ha="left", va="center", style="italic")
     draw_optional(axb, 14.5, -2.45, 3.4, "plain")
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
