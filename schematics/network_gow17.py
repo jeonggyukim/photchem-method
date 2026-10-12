@@ -669,8 +669,6 @@ def fig_2panel():
     for n, (x, y) in pos.items():
         draw_box(axb, n, x, y, "plain", GS_TIGRIS)
     axb.text(-2.6, 3.5, "(b)", fontsize=9, fontweight="bold", va="top")
-    axb.text(-0.75, -4.0, "O, O$^+$, C$^+$ and Si$^+$ are the boxes of (a)",
-             fontsize=FS_NOTE, color=DARK, ha="left", va="center", style="italic")
     draw_optional(axb, 14.5, -2.45, 3.4, "plain")
     fax = legend_axes(fig, [0.0, legend_h / H, 1, foot_h / H])
     footer(fax)
