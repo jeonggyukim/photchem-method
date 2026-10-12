@@ -19,6 +19,7 @@ import sys
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.patheffects as pe  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.colors import LogNorm, Normalize  # noqa: E402
 from photchem_method import paths  # noqa: E402
@@ -99,9 +100,12 @@ plt.rcParams.update({'font.family': 'serif', 'mathtext.fontset': 'dejavuserif',
                      'font.size': 9, 'xtick.labelsize': 7, 'ytick.labelsize': 7,
                      'xtick.direction': 'in', 'ytick.direction': 'in'})
 NCOL, NROW = len(LAYOUT), 4
-fig, allax = plt.subplots(NROW, NCOL + 1, figsize=(10.0, 6.9), sharex=True,
+# panels touch; the figure height makes them square: panel width
+# 10 in * (0.92 - 0.045)/6.45 = 1.357 in, so the grid is 4 * 1.357 = 5.43 in tall
+fig, allax = plt.subplots(NROW, NCOL + 1, figsize=(10.0, 6.1), sharex=True,
                           sharey=True,
-                          gridspec_kw={'width_ratios': [1, 0.30] + [1]*(NCOL - 1)})
+                          gridspec_kw={'width_ratios': [1, 0.45] + [1]*(NCOL - 1),
+                                       'wspace': 0.0, 'hspace': 0.0})
 for a in allax[:, 1]:
     a.set_visible(False)
 axs = allax[:, [0] + list(range(2, NCOL + 1))]
@@ -121,32 +125,30 @@ for col, acol in zip(LAYOUT, axs.T):
         ims[kind] = a.pcolormesh(data['x1f'], data['x2f'], data[q], norm=NORM[kind],
                                  cmap=CMAP[kind], shading='flat', rasterized=True)
         a.set_aspect('equal')
-        a.set_title(LAB[q], fontsize=9, pad=2)
-        a.set_xticks([-3, 0, 3])
-        a.set_yticks([-3, 0, 3])
+        a.text(0.05, 0.94, LAB[q], transform=a.transAxes, ha='left', va='top',
+               color='white', fontsize=9,
+               path_effects=[pe.withStroke(linewidth=2.0, foreground='black')])
+        a.set_xticks([-2, 0, 2])
+        a.set_yticks([-2, 0, 2])
 for acol in axs.T:
     vis = [a for a in acol if a.get_visible()]
     vis[-1].tick_params(labelbottom=True)
     vis[-1].set_xlabel(r'$x$ [pc]', labelpad=1)
+# y labels on the first column only, which is full; the colour bars sit right of it
 for arow in axs:
     arow[0].set_ylabel(r'$y$ [pc]', labelpad=1)
-    for a in arow[1:]:
-        if a.get_visible():
-            a.tick_params(labelleft=True)
-            break
-fig.subplots_adjust(left=0.05, right=0.92, bottom=0.07, top=0.93, wspace=0.06,
-                    hspace=0.22)
+fig.subplots_adjust(left=0.045, right=0.92, bottom=0.075, top=0.955)
 # colour bars: the ion fractions right of the grid; T (one bar for both rows), n_e and
 # Gamma beside the first column, in the spacer
-cax_ion = fig.add_axes([0.935, 0.07, 0.012, 0.86])
+cax_ion = fig.add_axes([0.93, 0.07, 0.012, 0.89])
 fig.colorbar(ims['ion'], cax=cax_ion, label='fraction of the element')
 for rows, kind in [((0, 1), 'T'), ((2,), 'ne'), ((3,), 'heat')]:
     top, bot = axs[rows[0], 0].get_position(), axs[rows[-1], 0].get_position()
     cax = fig.add_axes([top.x1 + 0.006, bot.y0, 0.008, top.y1 - bot.y0])
     fig.colorbar(ims[kind], cax=cax).ax.tick_params(labelsize=6)
-fig.suptitle(r'%s, slice at $z = %.3f$ pc, Tigris ($N = 64^3$)'
-             % ('5e4 K blackbody' if SPEC == 'bb5e4' else 'SB99 2 Myr',
-                float(data['z'][0])), fontsize=10)
+fig.text(0.5, 0.985, r'%s, slice at $z = %.3f$ pc, Tigris ($N = 64^3$)'
+         % ('5e4 K blackbody' if SPEC == 'bb5e4' else 'SB99 2 Myr',
+            float(data['z'][0])), ha='center', va='top', fontsize=10)
 for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=250)
 print(OUT)

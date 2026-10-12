@@ -157,7 +157,7 @@ for col, acol in zip(LAYOUT, axs.T):
         else:
             ax[q] = a
 rmax = 0.0
-for i, (mode, label) in enumerate(MODES):
+for mode, label in MODES:
     rc, rt = data['cloudy_%s_r' % mode], data['tigris_%s_r' % mode]
     pc = {q: data['cloudy_%s_%s' % (mode, q)] for q in QTY}
     pt = {q: data['tigris_%s_%s' % (mode, q)] for q in QTY}
@@ -170,12 +170,12 @@ for i, (mode, label) in enumerate(MODES):
         # OTS and no OTS differ in T and the heating; elsewhere OTS alone is shown
         if q == 'cool' or (mode == 'no_ots' and q not in BOTH_MODES):
             continue
-        ax[q].plot(rc, pc[q], color=COL[mode], lw=1.8, alpha=0.5, zorder=1)
+        ax[q].plot(rc, pc[q], color=COL[mode], lw=1.0, alpha=0.85, zorder=1)
         ax[q].plot(rt, pt[q], MARK[mode], color=COL[mode], ms=2.6, mfc='none',
-                   mew=0.7, ls='none', markevery=(i, 2), alpha=0.75, zorder=3)
+                   mew=0.7, ls='none', markevery=2, alpha=0.75, zorder=3)
     # Tigris cooling on its heating: a cell in balance puts the + on the marker
     ax['heat'].plot(rt, pt['cool'], '+', color=COL[mode], ms=4.5, mew=0.8, ls='none',
-                    markevery=(i, 2), zorder=4)
+                    markevery=2, zorder=4)
 for q in QTY:
     if q == 'cool':
         continue
@@ -200,6 +200,8 @@ for q in QTY:
                  fontsize=8, handletextpad=0.2, columnspacing=0.8, borderaxespad=0.3)
 for a in axs.ravel():
     a.set_xlim(0, 1.15*rmax)
+    a.grid(color='0.85', lw=0.5, zorder=0)
+    a.set_axisbelow(True)
 # the abundance columns share one y range: tick labels only on the first visible one
 for arow in axs:
     first = True
@@ -213,9 +215,9 @@ for acol in axs.T:
     low = [a for a in acol if a.get_visible()][-1]
     low.tick_params(labelbottom=True)
     low.set_xlabel(r'$r$ [pc]')
-h = [Line2D([], [], color=COL['no_ots'], lw=1.8, alpha=0.5),
+h = [Line2D([], [], color=COL['no_ots'], lw=1.0, alpha=0.85),
      Line2D([], [], color=COL['no_ots'], marker='o', ls='none', ms=3, mfc='none'),
-     Line2D([], [], color=COL['ots'], lw=1.8, alpha=0.5),
+     Line2D([], [], color=COL['ots'], lw=1.0, alpha=0.85),
      Line2D([], [], color=COL['ots'], marker='s', ls='none', ms=3, mfc='none')]
 fig.legend(h, ['Cloudy, no OTS', r'Tigris ($N=64^3$), no OTS', 'Cloudy, OTS',
                r'Tigris ($N=64^3$), OTS'], loc='upper center', ncol=4,
