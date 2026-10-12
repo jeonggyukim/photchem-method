@@ -1,0 +1,28 @@
+/Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/hii_static_bands10/bb5e4_no_ots/cloud.out2.00001.athdf: 20494 cells with x_H+ > 1e-3, T 23-10178 K, n_e 0.124-119 cm^-3
+Cloudy: /Users/jgkim/Documents/tigris-photchem-gow17-multi-ion/T6_multi_ion/cloudy_bb5e4/no_ots/hii.out
+
+interp max: largest cell error of the table against the solve at the same
+  n_p, over cells with T >= 1000 K.
+n_p max: largest cell change from n_p = n_H+ to n_p = 0.85 n_e.
+L(T<1e3K): fraction of the line from cells below the grid, where the table
+  holds its edge value.
+
+line               logL exp  logL tab    Cloudy  exp/Cloudy  tab/exp - 1  interp max   n_p max   L(T<1e3K)
+H-alpha (case B)     37.141       nan    37.126       1.035          nan         nan       nan         nan
+[O III] 5007         37.198    37.198    37.208       0.978    -5.72e-04    9.42e-04   7.8e-16     8.2e-24
+[O III] 4959         36.737    36.737    36.747       0.978    -5.72e-04    9.42e-04   7.8e-16     8.2e-24
+[O III] 4363         34.757    34.757    34.785       0.939    -1.23e-03    2.26e-03   6.7e-16     8.6e-37
+[O III] 88um         36.948    36.948    36.882       1.165    -1.50e-03    1.56e-03   4.0e-15     4.6e-11
+[O III] 52um         36.867    36.867    36.892       0.944    -1.65e-04    2.26e-04   1.3e-13     2.0e-11
+[S III] 9531         36.747    36.747    36.771       0.946    -2.62e-04    1.76e-03   0.0e+00     1.3e-14
+[S III] 9069         36.347    36.347    36.371       0.945    -2.62e-04    1.76e-03   0.0e+00     1.3e-14
+[S III] 6312         35.015    35.015    35.051       0.920    -7.89e-04    2.47e-03   0.0e+00     7.2e-24
+[S III] 18.7um       36.562    36.562    36.582       0.955     1.53e-04    2.89e-04   0.0e+00     7.8e-08
+[S III] 33.5um       36.757    36.757    36.774       0.962    -6.69e-04    7.43e-04   0.0e+00     2.3e-07
+
+ratio              Tigris     Cloudy
+[O III] 4363/5007     0.0036     0.0038
+[S III] 6312/9069     0.0466     0.0479
+[S III] 9531/9069     2.5125     2.5119
+[O III] 5007/B)       1.1410     1.2078
+[S III] 9069/B)       0.1606     0.1758
