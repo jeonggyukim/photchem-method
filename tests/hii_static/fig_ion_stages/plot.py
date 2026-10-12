@@ -42,11 +42,15 @@ CHARGE = {'He+': 1, 'C+': 1, 'HCO+': 1, 'H+': 1, 'H3+': 1, 'H2+': 1, 'O+': 1, 'S
 XTOT = {'H': 1.0, 'He': 0.1, 'O': 3.2e-4, 'S': 1.45e-5, 'N': 7.4e-5}
 MUH, KB, PC = 2.34335276e-24, 1.380649e-16, 3.0856776e18
 # columns top to bottom: neutral, singly, doubly, higher ions; None leaves a panel empty
-LAYOUT = [['T', 'ne', None, None], ['H0', 'H+', None, None],
+LAYOUT = [['T', 'ne', 'heat', None], ['H0', 'H+', None, None],
           ['He0', 'He+', 'He++', None]] + \
          [[el + '0', el + '+', el + '++', el + '_high'] for el in 'OSN']
-QTY = [q for col in LAYOUT for q in col if q]
-LAB = {'T': r'$T$ [K]', 'ne': r'$n_e$ [cm$^{-3}$]', 'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
+# heat: total heating; cool: total cooling, drawn in the heat panel
+QTY = [q for col in LAYOUT for q in col if q] + ['cool']
+LAB = {'T': r'$T$ [K]', 'ne': r'$n_e$ [cm$^{-3}$]',
+       'heat': r'$\Gamma, \Lambda$ / $n_{\rm H}^2$' '\n'
+               r'[$10^{-24}$ erg cm$^3$ s$^{-1}$]',
+       'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
        'He0': r'He$^0$/He', 'He+': r'He$^+$/He', 'He++': r'He$^{2+}$/He'}
 for el in 'OSN':
     LAB.update({el + '0': r'%s$^0$/%s' % (el, el), el + '+': r'%s$^+$/%s' % (el, el),
@@ -63,7 +67,8 @@ def tigris(rundir):
     xe = sum(CHARGE.get(nm, 0)*x[nm] for nm in NAMES)
     # rho is in m_H cm^-3 (1.4 n_H); the T formula takes rho with mu_H, which cancels
     f = {'T': d['press']*MUH*1e10/KB/(nh*(1.0 - x['H2'] + 0.1 + xe)), 'ne': xe*nh/1.4,
-         'H0': np.maximum(1.0 - x['H+'] - 2*x['H2'], 0.0), 'H+': x['H+']}
+         'H0': np.maximum(1.0 - x['H+'] - 2*x['H2'], 0.0), 'H+': x['H+'],
+         'heat': d['heat_rate']/(nh/1.4), 'cool': d['cool_rate']/(nh/1.4)}
     for el, ions in [('He', ['He+', 'He++']), ('O', ['O+', 'O++', 'O_high']),
                      ('S', ['S+', 'S++', 'S_high']), ('N', ['N+', 'N++', 'N_high'])]:
         for nm in ions:
@@ -88,6 +93,10 @@ def cloudy(mdir):
     rad = np.loadtxt(os.path.join(mdir, 'hii.rad'))
     r_rad = rad[:, 1]/PC
     p = {'T': c[:, 1], 'ne': c[:, 2]}
+    # save cooling: depth, T, Htot, Ctot [erg cm^-3 s^-1]; n_H = 100 cm^-3
+    hc = np.loadtxt(os.path.join(mdir, 'hii.cool'), usecols=(2, 3))
+    p['heat'] = np.interp(c[:, 0], r_rad, hc[:, 0])/1.0e4
+    p['cool'] = np.interp(c[:, 0], r_rad, hc[:, 1])/1.0e4
     # save element columns: depth, X0, X+, X2+, ...; Cloudy appends extra columns after
     # the bare nucleus, so the stages stop at column 1 + Z
     for el, z in [('H', 1), ('He', 2), ('O', 8), ('S', 16), ('N', 7)]:
@@ -152,15 +161,24 @@ for i, (mode, label) in enumerate(MODES):
     rmax = max(rmax, radius_half(rc, pc['H+']))
     print('%s: R_s [pc] Tigris %.3f Cloudy %.3f' % (label, radius_half(rt, pt['H+']),
                                                      radius_half(rc, pc['H+'])))
+    for q in ('heat', 'cool'):
+        pc[q], pt[q] = 1e24*pc[q], 1e24*pt[q]
     for q in QTY:
+        if q == 'cool':
+            continue
         ax[q].plot(rc, pc[q], color=COL[mode], lw=1.8, alpha=0.5,
                    ls='--' if mode == 'ots' else '-', zorder=1)
         ax[q].plot(rt, pt[q], MARK[mode], color=COL[mode], ms=2.6,
                    mfc='white' if mode == 'ots' else COL[mode], mew=0.7, ls='none',
                    markevery=(i, 2), alpha=0.75, zorder=3)
+    # Tigris cooling on its heating: a cell in balance puts the + on the marker
+    ax['heat'].plot(rt, pt['cool'], '+', color=COL[mode], ms=4.5, mew=0.8, ls='none',
+                    markevery=(i, 2), zorder=4)
 for q in QTY:
+    if q == 'cool':
+        continue
     a = ax[q]
-    if q in ('T', 'ne'):
+    if q in ('T', 'ne', 'heat'):
         a.set_ylabel(LAB[q])
         a.yaxis.labelpad = 1
     else:
@@ -172,6 +190,10 @@ for q in QTY:
         a.set_ylim(5000, 12000)
     if q == 'ne':
         a.set_ylim(0, 1.25*a.get_ylim()[1])
+    if q == 'heat':
+        a.set_ylim(0, 1.3*a.get_ylim()[1])
+        a.text(0.04, 0.95, r'symbols $\Gamma$, + $\Lambda$ (Tigris)',
+               transform=a.transAxes, va='top', fontsize=7.5)
 for a in axs.ravel():
     a.set_xlim(0, 1.15*rmax)
 # the abundance columns share one y range: tick labels only on the first visible one
