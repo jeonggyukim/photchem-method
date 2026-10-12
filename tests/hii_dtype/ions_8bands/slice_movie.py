@@ -1,10 +1,12 @@
 """z = 0 slice movie of the expanding H II region of run_tigris.sh (GOW17 + O3,S3,N3
-and He++, 8 bands, no dust, OTS, 128^3), laid out as ../../hii_static/fig_slices:
-first column n_H, T, P/k and |v|, then H, He, O, S, N, one row per stage (neutral,
-singly, doubly and higher ionized). Every panel keeps one colour range over all
-frames.
+and He++, 8 bands, OTS), laid out as ../../hii_static/fig_slices: first column n_H, T,
+P/k and |v|; with --radiation the point-source fields (u_LyC, the share above 24.6 eV,
+chi_LW, chi_PE); with --molecular H2, CO, C+ and C0; then H, He, O, S, N, one row per
+stage (neutral, singly, doubly and higher ionized). Every panel keeps one colour range
+over all frames.
 
-usage: python slice_movie.py RUNDIR OUTDIR [--nproc N] [--frame I]
+usage: python slice_movie.py RUNDIR OUTDIR [--nproc N] [--frame I] [--molecular]
+       [--radiation] [--temp-log] [--density-scale S] [--title TEXT]
 Writes OUTDIR/frame_NNNNN.png, one per HII.out2 dump, then OUTDIR/slices.mp4 (ffmpeg).
 The frames are independent and are drawn by N processes (default 8). --frame I draws
 only dump I, without the movie, to check the layout first.
@@ -19,7 +21,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.patheffects as pe  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.colors import ListedColormap, LogNorm, Normalize  # noqa: E402
+from matplotlib.colors import FuncNorm, LinearSegmentedColormap  # noqa: E402
+from matplotlib.colors import LogNorm, Normalize  # noqa: E402
 from photchem_method import paths  # noqa: E402
 
 athena_read = paths.athena_read()
@@ -37,41 +40,77 @@ IONS = {'He': ['He+', 'He++'], 'O': ['O+', 'O++', 'O_high'],
         'S': ['S+', 'S++', 'S_high'], 'N': ['N+', 'N++', 'N_high']}
 
 
-def layout(molecular):
-    """Columns top to bottom; --molecular adds H2 and the carbon carriers."""
-    return [['nH', 'T', 'Pk', 'v']] + \
-        ([['H2', 'CO', 'C+', 'C0']] if molecular else []) + \
+def layout(molecular, radiation):
+    """Columns top to bottom, as (columns with their own colour bars, columns that share
+    the fraction colour bar). --radiation adds the band fields, --molecular H2 and the
+    carbon carriers."""
+    own = [['nH', 'T', 'Pk', 'v']] + \
+        ([['uLyC', 'fHe', 'chiLW', 'chiPE']] if radiation else [])
+    shared = ([['H2', 'CO', 'C+', 'C0']] if molecular else []) + \
         [['H0', 'H+', None, None], ['He0', 'He+', 'He++', None]] + \
         [[el + '0', el + '+', el + '++', el + '_high'] for el in 'OSN']
+    return own, shared
 
 
+# ism units: energy density unit m_H (km/s)^2 / cm^3 [erg cm^-3]; the point-source bands
+# of the 8-band set are 0-5 ionizing (0-2 above the He I edge, 24.59 eV), 6 LW, 7 PE;
+# chi in Draine units, as the chemical network normalizes them
+E_CODE = 1.6738234e-14
+U_DRAINE_LW, U_DRAINE_PE = 1.335e-14, 7.613e-14
 LAB = {'nH': r'$n_{\rm H}$ [cm$^{-3}$]', 'T': r'$T$ [K]', 'Pk': r'$P/k$ [K cm$^{-3}$]',
        'v': r'$|v|$ [km s$^{-1}$]', 'H0': r'H$^0$/H', 'H+': r'H$^+$/H',
        'He0': r'He$^0$/He', 'He+': r'He$^+$/He', 'He++': r'He$^{2+}$/He',
-       'H2': r'2H$_2$/H', 'CO': 'CO/C', 'C+': r'C$^+$/C', 'C0': r'C$^0$/C'}
+       'H2': r'2H$_2$/H', 'CO': 'CO/C', 'C+': r'C$^+$/C', 'C0': r'C$^0$/C',
+       'uLyC': r'$u_{\rm LyC}$ [erg cm$^{-3}$]',
+       'fHe': r'$u_{>24.6\,{\rm eV}}/u_{\rm LyC}$', 'chiLW': r'$\chi_{\rm LW}$',
+       'chiPE': r'$\chi_{\rm PE}$'}
 X_C = 1.6e-4
 for el in 'OSN':
     LAB.update({el + '0': r'%s$^0$/%s' % (el, el), el + '+': r'%s$^+$/%s' % (el, el),
                 el + '++': r'%s$^{2+}$/%s' % (el, el),
                 el + '_high': r'%s$^{\geq3+}$/%s' % (el, el)})
 NORM = {'nH': LogNorm(10, 1e3), 'T': Normalize(5e3, 1.1e4), 'Pk': LogNorm(1e3, 3e6),
-        'v': Normalize(0, 15), 'ion': LogNorm(1e-5, 1)}
+        'v': Normalize(0, 15), 'ion': LogNorm(1e-5, 1), 'uLyC': LogNorm(1e-14, 1e-8),
+        'fHe': Normalize(0.0, 0.5), 'chiLW': LogNorm(1.0, 1e5),
+        'chiPE': LogNorm(1.0, 1e5)}
 CMAP = {'nH': 'cividis', 'T': 'inferno', 'Pk': 'magma', 'v': 'plasma',
-        'ion': plt.get_cmap('viridis').copy()}
+        'ion': plt.get_cmap('viridis').copy(), 'uLyC': 'magma', 'fHe': 'cividis',
+        'chiLW': 'BuPu_r', 'chiPE': 'BuPu_r'}
 CMAP['ion'].set_bad(CMAP['ion'](0.0))   # a fraction of exactly 0 takes the lowest colour
-# --temp-log: T on a log scale, 10-2e4 K, in pyathena's temperature colour map (RdYlBu_r
-# with its middle moved to 1e4 K, as pyathena/fields/fields.py cmap_shift)
-T_LOG = (10.0, 2.0e4)
+# --temp-log: T in a colour map with one hue family per phase, on a two-segment scale so
+# that both the neutral and the ionized gas show their structure: 10-5000 K on a log
+# scale over the lower T_SPLIT of the bar, 5000-11000 K linear over the rest.
+#   10-100 K      molecular, cold      navy to blue
+#   100-1000 K    warm PDR and shell   blue to teal to pale green
+#   1000-5000 K   warm neutral         pale green to pale yellow
+#   5000-11000 K  ionized              gold to orange to red to dark red
+T_LOG = (10.0, 5.0e3, 1.1e4)
+T_SPLIT = 0.6
 
 
-def shifted_cmap(base, mid):
-    """`base` resampled so that its middle sits at `mid` (0-1) instead of 0.5."""
-    s = np.linspace(0.0, 1.0, 256)
-    src = np.where(s < mid, 0.5*s/mid, 0.5 + 0.5*(s - mid)/(1.0 - mid))
-    return ListedColormap(plt.get_cmap(base)(src), name='T_pyathena')
+def _t_forward(t):
+    t = np.clip(np.asarray(t, dtype=float), T_LOG[0], T_LOG[2])
+    lo = T_SPLIT*np.log10(t/T_LOG[0])/np.log10(T_LOG[1]/T_LOG[0])
+    hi = T_SPLIT + (1.0 - T_SPLIT)*(t - T_LOG[1])/(T_LOG[2] - T_LOG[1])
+    return np.where(t < T_LOG[1], lo, hi)
 
 
-CMAP_T_LOG = shifted_cmap('RdYlBu_r', np.log10(1e4/T_LOG[0])/np.log10(T_LOG[1]/T_LOG[0]))
+def _t_inverse(s):
+    s = np.asarray(s, dtype=float)
+    lo = T_LOG[0]*(T_LOG[1]/T_LOG[0])**(s/T_SPLIT)
+    hi = T_LOG[1] + (s - T_SPLIT)/(1.0 - T_SPLIT)*(T_LOG[2] - T_LOG[1])
+    return np.where(s < T_SPLIT, lo, hi)
+
+
+def _at(t):
+    return float(_t_forward(t))
+
+
+CMAP_T_LOG = LinearSegmentedColormap.from_list('T_phases', [
+    (0.0, '#0b1d51'), (_at(100.0), '#2b8cbe'), (_at(3.2e2), '#41b6c4'),
+    (_at(1e3), '#a1dab4'), (_at(4.5e3), '#f4f9c4'), (_at(5e3), '#fed976'),
+    (_at(7.5e3), '#fd8d3c'), (_at(9.5e3), '#d7301f'), (1.0, '#67000d')])
+T_TICKS = [10, 100, 1000, 5000, 7000, 9000]
 
 
 def fields(fn):
@@ -94,6 +133,11 @@ def fields(fn):
         for nm in ions:
             f[nm] = x[nm]/XTOT[el]
         f[el + '0'] = np.maximum(1.0 - sum(f[nm] for nm in ions), 0.0)
+    u = [d['Er_rayt%d' % b][k].astype(np.float64)*E_CODE for b in range(8)]
+    f['uLyC'] = sum(u[:6])
+    with np.errstate(invalid='ignore', divide='ignore'):
+        f['fHe'] = np.where(f['uLyC'] > 0, sum(u[:3])/f['uLyC'], np.nan)
+    f['chiLW'], f['chiPE'] = u[6]/U_DRAINE_LW, u[7]/U_DRAINE_PE
     return f, d['x1f'], d['x2f'], float(d['Time'])
 
 
@@ -104,24 +148,32 @@ plt.rcParams.update({'font.family': 'serif', 'mathtext.fontset': 'dejavuserif',
 
 def frame(job):
     """Draw dump fn as OUTDIR/frame_<n>.png."""
-    n, fn, outdir, molecular, title, scale, temp_log = job
+    n, fn, outdir, molecular, radiation, title, scale, temp_log = job
     # the n_H and P/k ranges follow the ambient density (--density-scale)
     norm = dict(NORM, nH=LogNorm(10*scale, 1e3*scale), Pk=LogNorm(1e3*scale, 3e6*scale))
     cmap = dict(CMAP)
     if temp_log:
-        norm['T'], cmap['T'] = LogNorm(*T_LOG), CMAP_T_LOG
-    LAYOUT = layout(molecular)
-    NCOL = len(LAYOUT)
+        norm['T'] = FuncNorm((_t_forward, _t_inverse), vmin=T_LOG[0], vmax=T_LOG[2])
+        cmap['T'] = CMAP_T_LOG
+    for c in cmap:
+        cmap[c] = plt.get_cmap(cmap[c]).copy()
+        cmap[c].set_bad(cmap[c](0.0))  # 0 on a log scale, or no light, takes the lowest
+    own, shared = layout(molecular, radiation)
+    LAYOUT = own + shared
     f, x1f, x2f, t = fields(fn)
-    # panels square: the figure widens by one panel per column
-    fig, allax = plt.subplots(4, NCOL + 1, figsize=(10.0*(NCOL + 0.45)/6.45, 6.1),
-                              sharex=True,
-                              sharey=True,
-                              gridspec_kw={'width_ratios': [1, 0.45] + [1]*(NCOL - 1),
+    # grid: each column with its own colour bars is followed by a spacer that holds them
+    ratios = [1, 0.45]*len(own) + [1]*len(shared)
+    cols = [2*i for i in range(len(own))] + list(range(2*len(own), len(ratios)))
+    # panels square: the figure widens with the columns (10 in for 6.45 units)
+    fig, allax = plt.subplots(4, len(ratios), figsize=(10.0*sum(ratios)/6.45, 6.1),
+                              sharex=True, sharey=True,
+                              gridspec_kw={'width_ratios': ratios,
                                            'wspace': 0.0, 'hspace': 0.0})
-    for a in allax[:, 1]:
-        a.set_visible(False)
-    axs = allax[:, [0] + list(range(2, NCOL + 1))]
+    for i in range(len(ratios)):
+        if i not in cols:
+            for a in allax[:, i]:
+                a.set_visible(False)
+    axs = allax[:, cols]
     ims = {}
     for col, acol in zip(LAYOUT, axs.T):
         for q, a in zip(col, acol):
@@ -129,8 +181,9 @@ def frame(job):
                 a.set_visible(False)
                 continue
             kind = q if q in NORM else 'ion'
-            ims[kind] = a.pcolormesh(x1f, x2f, f[q], norm=norm[kind], cmap=cmap[kind],
-                                     shading='flat', rasterized=True)
+            ims[q if kind != 'ion' else 'ion'] = a.pcolormesh(
+                x1f, x2f, f[q], norm=norm[kind], cmap=cmap[kind], shading='flat',
+                rasterized=True)
             a.set_aspect('equal')
             a.text(0.05, 0.94, LAB[q], transform=a.transAxes, ha='left', va='top',
                    color='white', fontsize=9,
@@ -147,10 +200,15 @@ def frame(job):
     fig.subplots_adjust(left=0.045, right=0.92, bottom=0.075, top=0.955)
     fig.colorbar(ims['ion'], cax=fig.add_axes((0.93, 0.075, 0.012, 0.88)),
                  label='fraction of the element')
-    for row, q in enumerate(LAYOUT[0]):
-        p = axs[row, 0].get_position()
-        cax = fig.add_axes((p.x1 + 0.006, p.y0, 0.008, p.height))
-        fig.colorbar(ims[q], cax=cax).ax.tick_params(labelsize=6)
+    for ic, col in enumerate(own):
+        for row, q in enumerate(col):
+            p = axs[row, ic].get_position()
+            cax = fig.add_axes((p.x1 + 0.004, p.y0 + 0.004, 0.007, p.height - 0.008))
+            cb = fig.colorbar(ims[q], cax=cax)
+            if q == 'T' and temp_log:
+                cb.set_ticks(T_TICKS)
+                cb.set_ticklabels(['%g' % tk for tk in T_TICKS])
+            cb.ax.tick_params(labelsize=6)
     fig.text(0.5, 0.985, title + r', $t = %.3f$ Myr' % (0.978*t), ha='center',
              va='top', fontsize=10)
     fig.savefig('%s/frame_%05d.png' % (outdir, n), dpi=150)
@@ -165,8 +223,9 @@ if __name__ == '__main__':
     ap.add_argument('--nproc', type=int, default=8)
     ap.add_argument('--frame', type=int, default=None)
     ap.add_argument('--molecular', action='store_true')
+    ap.add_argument('--radiation', action='store_true')
     ap.add_argument('--temp-log', action='store_true',
-                    help='T on a log scale (10-2e4 K) in the pyathena colour map')
+                    help='T in the phase colour map (10-5000 K log, 5000-11000 K linear)')
     ap.add_argument('--density-scale', type=float, default=1.0,
                     help='ambient n_H / 100 cm^-3, which scales the n_H and P/k ranges')
     ap.add_argument('--title', default=r'expanding H II region, SB99 2 Myr, '
@@ -175,8 +234,8 @@ if __name__ == '__main__':
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     files = sorted(glob.glob(args.rundir + '/HII.out2.*.athdf'))
-    jobs = [(n, fn, args.outdir, args.molecular, args.title, args.density_scale,
-             args.temp_log)
+    jobs = [(n, fn, args.outdir, args.molecular, args.radiation, args.title,
+             args.density_scale, args.temp_log)
             for n, fn in enumerate(files)]
     if args.frame is not None:
         frame(jobs[args.frame])
