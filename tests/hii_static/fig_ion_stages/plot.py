@@ -56,6 +56,9 @@ for el in 'OSN':
                 el + '++': r'%s$^{2+}$/%s' % (el, el),
                 el + '_high': r'%s$^{\geq3+}$/%s' % (el, el)})
 MODES = [('no_ots', 'no OTS'), ('ots', 'OTS')]
+# panels drawn for both modes; inside the front the no-OTS abundances and n_e lie within
+# 16% of the OTS ones (H0 45%, He++ 27%, N0 26%), so the other panels show OTS only
+BOTH_MODES = ('T', 'heat')
 
 
 def tigris(rundir):
@@ -164,7 +167,8 @@ for i, (mode, label) in enumerate(MODES):
     for q in ('heat', 'cool'):
         pc[q], pt[q] = 1e22*pc[q], 1e22*pt[q]
     for q in QTY:
-        if q == 'cool':
+        # OTS and no OTS differ in T and the heating; elsewhere OTS alone is shown
+        if q == 'cool' or (mode == 'no_ots' and q not in BOTH_MODES):
             continue
         ax[q].plot(rc, pc[q], color=COL[mode], lw=1.8, alpha=0.5,
                    ls='--' if mode == 'ots' else '-', zorder=1)
