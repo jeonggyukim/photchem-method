@@ -1,20 +1,32 @@
-"""dt, the domain-minimum timescales and the ionized mass against time for runs of one
-setup under different timestep rules (grammar diag.sbatch: cfl10, cfl100, nolimit).
+"""dt, the shortest timescales over the domain and the ionized mass against time for
+one setup under different timestep rules: grammar/diag.sbatch, the n_H = 1e3 cm^-3
+dusty GOW17 H II region from a molecular start at 128^3 to t = 0.02, with
+cfl_photchem = 10, cfl_photchem = 100 and no chemistry limit on dt
+(photchem/flag_update_dt_main = false). Writes ../../../../figures/timestep_rules.png.
 
-usage: python plot_timestep_rules.py DIR OUT.png
-DIR holds one subdirectory per case with its HII.hst.
+The curves come from reduced_n128.txt; `python plot.py --from-runs DIR` reads
+DIR/<case>/HII.hst (DIR = the diag/n128 directory of the grammar job, copied here)
+and rewrites it.
+Usage: python plot.py [--from-runs DIR]
 """
+import os
 import re
 import sys
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
+from photchem_method import reduced  # noqa: E402
+from photchem_method.paths import figure_formats  # noqa: E402
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, '..', '..', '..', '..', 'figures', 'timestep_rules')
+REDUCED = os.path.join(HERE, 'reduced_n128.txt')
 CASES = [('cfl10', r'$c_{\rm pc} = 10$', '-'), ('cfl100', r'$c_{\rm pc} = 100$', '--'),
          ('nolimit', 'no limit', ':')]
 KINDS = [('tmin_cool', 'cooling', 'C3'), ('tmin_Hp', r'H$^+$', 'C0'),
          ('tmin_H2', r'H$_2$', 'C2'), ('tmin_CO', 'CO', 'C4')]
+FIELDS = ['time', 'dt', 'mass_ion'] + [k for k, _, _ in KINDS]
 MYR = 0.978  # code time unit [Myr]
 
 
@@ -25,19 +37,30 @@ def history(fn):
     return {n: a[:, i] for i, n in enumerate(names)}
 
 
+def from_runs(d):
+    arrays = {}
+    for case, _, _ in CASES:
+        h = history(os.path.join(d, case, 'HII.hst'))
+        for f in FIELDS:
+            arrays['%s_%s' % (case, f)] = h[f]
+    reduced.save(REDUCED, 'history columns of each case: <case>_<column>', arrays,
+                 sources=[os.path.join(d, c) for c, _, _ in CASES])
+
+
 def main():
-    d, out = sys.argv[1], sys.argv[2]
+    if '--from-runs' in sys.argv:
+        from_runs(sys.argv[sys.argv.index('--from-runs') + 1])
+    r = reduced.load(REDUCED)
     fig, ax = plt.subplots(1, 3, figsize=(13, 3.6), constrained_layout=True)
     for case, lab, ls in CASES:
-        h = history('%s/%s/HII.hst' % (d, case))
-        t = h['time']*MYR
-        ax[0].semilogy(t[1:], h['dt'][1:], ls, color='k', lw=1, label=lab)
+        t = r[case + '_time']*MYR
+        ax[0].semilogy(t[1:], r[case + '_dt'][1:], ls, color='k', lw=1, label=lab)
         if case != 'nolimit':
             for k, klab, col in KINDS:
-                ax[1].semilogy(t[1:], h[k][1:], ls, color=col, lw=0.9,
+                ax[1].semilogy(t[1:], r['%s_%s' % (case, k)][1:], ls, color=col, lw=0.9,
                                label=klab if case == 'cfl10' else None)
-        ax[2].plot(t, h['mass_ion'], ls, color='k', lw=1, marker='o' if len(t) < 5
-                   else None, ms=3, label=lab)
+        ax[2].plot(t, r[case + '_mass_ion'], ls, color='k', lw=1,
+                   marker='o' if len(t) < 5 else None, ms=3, label=lab)
     ax[0].set_ylabel('dt [code]')
     ax[1].set_ylabel('shortest timescale over the domain [code]')
     ax[2].set_ylabel('ionized mass [code]')
@@ -48,8 +71,10 @@ def main():
     ax[1].legend(fontsize=8, title=r'solid $c_{\rm pc} = 10$, dashed 100',
                  title_fontsize=7, ncol=2)
     ax[2].legend(fontsize=8)
-    fig.savefig(out, dpi=110)
-    print(out)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    for ext in figure_formats():
+        fig.savefig(OUT + '.' + ext, dpi=110)
+    print(OUT)
 
 
 if __name__ == '__main__':
