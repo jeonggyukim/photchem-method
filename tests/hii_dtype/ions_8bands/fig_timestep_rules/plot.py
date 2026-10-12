@@ -22,7 +22,7 @@ from photchem_method.paths import figure_formats  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', '..', 'figures', 'timestep_rules')
 REDUCED = os.path.join(HERE, 'reduced_n128.txt')
-CASES = [('cfl10', r'$c_{\rm pc} = 10$', '-'), ('cfl100', r'$c_{\rm pc} = 100$', '--'),
+CASES = [('cfl10', 'cfl_photchem = 10', '-'), ('cfl100', 'cfl_photchem = 100', '--'),
          ('nolimit', 'no limit', ':')]
 KINDS = [('tmin_cool', 'cooling', 'C3'), ('tmin_Hp', r'H$^+$', 'C0'),
          ('tmin_H2', r'H$_2$', 'C2'), ('tmin_CO', 'CO', 'C4')]
@@ -68,7 +68,7 @@ def main():
         a.set_xlabel('t [Myr]')
         a.grid(alpha=0.3)
     ax[0].legend(fontsize=8)
-    ax[1].legend(fontsize=8, title=r'solid $c_{\rm pc} = 10$, dashed 100',
+    ax[1].legend(fontsize=8, title='solid: cfl_photchem = 10, dashed: 100',
                  title_fontsize=7, ncol=2)
     ax[2].legend(fontsize=8)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
