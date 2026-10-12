@@ -12,6 +12,7 @@ the runs ($PHOTCHEM_RUNS) and rewrites them."""
 import glob
 import os
 import sys
+import textwrap
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -147,6 +148,26 @@ for ax in axs[-1]:
 fig.tight_layout(h_pad=0.4, w_pad=1.0)
 for ext in figure_formats():
     fig.savefig(OUT + '.' + ext, dpi=300)
+rs_t = [radius_half(*(lambda r, tg: (r, tg['H+']))(*TG[run])) for run, _, _, _ in RUNS]
+rs_c = [radius_half(c[:, 0], c[:, 3]) for _, c, _ in cl]
+# math is written without spaces so that the line breaks fall outside it
+CAPTION = (
+    r"Static H II region around a point source emitting $Q(\mathrm{H})=10^{49}$ "
+    r"ionizing photons s$^{-1}$ with the Starburst99 spectrum at 2 Myr, in uniform "
+    r"dust-free gas of $n_\mathrm{H}=100$ cm$^{-3}$. (a) Temperature, (b) electron "
+    r"density, and the ion fractions of (c) H and He, (d) O, (e) S and (f) N against "
+    r"distance $r$ from the source. Lines are Cloudy 25 with its default transfer of the "
+    r"diffuse field (solid, no OTS) and with the diffuse OTS option (dashed, OTS). "
+    r"Circles are Tigris on a $64^3$ grid ($\Delta{x}=0.1875$ pc), with recombination "
+    r"photons carried by the diffuse ray tracer (filled, no OTS) or absorbed where they "
+    r"are emitted (open, OTS); its profiles are density-weighted averages over shells "
+    r"$0.25\Delta{x}$ wide. For O and S, the Tigris species X$^{\geq3+}$, which holds "
+    r"every stage above X$^{2+}$, is compared with the Cloudy fraction of X$^{3+}$. The "
+    r"radius where $x(\mathrm{H}^+)=0.5$ is %.3f pc (no OTS) and %.3f pc (OTS) in "
+    r"Tigris, and %.3f pc and %.3f pc in Cloudy." % (rs_t[0], rs_t[1], rs_c[0], rs_c[1]))
+fig.text(0.01, -0.005, textwrap.fill(CAPTION, 122), ha='left', va='top', fontsize=8.5,
+         linespacing=1.35)
+fig.savefig(OUT + '_caption.png', dpi=300, bbox_inches='tight', pad_inches=0.08)
 cmodel = {lab: c for lab, c, _ in cl}
 for lab, c in cmodel.items():
     print('R_s [pc] Cloudy %-11s %.3f' % (lab, radius_half(c[:, 0], c[:, 3])))
