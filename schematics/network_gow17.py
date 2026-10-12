@@ -556,11 +556,11 @@ XE_TIGRIS = (r"$x_e = \sum_i q_i\,x_i$ over the 18 ions, X$^{\geq q+}$ at charge
              r" for $T \geq 2\times10^4$ K also"
              r"$\;\sum_{\rm X}[\bar q_{\rm X}(T) - q]\,x({\rm X}^{\geq q+})"
              r"\;+\;w(T)\,\Delta x_{e,\rm CIE}$")
-HIGH_TEXT = (r"X$^{\geq q+}$: every stage above the top tracked one, one species; "
-             "its split among stages, recombination and cooling follow CIE at $T$.\n"
-             "The ladders are on or off at configure time (--photchem_ions=O3,S3,N3, the "
-             "one set so far: O, S, N to O$^{2+}$, S$^{2+}$, N$^{2+}$,\nwith C$^{\\geq 2+}$ "
-             "and Si$^{\\geq 2+}$).")
+HIGH_TEXT = (r"X$^{\geq q+}$ groups every ion above the highest tracked stage into one species. "
+             "Its recombination and cooling\nare computed as if it were split among those "
+             "stages as in CIE at the local temperature.\n"
+             "The option --photchem_ions=O3,S3,N3 tracks O, S and N up to O$^{2+}$, S$^{2+}$ "
+             "and N$^{2+}$, and C and Si up to C$^+$ and Si$^+$.")
 
 
 def canvas(xlim, ylim, legend_h, foot_h, top_pad=0.04):
