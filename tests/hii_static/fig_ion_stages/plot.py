@@ -1,14 +1,14 @@
 """Static H II region, Tigris against Cloudy 25, every ionization stage of H, He, O, S
 and N. One spectrum per figure: sb99 (Starburst99 at 2 Myr) or bb5e4 (a 5e4 K
 blackbody); Q(H) = 1e49 photons s^-1, uniform dust-free gas of n_H = 100 cm^-3. Tigris
-is GOW17 + O3,S3,N3 with He++, 8 bands, 64^3, 20 point rays per cell, recombination
+is GOW17 + O3,S3,N3 with He++, 10 bands, 64^3, 20 point rays per cell, recombination
 photons on the spot (OTS) or carried by the diffuse ray tracer (no OTS); Cloudy is
 `diffuse OTS` and its default transfer of the diffuse field. Columns: T and n_e, then
 H, He, O, S, N; rows: neutral, singly, doubly and higher ionized. Tigris X_high (every
 stage above X^2+) is compared with Cloudy's stages 3+ and above summed. Writes
 ../../../figures/ion_stages_<spectrum>.png.
 
-Inputs: run_tigris.sh output in $PHOTCHEM_RUNS/T6_multi_ion/hii_static_stages
+Inputs: run_tigris.sh output in $PHOTCHEM_RUNS/T6_multi_ion/hii_static_bands10
 (<spectrum>_ots, <spectrum>_no_ots) and ../blackbody/run_cloudy_bb.sh output in
 $PHOTCHEM_RUNS/T6_multi_ion/cloudy_<spectrum> (ots, no_ots). The profiles come from
 reduced_<spectrum>.txt when it exists; `python plot.py SPECTRUM --from-runs` reads the
@@ -118,7 +118,7 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
     athena_read = paths.athena_read()
     arrays, sources = {}, []
     for mode, _ in MODES:
-        tdir = paths.runs('T6_multi_ion', 'hii_static_stages', '%s_%s' % (SPEC, mode))
+        tdir = paths.runs('T6_multi_ion', 'hii_static_bands10', '%s_%s' % (SPEC, mode))
         cdir = paths.runs('T6_multi_ion', 'cloudy_' + SPEC, mode)
         for code, (r, p) in [('tigris', tigris(tdir)), ('cloudy', cloudy(cdir))]:
             arrays['%s_%s_r' % (code, mode)] = r

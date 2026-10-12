@@ -107,6 +107,22 @@ xi_max       = 8.4      # iprob = 2 only: radius in units of c_s/sqrt(4 pi G rho
 density_file =          # iprob = 0 only
 temp0 = 100.0
 equil_init   = false    # start atomic
+# heating and cooling by process in every cell (user output variables heat_*, cool_*),
+# and two probe cells, written to cloud.probe<n>.txt: the terms over probe_nt
+# temperatures with the cell's abundances and radiation held fixed. The source is at
+# the origin; the probes hold r = 1.0 and 2.5 pc on the (1,1,1) diagonal, at
+# x1 = x2 = x3 = r/sqrt(3) (cell centres at 1.14 and 2.44 pc).
+rates_by_process = true
+n_probe      = 2
+probe0_x1    = 0.57735027
+probe0_x2    = 0.57735027
+probe0_x3    = 0.57735027
+probe1_x1    = 1.44337567
+probe1_x2    = 1.44337567
+probe1_x3    = 1.44337567
+probe_tmin   = 1.0e3    # [K]
+probe_tmax   = 3.0e4
+probe_nt     = 141
 nsource = 1
 source_file  =
 beam_chi0 = 0.0
@@ -166,5 +182,7 @@ sigma_d[4]     = 2.0e-21
 sigma_d[5]     = 1.0e-21
 sigma_d[6]     = 1.0e-21
 sigma_d[7]     = 1.0e-21
+sigma_d[8]     = 1.0e-21  # one entry per band (10 bands); unused with z_dust = 0
+sigma_d[9]     = 1.0e-21
 rates_dir      = ${TIGRIS_DIR}/inputs/tables/rates
 coolftn_file   = ${TIGRIS_DIR}/inputs/tables/tigress_coolftn_ncr.txt

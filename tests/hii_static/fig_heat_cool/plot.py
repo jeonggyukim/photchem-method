@@ -3,16 +3,17 @@ of n_H = 100 cm^-3): heating and cooling by process, Tigris against Cloudy 25.
 
 Top row: at two cells, r = 1.14 and 2.44 pc (0.39 and 0.83 R_s), the heating and
 cooling rates per n_H^2 as functions of T with the cell's abundances and radiation held
-fixed (the probes of run_tigris.sh). The crossing of total heating and cooling is the
+fixed (the probes of ../fig_ion_stages/athinput.stromgren_stages). The crossing of total heating and cooling is the
 equilibrium temperature these abundances predict; vertical lines mark the temperature
 of the Tigris cell and of Cloudy at the same radius. Middle row: radial profiles of
 the heating and cooling by agent. Bottom row: the mean heat per H photoionization and
 the share of H photoionizations by recombination photons, for recombination photons
 carried by the diffuse ray tracer (no OTS) and absorbed on the spot (OTS).
 
-Tigris: GOW17 + O3,S3,N3 with He++, 8 bands, 64^3, 20 point rays per cell; Cloudy:
+Tigris: GOW17 + O3,S3,N3 with He++, 10 bands, 64^3, 20 point rays per cell; Cloudy:
 `diffuse OTS` and its default transfer of the diffuse field. Reads
-$PHOTCHEM_RUNS/T6_multi_ion/hii_static_heat_cool/bb5e4_{ots,no_ots} and
+$PHOTCHEM_RUNS/T6_multi_ion/hii_static_bands10/bb5e4_{ots,no_ots}
+(../fig_ion_stages/run_tigris.sh) and
 $PHOTCHEM_RUNS/T6_multi_ion/cloudy_bb5e4/{ots,no_ots}; the profiles come from
 reduced_bb5e4.txt when it exists, and `python plot.py --from-runs` rewrites it.
 Writes ../../../figures/heat_cool_bb5e4.png."""
@@ -147,7 +148,7 @@ if '--from-runs' in sys.argv or not os.path.exists(REDUCED):
     athena_read = paths.athena_read()
     arrays, sources = {}, []
     for mode, _ in MODES:
-        tdir = paths.runs('T6_multi_ion', 'hii_static_heat_cool', '%s_%s' % (SPEC, mode))
+        tdir = paths.runs('T6_multi_ion', 'hii_static_bands10', '%s_%s' % (SPEC, mode))
         cdir = paths.runs('T6_multi_ion', 'cloudy_' + SPEC, mode)
         for code, (r, p) in [('tigris', tigris(tdir)), ('cloudy', cloudy(cdir))]:
             arrays['%s_%s_r' % (code, mode)] = r
