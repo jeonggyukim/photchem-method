@@ -1,8 +1,8 @@
 """Optically thin line maps of an hii_dtype run (GOW17 + O3,S3,N3): H-alpha, [O III]
 5007 and [S II] 6716+6731 surface brightness, int j dl along z, and their composite in
-the narrowband palette of Hubble images, [S II] red, H-alpha green, [O III] blue. No
-dust extinction or scattering; this is the numpy reference the renderer is checked
-against.
+the narrowband palette of Hubble images, [S II] red, H-alpha green, [O III] blue,
+plain and gold-balanced (compose). No dust extinction or scattering; this is the
+numpy reference the renderer is checked against.
 
 H-alpha is the case B fit of Tigris emission.hpp (Draine 2011 eq. 14.8); the forbidden
 lines come from the 5-level populations of pyathena's IonCoolant (CHIANTI 11), with
@@ -78,10 +78,23 @@ def stretch(img, lo, hi):
     return np.clip(np.log10(np.maximum(img, lo)/lo)/np.log10(hi/lo), 0.0, 1.0)
 
 
+def compose(sb, rng, gold):
+    """RGB of the stretched lines. gold: green is 0.8 H-alpha + 0.2 [O III], and the
+    excess of green over the larger of red and blue moves into red (green keeps three
+    quarters of it), so H-alpha-bright gas turns gold and [O III]-bright gas stays
+    blue, as narrowband SHO images are usually balanced."""
+    s, h, o = (stretch(sb[line], *rng[line]) for line in LINES)
+    if not gold:
+        return np.dstack([s, h, o])
+    g = 0.8*h + 0.2*o
+    excess = np.maximum(g - np.maximum(s, o), 0.0)
+    return np.clip(np.dstack([s + excess, g - 0.25*excess, o]), 0.0, 1.0)
+
+
 def frame(job):
     n, fn, outdir, title, rng = job
     sb, x1f, x2f, t = surface_brightness(fn)
-    fig, ax = plt.subplots(1, 4, figsize=(13.0, 3.6), constrained_layout=True)
+    fig, ax = plt.subplots(1, 5, figsize=(16.0, 3.6), constrained_layout=True)
     for a, line in zip(ax[:3], ['Halpha', 'OIII', 'SII']):
         lo, hi = rng[line]
         im = a.pcolormesh(x1f, x2f, np.maximum(sb[line], lo), norm=LogNorm(lo, hi),
@@ -91,11 +104,11 @@ def frame(job):
         cb = fig.colorbar(im, ax=a, orientation='horizontal', fraction=0.05, pad=0.02)
         cb.set_label(r'$\int j\,dl$ [erg s$^{-1}$ cm$^{-2}$ sr$^{-1}$]', fontsize=8)
         cb.ax.tick_params(labelsize=7)
-    rgb = np.dstack([stretch(sb[line], *rng[line]) for line in LINES])
-    ax[3].imshow(rgb, origin='lower', extent=[x1f[0], x1f[-1], x2f[0], x2f[-1]],
-                 interpolation='nearest')
-    ax[3].text(0.04, 0.95, '[S II] H$\\alpha$ [O III]', transform=ax[3].transAxes,
-               va='top', color='w', fontsize=10)
+    for a, gold, lab in [(ax[3], False, r'R, G, B = [S II], H$\alpha$, [O III]'),
+                         (ax[4], True, r'G = 0.8 H$\alpha$ + 0.2 [O III], gold')]:
+        a.imshow(compose(sb, rng, gold), origin='lower',
+                 extent=[x1f[0], x1f[-1], x2f[0], x2f[-1]], interpolation='nearest')
+        a.text(0.04, 0.95, lab, transform=a.transAxes, va='top', color='w', fontsize=9)
     for a in ax:
         a.set_aspect('equal')
         a.set_xticks([])
